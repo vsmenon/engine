@@ -25,9 +25,9 @@ class LicensesCommand extends Command<bool> {
 
   void _checkLicenseHeaders() {
     final List<io.File> allSourceFiles =
-        _flatListSourceFiles(environment.webUiRootDir);
+        _flatListSourceFiles(environment!.webUiRootDir!);
     _expect(allSourceFiles.isNotEmpty,
-        'Dart source listing of ${environment.webUiRootDir.path} must not be empty.');
+        'Dart source listing of ${environment!.webUiRootDir!.path} must not be empty.');
 
     final List<String> allDartPaths =
         allSourceFiles.map((f) => f.path).toList();
@@ -39,7 +39,7 @@ class LicensesCommand extends Command<bool> {
       'tool'
     ]) {
       final String expectedAbsoluteDirectory =
-          path.join(environment.webUiRootDir.path, expectedDirectory);
+          path.join(environment!.webUiRootDir!.path, expectedDirectory);
       _expect(
         allDartPaths
             .where((p) => p.startsWith(expectedAbsoluteDirectory))
@@ -86,8 +86,8 @@ class LicensesCommand extends Command<bool> {
         // Not a source file we're checking.
         return false;
       }
-      if (path.isWithin(environment.webUiBuildDir.path, f.path) ||
-          path.isWithin(environment.webUiDartToolDir.path, f.path)) {
+      if (path.isWithin(environment!.webUiBuildDir.path, f.path) ||
+          path.isWithin(environment!.webUiDartToolDir.path, f.path)) {
         // Generated files.
         return false;
       }

@@ -17,7 +17,7 @@ import 'firefox_installer.dart';
 void main() async {
   void deleteFirefoxInstallIfExists() {
     final io.Directory firefoxInstallationDir = io.Directory(
-      path.join(environment.webUiDartToolDir.path, 'firefox'),
+      path.join(environment!.webUiDartToolDir.path, 'firefox'),
     );
 
     if (firefoxInstallationDir.existsSync()) {
@@ -37,10 +37,10 @@ void main() async {
     FirefoxInstaller installer = FirefoxInstaller(version: '69.0.2');
     expect(installer.isInstalled, isFalse);
 
-    BrowserInstallation installation = await getOrInstallFirefox('69.0.2');
+    BrowserInstallation installation = await (getOrInstallFirefox('69.0.2') as FutureOr<BrowserInstallation>);
 
     expect(installation.version, '69.0.2');
     expect(installer.isInstalled, isTrue);
-    expect(io.File(installation.executable).existsSync(), isTrue);
+    expect(io.File(installation.executable!).existsSync(), isTrue);
   });
 }

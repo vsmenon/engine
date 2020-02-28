@@ -95,7 +95,7 @@ abstract class OffsetBase {
   int get hashCode => hashValues(_dx, _dy);
 
   @override
-  String toString() => 'OffsetBase(${_dx?.toStringAsFixed(1)}, ${_dy?.toStringAsFixed(1)})';
+  String toString() => 'OffsetBase(${_dx.toStringAsFixed(1)}, ${_dy.toStringAsFixed(1)})';
 }
 
 /// An immutable 2D floating-point offset.
@@ -316,15 +316,15 @@ class Offset extends OffsetBase {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Offset lerp(Offset a, Offset b, double t) {
+  static Offset? lerp(Offset a, Offset b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null)
-      return b * t;
-    if (b == null)
-      return a * (1.0 - t);
-    return Offset(lerpDouble(a.dx, b.dx, t), lerpDouble(a.dy, b.dy, t));
+    /* if (a == null)
+      return b * t; */
+    /* if (b == null)
+      return a * (1.0 - t); */
+    return Offset(lerpDouble(a.dx, b.dx, t)!, lerpDouble(a.dy, b.dy, t)!);
   }
 
   /// Compares two Offsets for equality.
@@ -339,7 +339,7 @@ class Offset extends OffsetBase {
   int get hashCode => hashValues(dx, dy);
 
   @override
-  String toString() => 'Offset(${dx?.toStringAsFixed(1)}, ${dy?.toStringAsFixed(1)})';
+  String toString() => 'Offset(${dx.toStringAsFixed(1)}, ${dy.toStringAsFixed(1)})';
 }
 
 /// Holds a 2D floating-point size.
@@ -581,15 +581,15 @@ class Size extends OffsetBase {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Size lerp(Size a, Size b, double t) {
+  static Size? lerp(Size a, Size b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null)
-      return b * t;
-    if (b == null)
-      return a * (1.0 - t);
-    return Size(lerpDouble(a.width, b.width, t), lerpDouble(a.height, b.height, t));
+    /* if (a == null)
+      return b * t; */
+    /* if (b == null)
+      return a * (1.0 - t); */
+    return Size(lerpDouble(a.width, b.width, t)!, lerpDouble(a.height, b.height, t)!);
   }
 
   /// Compares two Sizes for equality.
@@ -605,7 +605,7 @@ class Size extends OffsetBase {
   int get hashCode => hashValues(_dx, _dy);
 
   @override
-  String toString() => 'Size(${width?.toStringAsFixed(1)}, ${height?.toStringAsFixed(1)})';
+  String toString() => 'Size(${width.toStringAsFixed(1)}, ${height.toStringAsFixed(1)})';
 }
 
 /// An immutable, 2D, axis-aligned, floating-point rectangle whose coordinates
@@ -640,7 +640,7 @@ class Rect {
   /// Construct a rectangle that bounds the given circle.
   ///
   /// The `center` argument is assumed to be an offset from the origin.
-  Rect.fromCircle({ Offset center, double radius }) : this.fromCenter(
+  Rect.fromCircle({ required Offset center, required double radius }) : this.fromCenter(
     center: center,
     width: radius * 2,
     height: radius * 2,
@@ -649,7 +649,7 @@ class Rect {
   /// Constructs a rectangle from its center point, width, and height.
   ///
   /// The `center` argument is assumed to be an offset from the origin.
-  Rect.fromCenter({ Offset center, double width, double height }) : this.fromLTRB(
+  Rect.fromCenter({ required Offset center, required double width, required double height }) : this.fromLTRB(
     center.dx - width / 2,
     center.dy - height / 2,
     center.dx + width / 2,
@@ -856,21 +856,21 @@ class Rect {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Rect lerp(Rect a, Rect b, double t) {
+  static Rect? lerp(Rect a, Rect b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null)
-      return Rect.fromLTRB(b.left * t, b.top * t, b.right * t, b.bottom * t);
-    if (b == null) {
+    /* if (a == null)
+      return Rect.fromLTRB(b.left * t, b.top * t, b.right * t, b.bottom * t); */
+    /* if (b == null) {
       final double k = 1.0 - t;
       return Rect.fromLTRB(a.left * k, a.top * k, a.right * k, a.bottom * k);
-    }
+    } */
     return Rect.fromLTRB(
-      lerpDouble(a.left, b.left, t),
-      lerpDouble(a.top, b.top, t),
-      lerpDouble(a.right, b.right, t),
-      lerpDouble(a.bottom, b.bottom, t),
+      lerpDouble(a.left, b.left, t)!,
+      lerpDouble(a.top, b.top, t)!,
+      lerpDouble(a.right, b.right, t)!,
+      lerpDouble(a.bottom, b.bottom, t)!,
     );
   }
 
@@ -903,10 +903,10 @@ class Radius {
   const Radius.elliptical(this.x, this.y);
 
   /// The radius value on the horizontal axis.
-  final double x;
+  final double? x;
 
   /// The radius value on the vertical axis.
-  final double y;
+  final double? y;
 
   /// A radius with [x] and [y] values set to zero.
   ///
@@ -921,49 +921,49 @@ class Radius {
   /// occur as part of expressions. For example, negating a radius of one pixel
   /// and then adding the result to another radius is equivalent to subtracting
   /// a radius of one pixel from the other.
-  Radius operator -() => Radius.elliptical(-x, -y);
+  Radius operator -() => Radius.elliptical(-x!, -y!);
 
   /// Binary subtraction operator.
   ///
   /// Returns a radius whose [x] value is the left-hand-side operand's [x]
   /// minus the right-hand-side operand's [x] and whose [y] value is the
   /// left-hand-side operand's [y] minus the right-hand-side operand's [y].
-  Radius operator -(Radius other) => Radius.elliptical(x - other.x, y - other.y);
+  Radius operator -(Radius other) => Radius.elliptical(x! - other.x!, y! - other.y!);
 
   /// Binary addition operator.
   ///
   /// Returns a radius whose [x] value is the sum of the [x] values of the
   /// two operands, and whose [y] value is the sum of the [y] values of the
   /// two operands.
-  Radius operator +(Radius other) => Radius.elliptical(x + other.x, y + other.y);
+  Radius operator +(Radius other) => Radius.elliptical(x! + other.x!, y! + other.y!);
 
   /// Multiplication operator.
   ///
   /// Returns a radius whose coordinates are the coordinates of the
   /// left-hand-side operand (a radius) multiplied by the scalar
   /// right-hand-side operand (a double).
-  Radius operator *(double operand) => Radius.elliptical(x * operand, y * operand);
+  Radius operator *(double operand) => Radius.elliptical(x! * operand, y! * operand);
 
   /// Division operator.
   ///
   /// Returns a radius whose coordinates are the coordinates of the
   /// left-hand-side operand (a radius) divided by the scalar right-hand-side
   /// operand (a double).
-  Radius operator /(double operand) => Radius.elliptical(x / operand, y / operand);
+  Radius operator /(double operand) => Radius.elliptical(x! / operand, y! / operand);
 
   /// Integer (truncating) division operator.
   ///
   /// Returns a radius whose coordinates are the coordinates of the
   /// left-hand-side operand (a radius) divided by the scalar right-hand-side
   /// operand (a double), rounded towards zero.
-  Radius operator ~/(double operand) => Radius.elliptical((x ~/ operand).toDouble(), (y ~/ operand).toDouble());
+  Radius operator ~/(double operand) => Radius.elliptical((x! ~/ operand).toDouble(), (y! ~/ operand).toDouble());
 
   /// Modulo (remainder) operator.
   ///
   /// Returns a radius whose coordinates are the remainder of dividing the
   /// coordinates of the left-hand-side operand (a radius) by the scalar
   /// right-hand-side operand (a double).
-  Radius operator %(double operand) => Radius.elliptical(x % operand, y % operand);
+  Radius operator %(double operand) => Radius.elliptical(x! % operand, y! % operand);
 
   /// Linearly interpolate between two radii.
   ///
@@ -980,16 +980,16 @@ class Radius {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Radius lerp(Radius a, Radius b, double t) {
+  static Radius? lerp(Radius a, Radius b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null)
-      return Radius.elliptical(b.x * t, b.y * t);
-    if (b == null) {
+    /* if (a == null)
+      return Radius.elliptical(b.x * t, b.y * t); */
+    /* if (b == null) {
       final double k = 1.0 - t;
       return Radius.elliptical(a.x * k, a.y * k);
-    }
+    } */
     return Radius.elliptical(
       lerpDouble(a.x, b.x, t),
       lerpDouble(a.y, b.y, t),
@@ -1013,9 +1013,9 @@ class Radius {
 
   @override
   String toString() {
-    return x == y ? 'Radius.circular(${x.toStringAsFixed(1)})' :
-                    'Radius.elliptical(${x.toStringAsFixed(1)}, '
-                    '${y.toStringAsFixed(1)})';
+    return x == y ? 'Radius.circular(${x!.toStringAsFixed(1)})' :
+                    'Radius.elliptical(${x!.toStringAsFixed(1)}, '
+                    '${y!.toStringAsFixed(1)})';
   }
 }
 
@@ -1048,14 +1048,14 @@ class RRect {
         left: left,
         right: right,
         bottom: bottom,
-        tlRadiusX: radius.x,
-        tlRadiusY: radius.y,
-        trRadiusX: radius.x,
-        trRadiusY: radius.y,
-        blRadiusX: radius.x,
-        blRadiusY: radius.y,
-        brRadiusX: radius.x,
-        brRadiusY: radius.y,
+        tlRadiusX: radius.x!,
+        tlRadiusY: radius.y!,
+        trRadiusX: radius.x!,
+        trRadiusY: radius.y!,
+        blRadiusX: radius.x!,
+        blRadiusY: radius.y!,
+        brRadiusX: radius.x!,
+        brRadiusY: radius.y!,
       );
 
   /// Construct a rounded rectangle from its bounding box and the same radii
@@ -1084,14 +1084,14 @@ class RRect {
         left: rect.left,
         right: rect.right,
         bottom: rect.bottom,
-        tlRadiusX: radius.x,
-        tlRadiusY: radius.y,
-        trRadiusX: radius.x,
-        trRadiusY: radius.y,
-        blRadiusX: radius.x,
-        blRadiusY: radius.y,
-        brRadiusX: radius.x,
-        brRadiusY: radius.y,
+        tlRadiusX: radius.x!,
+        tlRadiusY: radius.y!,
+        trRadiusX: radius.x!,
+        trRadiusY: radius.y!,
+        blRadiusX: radius.x!,
+        blRadiusY: radius.y!,
+        brRadiusX: radius.x!,
+        brRadiusY: radius.y!,
       );
 
   /// Construct a rounded rectangle from its left, top, right, and bottom edges,
@@ -1112,14 +1112,14 @@ class RRect {
          left: left,
          right: right,
          bottom: bottom,
-         tlRadiusX: topLeft.x,
-         tlRadiusY: topLeft.y,
-         trRadiusX: topRight.x,
-         trRadiusY: topRight.y,
-         blRadiusX: bottomLeft.x,
-         blRadiusY: bottomLeft.y,
-         brRadiusX: bottomRight.x,
-         brRadiusY: bottomRight.y,
+         tlRadiusX: topLeft.x!,
+         tlRadiusY: topLeft.y!,
+         trRadiusX: topRight.x!,
+         trRadiusY: topRight.y!,
+         blRadiusX: bottomLeft.x!,
+         blRadiusY: bottomLeft.y!,
+         brRadiusX: bottomRight.x!,
+         brRadiusY: bottomRight.y!,
        );
 
   /// Construct a rounded rectangle from its bounding box and and topLeft,
@@ -1139,14 +1139,14 @@ class RRect {
         left: rect.left,
         right: rect.right,
         bottom: rect.bottom,
-        tlRadiusX: topLeft.x,
-        tlRadiusY: topLeft.y,
-        trRadiusX: topRight.x,
-        trRadiusY: topRight.y,
-        blRadiusX: bottomLeft.x,
-        blRadiusY: bottomLeft.y,
-        brRadiusX: bottomRight.x,
-        brRadiusY: bottomRight.y,
+        tlRadiusX: topLeft.x!,
+        tlRadiusY: topLeft.y!,
+        trRadiusX: topRight.x!,
+        trRadiusY: topRight.y!,
+        blRadiusX: bottomLeft.x!,
+        blRadiusY: bottomLeft.y!,
+        brRadiusX: bottomRight.x!,
+        brRadiusY: bottomRight.y!,
       );
 
   const RRect._raw({
@@ -1540,11 +1540,11 @@ class RRect {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static RRect lerp(RRect a, RRect b, double t) {
+  static RRect? lerp(RRect a, RRect b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null) {
+    /* if (a == null) {
       return RRect._raw(
         left: b.left * t,
         top: b.top * t,
@@ -1559,8 +1559,8 @@ class RRect {
         blRadiusX: b.blRadiusX * t,
         blRadiusY: b.blRadiusY * t,
       );
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       final double k = 1.0 - t;
       return RRect._raw(
         left: a.left * k,
@@ -1576,20 +1576,20 @@ class RRect {
         blRadiusX: a.blRadiusX * k,
         blRadiusY: a.blRadiusY * k,
       );
-    }
+    } */
     return RRect._raw(
-      left: lerpDouble(a.left, b.left, t),
-      top: lerpDouble(a.top, b.top, t),
-      right: lerpDouble(a.right, b.right, t),
-      bottom: lerpDouble(a.bottom, b.bottom, t),
-      tlRadiusX: lerpDouble(a.tlRadiusX, b.tlRadiusX, t),
-      tlRadiusY: lerpDouble(a.tlRadiusY, b.tlRadiusY, t),
-      trRadiusX: lerpDouble(a.trRadiusX, b.trRadiusX, t),
-      trRadiusY: lerpDouble(a.trRadiusY, b.trRadiusY, t),
-      brRadiusX: lerpDouble(a.brRadiusX, b.brRadiusX, t),
-      brRadiusY: lerpDouble(a.brRadiusY, b.brRadiusY, t),
-      blRadiusX: lerpDouble(a.blRadiusX, b.blRadiusX, t),
-      blRadiusY: lerpDouble(a.blRadiusY, b.blRadiusY, t),
+      left: lerpDouble(a.left, b.left, t)!,
+      top: lerpDouble(a.top, b.top, t)!,
+      right: lerpDouble(a.right, b.right, t)!,
+      bottom: lerpDouble(a.bottom, b.bottom, t)!,
+      tlRadiusX: lerpDouble(a.tlRadiusX, b.tlRadiusX, t)!,
+      tlRadiusY: lerpDouble(a.tlRadiusY, b.tlRadiusY, t)!,
+      trRadiusX: lerpDouble(a.trRadiusX, b.trRadiusX, t)!,
+      trRadiusY: lerpDouble(a.trRadiusY, b.trRadiusY, t)!,
+      brRadiusX: lerpDouble(a.brRadiusX, b.brRadiusX, t)!,
+      brRadiusY: lerpDouble(a.brRadiusY, b.brRadiusY, t)!,
+      blRadiusX: lerpDouble(a.blRadiusX, b.blRadiusX, t)!,
+      blRadiusY: lerpDouble(a.blRadiusY, b.blRadiusY, t)!,
     );
   }
 
@@ -1629,8 +1629,8 @@ class RRect {
         trRadius == brRadius &&
         brRadius == blRadius) {
       if (tlRadius.x == tlRadius.y)
-        return 'RRect.fromLTRBR($rect, ${tlRadius.x.toStringAsFixed(1)})';
-      return 'RRect.fromLTRBXY($rect, ${tlRadius.x.toStringAsFixed(1)}, ${tlRadius.y.toStringAsFixed(1)})';
+        return 'RRect.fromLTRBR($rect, ${tlRadius.x!.toStringAsFixed(1)})';
+      return 'RRect.fromLTRBXY($rect, ${tlRadius.x!.toStringAsFixed(1)}, ${tlRadius.y!.toStringAsFixed(1)})';
     }
     return 'RRect.fromLTRBAndCorners('
              '$rect, '
@@ -1700,12 +1700,12 @@ class RSTransform {
   /// over multiple [RSTransform] objects, it may be more efficient to directly
   /// use the more direct [new RSTransform] constructor instead.
   factory RSTransform.fromComponents({
-    double rotation,
-    double scale,
-    double anchorX,
-    double anchorY,
-    double translateX,
-    double translateY
+    required double rotation,
+    required double scale,
+    required double anchorX,
+    required double anchorY,
+    required double translateX,
+    required double translateY
   }) {
     final double scos = math.cos(rotation) * scale;
     final double ssin = math.sin(rotation) * scale;

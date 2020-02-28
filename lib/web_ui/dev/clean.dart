@@ -24,7 +24,7 @@ class CleanCommand extends Command<bool> {
   @override
   String get name => 'clean';
 
-  bool get _alsoCleanNinja => argResults['ninja'];
+  bool? get _alsoCleanNinja => argResults['ninja'];
 
   @override
   String get description => 'Deletes build caches and artifacts.';
@@ -32,27 +32,27 @@ class CleanCommand extends Command<bool> {
   @override
   FutureOr<bool> run() async {
     final io.Directory assetsDir = io.Directory(path.join(
-      environment.webUiRootDir.path, 'lib', 'assets'
+      environment!.webUiRootDir!.path, 'lib', 'assets'
     ));
     final Iterable<io.File> fontFiles = assetsDir
       .listSync()
       .whereType<io.File>()
       .where((io.File file) => file.path.endsWith('.ttf'));
 
-    final List<io.FileSystemEntity> thingsToBeCleaned = <io.FileSystemEntity>[
-      environment.webUiDartToolDir,
-      environment.webUiBuildDir,
-      io.File(path.join(environment.webUiRootDir.path, '.packages')),
-      io.File(path.join(environment.webUiRootDir.path, 'pubspec.lock')),
+    final List<io.FileSystemEntity?> thingsToBeCleaned = <io.FileSystemEntity?>[
+      environment!.webUiDartToolDir,
+      environment!.webUiBuildDir,
+      io.File(path.join(environment!.webUiRootDir!.path, '.packages')),
+      io.File(path.join(environment!.webUiRootDir!.path, 'pubspec.lock')),
       ...fontFiles,
-      if (_alsoCleanNinja)
-        environment.outDir,
+      if (_alsoCleanNinja!)
+        environment!.outDir,
     ];
 
     await Future.wait(
       thingsToBeCleaned
-        .where((io.FileSystemEntity entity) => entity.existsSync())
-        .map((io.FileSystemEntity entity) => entity.delete(recursive: true))
+        .where((io.FileSystemEntity? entity) => entity!.existsSync())
+        .map((io.FileSystemEntity? entity) => entity!.delete(recursive: true))
     );
     return true;
   }

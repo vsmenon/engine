@@ -31,17 +31,17 @@ class StringCodec implements MessageCodec<String> {
 
   @override
   String decodeMessage(ByteData message) {
-    if (message == null) {
+    /* if (message == null) {
       return null;
-    }
+    } */
     return utf8.decoder.convert(message.buffer.asUint8List());
   }
 
   @override
   ByteData encodeMessage(String message) {
-    if (message == null) {
+    /* if (message == null) {
       return null;
-    }
+    } */
     final Uint8List encoded = utf8.encoder.convert(message);
     return encoded.buffer.asByteData();
   }
@@ -74,7 +74,7 @@ class JSONMessageCodec implements MessageCodec<dynamic> {
   const JSONMessageCodec();
 
   @override
-  ByteData encodeMessage(dynamic message) {
+  ByteData? encodeMessage(dynamic message) {
     if (message == null) {
       return null;
     }
@@ -82,7 +82,7 @@ class JSONMessageCodec implements MessageCodec<dynamic> {
   }
 
   @override
-  dynamic decodeMessage(ByteData message) {
+  dynamic decodeMessage(ByteData? message) {
     if (message == null) {
       return message;
     }
@@ -113,7 +113,7 @@ class JSONMethodCodec implements MethodCodec {
   const JSONMethodCodec();
 
   @override
-  ByteData encodeMethodCall(MethodCall call) {
+  ByteData? encodeMethodCall(MethodCall call) {
     return const JSONMessageCodec().encodeMessage(<String, dynamic>{
       'method': call.method,
       'args': call.arguments,
@@ -121,7 +121,7 @@ class JSONMethodCodec implements MethodCodec {
   }
 
   @override
-  MethodCall decodeMethodCall(ByteData methodCall) {
+  MethodCall decodeMethodCall(ByteData? methodCall) {
     final dynamic decoded = const JSONMessageCodec().decodeMessage(methodCall);
     if (decoded is! Map) {
       throw FormatException('Expected method call Map, got $decoded');
@@ -135,7 +135,7 @@ class JSONMethodCodec implements MethodCodec {
   }
 
   @override
-  dynamic decodeEnvelope(ByteData envelope) {
+  dynamic decodeEnvelope(ByteData? envelope) {
     final dynamic decoded = const JSONMessageCodec().decodeMessage(envelope);
     if (decoded is! List) {
       throw FormatException('Expected envelope List, got $decoded');
@@ -156,13 +156,13 @@ class JSONMethodCodec implements MethodCodec {
   }
 
   @override
-  ByteData encodeSuccessEnvelope(dynamic result) {
+  ByteData? encodeSuccessEnvelope(dynamic result) {
     return const JSONMessageCodec().encodeMessage(<dynamic>[result]);
   }
 
   @override
-  ByteData encodeErrorEnvelope(
-      {@required String code, String message, dynamic details}) {
+  ByteData? encodeErrorEnvelope(
+      {/* @*/ required String code, String? message, dynamic details}) {
     assert(code != null);
     return const JSONMessageCodec()
         .encodeMessage(<dynamic>[code, message, details]);
@@ -271,7 +271,7 @@ class StandardMessageCodec implements MessageCodec<dynamic> {
   const StandardMessageCodec();
 
   @override
-  ByteData encodeMessage(dynamic message) {
+  ByteData? encodeMessage(dynamic message) {
     if (message == null) {
       return null;
     }
@@ -281,7 +281,7 @@ class StandardMessageCodec implements MessageCodec<dynamic> {
   }
 
   @override
-  dynamic decodeMessage(ByteData message) {
+  dynamic decodeMessage(ByteData? message) {
     if (message == null) {
       return null;
     }
@@ -326,7 +326,7 @@ class StandardMessageCodec implements MessageCodec<dynamic> {
       buffer.putUint8(_valueString);
       final List<int> bytes = utf8.encoder.convert(value);
       writeSize(buffer, bytes.length);
-      buffer.putUint8List(bytes);
+      buffer.putUint8List(bytes as Uint8List);
     } else if (value is Uint8List) {
       buffer.putUint8(_valueUint8List);
       writeSize(buffer, value.length);
@@ -517,8 +517,8 @@ class StandardMethodCodec implements MethodCodec {
   }
 
   @override
-  MethodCall decodeMethodCall(ByteData methodCall) {
-    final ReadBuffer buffer = ReadBuffer(methodCall);
+  MethodCall decodeMethodCall(ByteData? methodCall) {
+    final ReadBuffer buffer = ReadBuffer(methodCall!);
     final dynamic method = messageCodec.readValue(buffer);
     final dynamic arguments = messageCodec.readValue(buffer);
     if (method is String && !buffer.hasRemaining)
@@ -537,7 +537,7 @@ class StandardMethodCodec implements MethodCodec {
 
   @override
   ByteData encodeErrorEnvelope(
-      {@required String code, String message, dynamic details}) {
+      {/* @*/ required String code, String? message, dynamic details}) {
     final WriteBuffer buffer = WriteBuffer();
     buffer.putUint8(1);
     messageCodec.writeValue(buffer, code);
@@ -547,9 +547,9 @@ class StandardMethodCodec implements MethodCodec {
   }
 
   @override
-  dynamic decodeEnvelope(ByteData envelope) {
+  dynamic decodeEnvelope(ByteData? envelope) {
     // First byte is zero in success case, and non-zero otherwise.
-    if (envelope.lengthInBytes == 0)
+    if (envelope!.lengthInBytes == 0)
       throw const FormatException('Expected envelope, got nothing');
     final ReadBuffer buffer = ReadBuffer(envelope);
     if (buffer.getUint8() == 0) {

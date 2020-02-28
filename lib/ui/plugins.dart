@@ -43,10 +43,10 @@ class CallbackHandle {
 class PluginUtilities {
   // This class is only a namespace, and should not be instantiated or
   // extended directly.
-  factory PluginUtilities._() => null;
+  factory PluginUtilities._() => null!;
 
-  static Map<Function, CallbackHandle> _forwardCache =
-      <Function, CallbackHandle>{};
+  static Map<Function, CallbackHandle?> _forwardCache =
+      <Function, CallbackHandle?>{};
   static Map<CallbackHandle, Function> _backwardCache =
       <CallbackHandle, Function>{};
 
@@ -59,7 +59,7 @@ class PluginUtilities {
   /// [PluginUtilities.getCallbackFromHandle] to retrieve a tear-off of the
   /// original callback. If `callback` is not a top-level or static function,
   /// null is returned.
-  static CallbackHandle getCallbackHandle(Function callback) {
+  static CallbackHandle? getCallbackHandle(Function callback) {
     assert(callback != null, "'callback' must not be null.");
     return _forwardCache.putIfAbsent(callback, () {
       final int handle = _getCallbackHandle(callback);

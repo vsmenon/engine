@@ -53,7 +53,7 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
       ..bottom = '0'
       ..left = '0'
       ..backgroundColor = colorToCssString(color);
-    currentElement.append(box);
+    currentElement!.append(box);
   }
 
   @override
@@ -79,7 +79,7 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
       rectangle.setAttribute('flt-paint', '$paint');
       return true;
     }());
-    String effectiveTransform;
+    String? effectiveTransform;
     final bool isStroke = paint.style == ui.PaintingStyle.stroke;
     final double left = math.min(rect.left, rect.right);
     final double right = math.max(rect.left, rect.right);
@@ -88,7 +88,7 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
     if (currentTransform.isIdentity()) {
       if (isStroke) {
         effectiveTransform =
-            'translate(${left - (paint.strokeWidth / 2.0)}px, ${top - (paint.strokeWidth / 2.0)}px)';
+            'translate(${left - (paint.strokeWidth! / 2.0)}px, ${top - (paint.strokeWidth! / 2.0)}px)';
       } else {
         effectiveTransform = 'translate(${left}px, ${top}px)';
       }
@@ -97,7 +97,7 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
       final Matrix4 translated = currentTransform.clone();
       if (isStroke) {
         translated.translate(
-            left - (paint.strokeWidth / 2.0), top - (paint.strokeWidth / 2.0));
+            left - (paint.strokeWidth! / 2.0), top - (paint.strokeWidth! / 2.0));
       } else {
         translated.translate(left, top);
       }
@@ -107,19 +107,19 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
     style
       ..position = 'absolute'
       ..transformOrigin = '0 0 0'
-      ..transform = effectiveTransform;
+      ..transform = effectiveTransform!;
 
-    final String cssColor = paint.color == null ? '#000000'
+    final String? cssColor = paint.color == null ? '#000000'
         : colorToCssString(paint.color);
 
     if (paint.maskFilter != null) {
-      style.filter = 'blur(${paint.maskFilter.webOnlySigma}px)';
+      style.filter = 'blur(${paint.maskFilter!.webOnlySigma}px)';
     }
 
     if (isStroke) {
       style
-        ..width = '${right - left - paint.strokeWidth}px'
-        ..height = '${bottom - top - paint.strokeWidth}px'
+        ..width = '${right - left - paint.strokeWidth!}px'
+        ..height = '${bottom - top - paint.strokeWidth!}px'
         ..border = '${paint.strokeWidth}px solid $cssColor';
     } else {
       style
@@ -128,7 +128,7 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
         ..backgroundColor = cssColor;
     }
 
-    currentElement.append(rectangle);
+    currentElement!.append(rectangle);
     return rectangle;
   }
 
@@ -178,8 +178,8 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
   @override
   void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) {
     final html.Element paragraphElement =
-        _drawParagraphElement(paragraph, offset, transform: currentTransform);
-    currentElement.append(paragraphElement);
+        _drawParagraphElement(paragraph as EngineParagraph, offset, transform: currentTransform);
+    currentElement!.append(paragraphElement);
   }
 
   @override
@@ -190,7 +190,7 @@ class DomCanvas extends EngineCanvas with SaveElementStackTracking {
 
   @override
   void drawPoints(ui.PointMode pointMode, Float32List points,
-      double strokeWidth, ui.Color color) {
+      double strokeWidth, ui.Color? color) {
     throw UnimplementedError();
   }
 

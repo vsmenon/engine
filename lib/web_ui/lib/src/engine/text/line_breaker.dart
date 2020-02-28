@@ -57,8 +57,8 @@ LineBreakResult nextLineBreak(String text, int index) {
   // Always break at the end of text.
   // LB3: ÷ eot
   while (index++ < text.length) {
-    final int curr = index < text.length ? text.codeUnitAt(index) : null;
-    final int prev = index > 0 ? text.codeUnitAt(index - 1) : null;
+    final int? curr = index < text.length ? text.codeUnitAt(index) : null;
+    final int? prev = index > 0 ? text.codeUnitAt(index - 1) : null;
 
     // Always break after hard line breaks.
     // LB4: BK !

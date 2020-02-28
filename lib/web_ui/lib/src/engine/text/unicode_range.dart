@@ -65,7 +65,7 @@ class UnicodePropertyLookup<P> {
 
   final List<UnicodeRange<P>> ranges;
 
-  P find(int value) {
+  P? find(int value) {
     final int index = _binarySearch(value);
     return index == -1 ? null : ranges[index].property;
   }

@@ -21,7 +21,7 @@ class Edge extends Browser {
   @override
   final name = 'Edge';
 
-  static String version;
+  static String? version;
 
   /// Starts a new instance of Safari open to the given [url], which may be a
   /// [Uri] or a [String].
@@ -44,7 +44,7 @@ class Edge extends Browser {
       }
 
       var process =
-          await Process.start(installation.executable, ['$pathToOpen','-k']);
+          await Process.start(installation.executable!, ['$pathToOpen','-k']);
 
       return process;
     });

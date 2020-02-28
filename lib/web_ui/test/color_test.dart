@@ -151,7 +151,7 @@ void main() {
   test('Paint converts Color subclasses to plain Color', () {
     final DynamicColorClass color = DynamicColorClass(0xF0E0D0C0);
     final Paint paint = Paint()..color = color;
-    expect(paint.color.runtimeType, Color);
+    expect(paint.color!.runtimeType, Color);
   });
 }
 

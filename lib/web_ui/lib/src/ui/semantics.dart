@@ -267,7 +267,7 @@ class SemanticsAction {
       case _kMoveCursorBackwardByWordIndex:
         return 'SemanticsAction.moveCursorBackwardByWord';
     }
-    return null;
+    return null!;
   }
 }
 
@@ -601,7 +601,7 @@ class SemanticsFlag {
       case _kIsReadOnlyIndex:
         return 'SemanticsFlag.isReadOnly';
     }
-    return null;
+    return null!;
   }
 }
 
@@ -665,32 +665,32 @@ class SemanticsUpdateBuilder {
   /// The `transform` is a matrix that maps this node's coordinate system into
   /// its parent's coordinate system.
   void updateNode({
-    int id,
-    int flags,
-    int actions,
-    int maxValueLength,
-    int currentValueLength,
-    int textSelectionBase,
-    int textSelectionExtent,
-    int platformViewId,
-    int scrollChildren,
-    int scrollIndex,
-    double scrollPosition,
-    double scrollExtentMax,
-    double scrollExtentMin,
-    double elevation,
-    double thickness,
-    Rect rect,
-    String label,
-    String hint,
-    String value,
-    String increasedValue,
-    String decreasedValue,
-    TextDirection textDirection,
-    Float64List transform,
-    Int32List childrenInTraversalOrder,
-    Int32List childrenInHitTestOrder,
-    Int32List additionalActions,
+    int? id,
+    int? flags,
+    int? actions,
+    int? maxValueLength,
+    int? currentValueLength,
+    int? textSelectionBase,
+    int? textSelectionExtent,
+    int? platformViewId,
+    int? scrollChildren,
+    int? scrollIndex,
+    double? scrollPosition,
+    double? scrollExtentMax,
+    double? scrollExtentMin,
+    double? elevation,
+    double? thickness,
+    Rect? rect,
+    String? label,
+    String? hint,
+    String? value,
+    String? increasedValue,
+    String? decreasedValue,
+    TextDirection? textDirection,
+    required Float64List transform,
+    Int32List? childrenInTraversalOrder,
+    Int32List? childrenInHitTestOrder,
+    Int32List? additionalActions,
   }) {
     if (transform.length != 16)
       throw ArgumentError('transform argument must have 16 entries.');
@@ -725,7 +725,7 @@ class SemanticsUpdateBuilder {
   }
 
   void updateCustomAction(
-      {int id, String label, String hint, int overrideId = -1}) {
+      {int? id, String? label, String? hint, int overrideId = -1}) {
     // TODO(yjbanov): implement.
   }
 
@@ -752,7 +752,7 @@ abstract class SemanticsUpdate {
   /// or extended directly.
   ///
   /// To create a SemanticsUpdate object, use a [SemanticsUpdateBuilder].
-  factory SemanticsUpdate._({List<engine.SemanticsNodeUpdate> nodeUpdates}) =
+  factory SemanticsUpdate._({List<engine.SemanticsNodeUpdate>? nodeUpdates}) =
       engine.SemanticsUpdate;
 
   /// Releases the resources used by this semantics update.

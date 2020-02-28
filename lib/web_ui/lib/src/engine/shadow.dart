@@ -26,7 +26,7 @@ class ElevationShadow {
   ///
   /// Valid values: 2, 3, 4, 6, 8, 12, 16, 24
   static void applyShadowElevation(html.CssStyleDeclaration style,
-      {@required int dp, @required ui.Color color}) {
+      {/* @*/ required int dp, /* @*/ required ui.Color color}) {
     const double keyUmbraOpacity = 0.2;
     const double keyPenumbraOpacity = 0.14;
     const double ambientShadowOpacity = 0.12;
@@ -145,7 +145,7 @@ class ElevationShadow {
   }
 
   static List<CanvasShadow> computeShadowElevation(
-      {@required int dp, @required ui.Color color}) {
+      {/* @*/ required int dp, /* @*/ required ui.Color color}) {
     final int red = color.red;
     final int green = color.green;
     final int blue = color.blue;
@@ -354,11 +354,11 @@ class ElevationShadow {
 
 class CanvasShadow {
   CanvasShadow({
-    @required this.offsetX,
-    @required this.offsetY,
-    @required this.blur,
-    @required this.spread,
-    @required this.color,
+    /* @*/ required this.offsetX,
+    /* @*/ required this.offsetY,
+    /* @*/ required this.blur,
+    /* @*/ required this.spread,
+    /* @*/ required this.color,
   });
 
   final double offsetX;

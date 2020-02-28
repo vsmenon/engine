@@ -22,7 +22,7 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
   /// where this canvas paints.
   ///
   /// Painting outside the bounds of this rectangle is cropped.
-  final ui.Rect bounds;
+  final ui.Rect? bounds;
 
   HoudiniCanvas(this.bounds) {
     // TODO(yjbanov): would it be faster to specify static values in a
@@ -31,7 +31,7 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
       ..position = 'absolute'
       ..top = '0'
       ..left = '0'
-      ..width = '${bounds.size.width}px'
+      ..width = '${bounds!.size.width}px'
       ..height = '${bounds.size.height}px'
       ..backgroundImage = 'paint(flt)';
   }
@@ -72,7 +72,7 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
   void clipRect(ui.Rect rect) {
     final html.Element clip = html.Element.tag('flt-clip-rect');
     final String cssTransform = matrix4ToCssTransform(
-        transformWithOffset(currentTransform, ui.Offset(rect.left, rect.top)));
+        transformWithOffset(currentTransform, ui.Offset(rect.left, rect.top)))!;
     clip.style
       ..overflow = 'hidden'
       ..position = 'absolute'
@@ -85,7 +85,7 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
     // direction.
     super.translate(-rect.left, -rect.top);
 
-    currentElement.append(clip);
+    currentElement!.append(clip);
     pushElement(clip);
   }
 
@@ -137,7 +137,7 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
     // direction.
     super.translate(-rrect.left, -rrect.top);
 
-    currentElement.append(clip);
+    currentElement!.append(clip);
     pushElement(clip);
   }
 
@@ -206,10 +206,10 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
   void drawImageRect(
       ui.Image image, ui.Rect src, ui.Rect dst, SurfacePaintData paint) {
     // TODO(yjbanov): implement src rectangle
-    final HtmlImage htmlImage = image;
+    final HtmlImage htmlImage = image as HtmlImage;
     final html.Element imageBox = html.Element.tag('flt-img');
     final String cssTransform = matrix4ToCssTransform(
-        transformWithOffset(currentTransform, ui.Offset(dst.left, dst.top)));
+        transformWithOffset(currentTransform, ui.Offset(dst.left, dst.top)))!;
     imageBox.style
       ..position = 'absolute'
       ..transformOrigin = '0 0 0'
@@ -219,14 +219,14 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
       ..backgroundImage = 'url(${htmlImage.imgElement.src})'
       ..backgroundRepeat = 'norepeat'
       ..backgroundSize = '${dst.width}px ${dst.height}px';
-    currentElement.append(imageBox);
+    currentElement!.append(imageBox);
   }
 
   @override
   void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) {
     final html.Element paragraphElement =
-        _drawParagraphElement(paragraph, offset, transform: currentTransform);
-    currentElement.append(paragraphElement);
+        _drawParagraphElement(paragraph as EngineParagraph, offset, transform: currentTransform);
+    currentElement!.append(paragraphElement);
   }
 
   @override
@@ -237,7 +237,7 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
 
   @override
   void drawPoints(ui.PointMode pointMode, Float32List points,
-      double strokeWidth, ui.Color color) {
+      double strokeWidth, ui.Color? color) {
     // TODO(flutter_web): implement.
   }
 
@@ -248,10 +248,10 @@ class HoudiniCanvas extends EngineCanvas with SaveElementStackTracking {
 class _SaveElementStackEntry {
   _SaveElementStackEntry({
     @required this.savedElement,
-    @required this.transform,
+    /* @*/ required this.transform,
   });
 
-  final html.Element savedElement;
+  final html.Element? savedElement;
   final Matrix4 transform;
 }
 
@@ -264,7 +264,7 @@ mixin SaveElementStackTracking on EngineCanvas {
 
   /// The element at the top of the element stack, or [rootElement] if the stack
   /// is empty.
-  html.Element get currentElement =>
+  html.Element? get currentElement =>
       _elementStack.isEmpty ? rootElement : _elementStack.last;
 
   /// The stack that maintains the DOM elements used to express certain paint
@@ -354,7 +354,7 @@ mixin SaveElementStackTracking on EngineCanvas {
     // DO NOT USE Matrix4.skew(sx, sy)! It treats sx and sy values as radians,
     // but in our case they are transform matrix values.
     final Matrix4 skewMatrix = Matrix4.identity();
-    final Float64List storage = skewMatrix.storage;
+    final Float64List storage = skewMatrix.storage!;
     storage[1] = sy;
     storage[4] = sx;
     _currentTransform.multiply(skewMatrix);

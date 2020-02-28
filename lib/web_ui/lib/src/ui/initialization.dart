@@ -7,7 +7,7 @@ part of ui;
 
 /// Initializes the platform.
 Future<void> webOnlyInitializePlatform({
-  engine.AssetManager assetManager,
+  engine.AssetManager? assetManager,
 }) async {
   if (!debugEmulateFlutterTesterEnvironment) {
     engine.window.locationStrategy = const engine.HashLocationStrategy();
@@ -24,16 +24,16 @@ Future<void> webOnlyInitializePlatform({
   assetManager ??= const engine.AssetManager();
   await webOnlySetAssetManager(assetManager);
   if (engine.experimentalUseSkia) {
-    await engine.skiaFontCollection.ensureFontsLoaded();
+    await engine.skiaFontCollection!.ensureFontsLoaded();
   } else {
-    await _fontCollection.ensureFontsLoaded();
+    await _fontCollection!.ensureFontsLoaded();
   }
 
   _webOnlyIsInitialized = true;
 }
 
-engine.AssetManager _assetManager;
-engine.FontCollection _fontCollection;
+engine.AssetManager? _assetManager;
+engine.FontCollection? _fontCollection;
 
 bool _webOnlyIsInitialized = false;
 bool get webOnlyIsInitialized => _webOnlyIsInitialized;
@@ -54,20 +54,20 @@ Future<void> webOnlySetAssetManager(engine.AssetManager assetManager) async {
     engine.skiaFontCollection ??= engine.SkiaFontCollection();
   } else {
     _fontCollection ??= engine.FontCollection();
-    _fontCollection.clear();
+    _fontCollection!.clear();
   }
 
 
   if (_assetManager != null) {
     if (engine.experimentalUseSkia) {
-      await engine.skiaFontCollection.registerFonts(_assetManager);
+      await engine.skiaFontCollection!.registerFonts(_assetManager!);
     } else {
-      await _fontCollection.registerFonts(_assetManager);
+      await _fontCollection!.registerFonts(_assetManager!);
     }
   }
 
   if (debugEmulateFlutterTesterEnvironment && !engine.experimentalUseSkia) {
-    _fontCollection.debugRegisterTestFonts();
+    _fontCollection!.debugRegisterTestFonts();
   }
 }
 
@@ -86,14 +86,14 @@ set debugEmulateFlutterTesterEnvironment(bool value) {
   if (_debugEmulateFlutterTesterEnvironment) {
     const Size logicalSize = Size(800.0, 600.0);
     engine.window.webOnlyDebugPhysicalSizeOverride =
-        logicalSize * window.devicePixelRatio;
+        logicalSize * window.devicePixelRatio!;
   }
 }
 
 bool _debugEmulateFlutterTesterEnvironment = false;
 
 /// This class handles downloading assets over the network.
-engine.AssetManager get webOnlyAssetManager => _assetManager;
+engine.AssetManager? get webOnlyAssetManager => _assetManager;
 
 /// A collection of fonts that may be used by the platform.
-engine.FontCollection get webOnlyFontCollection => _fontCollection;
+engine.FontCollection? get webOnlyFontCollection => _fontCollection;

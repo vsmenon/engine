@@ -28,7 +28,7 @@ class Chrome extends Browser {
   @override
   final Future<Uri> remoteDebuggerUrl;
 
-  static String version;
+  static String? version;
 
   /// Starts a new instance of Chrome open to the given [url], which may be a
   /// [Uri] or a [String].
@@ -38,10 +38,10 @@ class Chrome extends Browser {
     assert(version != null);
     var remoteDebuggerCompleter = Completer<Uri>.sync();
     return Chrome._(() async {
-      final BrowserInstallation installation = await getOrInstallChrome(
+      final BrowserInstallation installation = await (getOrInstallChrome(
         version,
         infoLog: isCirrus ? stdout : DevNull(),
-      );
+      ) as FutureOr<BrowserInstallation>);
 
       // A good source of various Chrome CLI options:
       // https://peter.sh/experiments/chromium-command-line-switches/
@@ -76,7 +76,7 @@ class Chrome extends Browser {
       ];
 
       final Process process =
-          await Process.start(installation.executable, args);
+          await Process.start(installation.executable!, args);
 
       remoteDebuggerCompleter.complete(
           getRemoteDebuggerUrl(Uri.parse('http://localhost:${kDevtoolsPort}')));

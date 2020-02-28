@@ -10,8 +10,8 @@ import 'package:test/test.dart';
 import '../mock_engine_canvas.dart';
 
 void main() {
-  RecordingCanvas underTest;
-  MockEngineCanvas mockCanvas;
+  RecordingCanvas? underTest;
+  MockEngineCanvas? mockCanvas;
 
   setUp(() {
     underTest = RecordingCanvas(Rect.largest);
@@ -24,10 +24,10 @@ void main() {
       ..color = const Color(0xFFFF0000);
 
     test('Happy case', () {
-      underTest.drawDRRect(rrect, rrect.deflate(1), somePaint);
-      underTest.apply(mockCanvas);
+      underTest!.drawDRRect(rrect, rrect.deflate(1), somePaint);
+      underTest!.apply(mockCanvas!);
 
-      _expectDrawCall(mockCanvas, {
+      _expectDrawCall(mockCanvas!, {
         'outer': rrect,
         'inner': rrect.deflate(1),
         'paint': somePaint.paintData,
@@ -35,28 +35,28 @@ void main() {
     });
 
     test('Inner RRect > Outer RRect', () {
-      underTest.drawDRRect(rrect, rrect.inflate(1), somePaint);
-      underTest.apply(mockCanvas);
+      underTest!.drawDRRect(rrect, rrect.inflate(1), somePaint);
+      underTest!.apply(mockCanvas!);
       // Expect nothing to be called
-      expect(mockCanvas.methodCallLog.length, equals(1));
-      expect(mockCanvas.methodCallLog.single.methodName, 'endOfPaint');
+      expect(mockCanvas!.methodCallLog.length, equals(1));
+      expect(mockCanvas!.methodCallLog.single.methodName, 'endOfPaint');
     });
 
     test('Inner RRect not completely inside Outer RRect', () {
-      underTest.drawDRRect(
+      underTest!.drawDRRect(
           rrect, rrect.deflate(1).shift(const Offset(0.0, 10)), somePaint);
-      underTest.apply(mockCanvas);
+      underTest!.apply(mockCanvas!);
       // Expect nothing to be called
-      expect(mockCanvas.methodCallLog.length, equals(1));
-      expect(mockCanvas.methodCallLog.single.methodName, 'endOfPaint');
+      expect(mockCanvas!.methodCallLog.length, equals(1));
+      expect(mockCanvas!.methodCallLog.single.methodName, 'endOfPaint');
     });
 
     test('Inner RRect same as Outer RRect', () {
-      underTest.drawDRRect(rrect, rrect, somePaint);
-      underTest.apply(mockCanvas);
+      underTest!.drawDRRect(rrect, rrect, somePaint);
+      underTest!.apply(mockCanvas!);
       // Expect nothing to be called
-      expect(mockCanvas.methodCallLog.length, equals(1));
-      expect(mockCanvas.methodCallLog.single.methodName, 'endOfPaint');
+      expect(mockCanvas!.methodCallLog.length, equals(1));
+      expect(mockCanvas!.methodCallLog.single.methodName, 'endOfPaint');
     });
 
     test('negative corners in inner RRect get passed through to draw', () {
@@ -71,11 +71,11 @@ void main() {
       expect(inner.brRadius, equals(Radius.circular(-1)));
       expect(inner.trRadius, equals(Radius.circular(-1)));
 
-      underTest.drawDRRect(outer, inner, somePaint);
-      underTest.apply(mockCanvas);
+      underTest!.drawDRRect(outer, inner, somePaint);
+      underTest!.apply(mockCanvas!);
 
       // Expect to draw, even when inner has negative radii (which get ignored by canvas)
-      _expectDrawCall(mockCanvas, {
+      _expectDrawCall(mockCanvas!, {
         'outer': outer,
         'inner': inner,
         'paint': somePaint.paintData,
@@ -88,10 +88,10 @@ void main() {
       final RRect inner =
           RRect.fromRectAndCorners(const Rect.fromLTRB(12, 22, 28, 38));
 
-      underTest.drawDRRect(outer, inner, somePaint);
-      underTest.apply(mockCanvas);
+      underTest!.drawDRRect(outer, inner, somePaint);
+      underTest!.apply(mockCanvas!);
 
-      _expectDrawCall(mockCanvas, {
+      _expectDrawCall(mockCanvas!, {
         'outer': outer,
         'inner': inner,
         'paint': somePaint.paintData,

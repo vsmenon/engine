@@ -111,7 +111,7 @@ class PointerData {
   final PointerDeviceKind kind;
 
   /// The kind of signal for a pointer signal event.
-  final PointerSignalKind signalKind;
+  final PointerSignalKind? signalKind;
 
   /// Unique identifier for the pointing device, reused across interactions.
   final int device;
@@ -301,5 +301,5 @@ class PointerDataPacket {
   /// Data about the individual pointers in this packet.
   ///
   /// This list might contain multiple pieces of data about the same pointer.
-  final List<PointerData> data;
+  final List<PointerData?> data;
 }

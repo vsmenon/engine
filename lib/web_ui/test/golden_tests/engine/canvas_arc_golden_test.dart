@@ -14,36 +14,36 @@ import 'package:web_engine_tester/golden_tester.dart';
 void main() async {
   final Rect region = Rect.fromLTWH(0, 0, 400, 600);
 
-  BitmapCanvas canvas;
+  BitmapCanvas? canvas;
 
   setUp(() {
     canvas = BitmapCanvas(region);
   });
 
   tearDown(() {
-    canvas.rootElement.remove();
+    canvas!.rootElement.remove();
   });
 
   test('draws arcs with largeArc , anticlockwise variations', () async {
-    paintArc(canvas, Offset(0, 0),
+    paintArc(canvas!, Offset(0, 0),
         largeArc: false, clockwise: false, distance: 20);
-    paintArc(canvas, Offset(200, 0),
+    paintArc(canvas!, Offset(200, 0),
         largeArc: true, clockwise: false, distance: 20);
-    paintArc(canvas, Offset(0, 150),
+    paintArc(canvas!, Offset(0, 150),
         largeArc: false, clockwise: true, distance: 20);
-    paintArc(canvas, Offset(200, 150),
+    paintArc(canvas!, Offset(200, 150),
         largeArc: true, clockwise: true, distance: 20);
-    paintArc(canvas, Offset(0, 300),
+    paintArc(canvas!, Offset(0, 300),
         largeArc: false, clockwise: false, distance: -20);
-    paintArc(canvas, Offset(200, 300),
+    paintArc(canvas!, Offset(200, 300),
         largeArc: true, clockwise: false, distance: -20);
-    paintArc(canvas, Offset(0, 400),
+    paintArc(canvas!, Offset(0, 400),
         largeArc: false, clockwise: true, distance: -20);
-    paintArc(canvas, Offset(200, 400),
+    paintArc(canvas!, Offset(200, 400),
         largeArc: true, clockwise: true, distance: -20);
 
 
-    html.document.body.append(canvas.rootElement);
+    html.document.body.append(canvas!.rootElement);
     await matchGoldenFile('canvas_arc_to_point.png', region: region);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
@@ -53,11 +53,11 @@ void paintArc(BitmapCanvas canvas, Offset offset,
       {bool largeArc = false, bool clockwise = false, double distance = 0}) {
 
   final Offset startP =
-      Offset(75 - distance + offset.dx, 75 - distance + offset.dy);
+      Offset(75 - distance + offset.dx!, 75 - distance + offset.dy!);
   final Offset endP =
-      Offset(75.0 + distance + offset.dx, 75.0 + distance + offset.dy);
+      Offset(75.0 + distance + offset.dx!, 75.0 + distance + offset.dy!);
   canvas.drawRect(
-      Rect.fromLTRB(startP.dx, startP.dy, endP.dx, endP.dy),
+      Rect.fromLTRB(startP.dx!, startP.dy!, endP.dx!, endP.dy!),
       SurfacePaintData()
         ..strokeWidth = 1
         ..color = Color(0xFFFF9800) // orange

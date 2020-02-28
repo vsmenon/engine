@@ -19,18 +19,18 @@ class Engine extends RuntimeDelegate {
   @override
   String get defaultRouteName => _initialRoute ?? '/';
 
-  String _initialRoute;
+  String? _initialRoute;
 
   bool get haveSurface => true;
 
-  ViewportMetrics _viewportMetrics;
+  ViewportMetrics? _viewportMetrics;
   set viewportMetrics(ViewportMetrics metrics) {
     final bool dimensionsChanged =
-        _viewportMetrics.physicalHeight != metrics.physicalHeight ||
-            _viewportMetrics.physicalWidth != metrics.physicalWidth;
+        _viewportMetrics!.physicalHeight != metrics.physicalHeight ||
+            _viewportMetrics!.physicalWidth != metrics.physicalWidth;
     _viewportMetrics = metrics;
     _runtimeController.viewportMetrics = _viewportMetrics;
-    if (_animator != null) {
+    /* if (_animator != null) */ {
       if (dimensionsChanged) {
         _animator.setDimensionChangePending();
       }
@@ -47,19 +47,19 @@ class Engine extends RuntimeDelegate {
 
   @override
   void render(LayerTree layerTree) {
-    if (layerTree == null) {
+    /* if (layerTree == null) {
       return;
-    }
+    } */
 
     final ui.Size frameSize = ui.Size(
-        _viewportMetrics.physicalWidth, _viewportMetrics.physicalHeight);
+        _viewportMetrics!.physicalWidth, _viewportMetrics!.physicalHeight);
 
     if (frameSize.isEmpty) {
       return;
     }
 
     layerTree.frameSize = frameSize;
-    layerTree.devicePixelRatio = _viewportMetrics.devicePixelRatio;
+    layerTree.devicePixelRatio = _viewportMetrics!.devicePixelRatio;
     _animator.render(layerTree);
   }
 
@@ -74,26 +74,26 @@ class Engine extends RuntimeDelegate {
 
   void handleAssetPlatformMessage(PlatformMessage message) {
     final PlatformMessageResponse response = message.response;
-    if (response == null) {
+    /* if (response == null) {
       return;
-    }
+    } */
 
     final String asset = utf8.decode(message.data.buffer.asUint8List());
-    if (_assetManager != null) {
-      _assetManager.load(asset).then((ByteData data) {
-        if (data != null) {
-          response.complete(data.buffer.asUint8List());
+    /* if (_assetManager != null) {
+      */ _assetManager.load(asset).then((ByteData data) {
+        /* if (data != null) {
+          */ response.complete(data.buffer.asUint8List()); /*
         } else {
           response.completeEmpty();
-        }
-      });
+        } */
+      }); /*
     } else {
       response.completeEmpty();
-    }
+    } */
   }
 
   @override
-  FontCollection getFontCollection() => null;
+  FontCollection? getFontCollection() => null;
 }
 
 class Animator {

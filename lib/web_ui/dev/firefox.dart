@@ -28,7 +28,7 @@ class Firefox extends Browser {
   @override
   final Future<Uri> remoteDebuggerUrl;
 
-  static String version;
+  static String? version;
 
   /// Starts a new instance of Firefox open to the given [url], which may be a
   /// [Uri] or a [String].
@@ -38,10 +38,10 @@ class Firefox extends Browser {
     assert(version != null);
     var remoteDebuggerCompleter = Completer<Uri>.sync();
     return Firefox._(() async {
-      final BrowserInstallation installation = await getOrInstallFirefox(
+      final BrowserInstallation installation = await (getOrInstallFirefox(
         version,
         infoLog: isCirrus ? stdout : DevNull(),
-      );
+      ) as FutureOr<BrowserInstallation>);
 
       // A good source of various Firefox Command Line options:
       // https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options#Browser
@@ -58,7 +58,7 @@ class Firefox extends Browser {
       ];
 
       final Process process =
-          await Process.start(installation.executable, args);
+          await Process.start(installation.executable!, args);
 
       remoteDebuggerCompleter.complete(
           getRemoteDebuggerUrl(Uri.parse('http://localhost:$kDevtoolsPort')));

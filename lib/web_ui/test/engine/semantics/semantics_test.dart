@@ -104,7 +104,7 @@ void _testEngineSemanticsOwner() {
       id: 0,
       actions: 0,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 20, 20),
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -114,7 +114,7 @@ void _testEngineSemanticsOwner() {
       actions: 0,
       flags: 0,
       label: label,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 20, 20),
     );
     semantics().updateSemantics(builder.build());
@@ -126,10 +126,10 @@ void _testEngineSemanticsOwner() {
     // Create
     renderLabel('Hello');
 
-    final Map<int, SemanticsObject> tree = semantics().debugSemanticsTree;
+    final Map<int?, SemanticsObject?> tree = semantics().debugSemanticsTree!;
     expect(tree.length, 2);
-    expect(tree[0].id, 0);
-    expect(tree[0].element.tagName.toLowerCase(), 'flt-semantics');
+    expect(tree[0]!.id, 0);
+    expect(tree[0]!.element.tagName.toLowerCase(), 'flt-semantics');
 
     expectSemanticsTree('''
 <sem style="filter: opacity(0%); color: rgba(0, 0, 0, 0)">
@@ -233,7 +233,7 @@ void _testHeader() {
       actions: 0,
       flags: 0 | ui.SemanticsFlag.isHeader.index,
       label: 'Header of the page',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -308,7 +308,7 @@ void _testContainer() {
       id: 0,
       actions: 0,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: zeroOffsetRect,
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -323,9 +323,9 @@ void _testContainer() {
 </sem>''');
 
     final html.Element parentElement =
-        html.document.querySelector('flt-semantics');
+        html.document.querySelector('flt-semantics')!;
     final html.Element container =
-        html.document.querySelector('flt-semantics-container');
+        html.document.querySelector('flt-semantics-container')!;
 
     expect(parentElement.style.transform, '');
     expect(parentElement.style.transformOrigin, '');
@@ -347,7 +347,7 @@ void _testContainer() {
       id: 0,
       actions: 0,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(10, 10, 20, 20),
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -362,9 +362,9 @@ void _testContainer() {
 </sem>''');
 
     final html.Element parentElement =
-        html.document.querySelector('flt-semantics');
+        html.document.querySelector('flt-semantics')!;
     final html.Element container =
-        html.document.querySelector('flt-semantics-container');
+        html.document.querySelector('flt-semantics-container')!;
 
     expect(parentElement.style.transform, 'matrix(1, 0, 0, 1, 10, 10)');
     expect(parentElement.style.transformOrigin, '0px 0px 0px');
@@ -388,7 +388,7 @@ void _testVerticalScrolling() {
       id: 0,
       actions: 0 | ui.SemanticsAction.scrollUp.index,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 50, 100),
     );
 
@@ -414,7 +414,7 @@ void _testVerticalScrolling() {
       id: 0,
       actions: 0 | ui.SemanticsAction.scrollUp.index,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 50, 100),
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -443,10 +443,10 @@ void _testVerticalScrolling() {
           browserEngine == BrowserEngine.edge);
 
   test('scrollable node dispatches scroll events', () async {
-    final StreamController<int> idLogController = StreamController<int>();
+    final StreamController<int?> idLogController = StreamController<int?>();
     final StreamController<ui.SemanticsAction> actionLogController =
         StreamController<ui.SemanticsAction>();
-    final Stream<int> idLog = idLogController.stream.asBroadcastStream();
+    final Stream<int?> idLog = idLogController.stream.asBroadcastStream();
     final Stream<ui.SemanticsAction> actionLog =
         actionLogController.stream.asBroadcastStream();
 
@@ -456,7 +456,7 @@ void _testVerticalScrolling() {
     final Zone testZone = Zone.current;
 
     ui.window.onSemanticsAction =
-        (int id, ui.SemanticsAction action, ByteData args) {
+        (int? id, ui.SemanticsAction action, ByteData? args) {
       idLogController.add(id);
       actionLogController.add(action);
       testZone.run(() {
@@ -474,7 +474,7 @@ void _testVerticalScrolling() {
           ui.SemanticsAction.scrollUp.index |
           ui.SemanticsAction.scrollDown.index,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 50, 100),
       childrenInHitTestOrder: Int32List.fromList(<int>[1, 2, 3]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1, 2, 3]),
@@ -485,7 +485,7 @@ void _testVerticalScrolling() {
         id: id,
         actions: 0,
         flags: 0,
-        transform: Matrix4.translationValues(0, 50.0 * id, 0).storage,
+        transform: Matrix4.translationValues(0, 50.0 * id, 0).storage!,
         rect: const ui.Rect.fromLTRB(0, 0, 50, 50),
       );
     }
@@ -540,7 +540,7 @@ void _testHorizontalScrolling() {
       id: 0,
       actions: 0 | ui.SemanticsAction.scrollLeft.index,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -566,7 +566,7 @@ void _testHorizontalScrolling() {
       id: 0,
       actions: 0 | ui.SemanticsAction.scrollLeft.index,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -607,7 +607,7 @@ void _testHorizontalScrolling() {
           ui.SemanticsAction.scrollLeft.index |
           ui.SemanticsAction.scrollRight.index,
       flags: 0,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
       childrenInHitTestOrder: Int32List.fromList(<int>[1, 2, 3]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1, 2, 3]),
@@ -618,7 +618,7 @@ void _testHorizontalScrolling() {
         id: id,
         actions: 0,
         flags: 0,
-        transform: Matrix4.translationValues(50.0 * id, 0, 0).storage,
+        transform: Matrix4.translationValues(50.0 * id, 0, 0).storage!,
         rect: const ui.Rect.fromLTRB(0, 0, 50, 50),
       );
     }
@@ -642,15 +642,15 @@ void _testHorizontalScrolling() {
 
     scrollable.scrollLeft = 20;
     expect(scrollable.scrollLeft, 20);
-    expect(await logger.idLog.first, 0);
-    expect(await logger.actionLog.first, ui.SemanticsAction.scrollLeft);
+    expect(await logger.idLog!.first, 0);
+    expect(await logger.actionLog!.first, ui.SemanticsAction.scrollLeft);
     // Engine semantics returns scroll position back to neutral.
     expect(scrollable.scrollLeft, 10);
 
     scrollable.scrollLeft = 5;
     expect(scrollable.scrollLeft, 5);
-    expect(await logger.idLog.first, 0);
-    expect(await logger.actionLog.first, ui.SemanticsAction.scrollRight);
+    expect(await logger.idLog!.first, 0);
+    expect(await logger.actionLog!.first, ui.SemanticsAction.scrollRight);
     // Engine semantics returns scroll top back to neutral.
     expect(scrollable.scrollLeft, 10);
 
@@ -674,7 +674,7 @@ void _testIncrementables() {
       actions: 0 | ui.SemanticsAction.increase.index,
       flags: 0,
       value: 'd',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -702,7 +702,7 @@ void _testIncrementables() {
       flags: 0,
       value: 'd',
       increasedValue: 'e',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -713,12 +713,12 @@ void _testIncrementables() {
 </sem>''');
 
     final html.InputElement input =
-        html.document.querySelectorAll('input').single;
+        html.document.querySelectorAll('input').single as InputElement;
     input.value = '2';
     input.dispatchEvent(html.Event('change'));
 
-    expect(await logger.idLog.first, 0);
-    expect(await logger.actionLog.first, ui.SemanticsAction.increase);
+    expect(await logger.idLog!.first, 0);
+    expect(await logger.actionLog!.first, ui.SemanticsAction.increase);
 
     semantics().semanticsEnabled = false;
   },
@@ -738,7 +738,7 @@ void _testIncrementables() {
       flags: 0,
       value: 'd',
       decreasedValue: 'c',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -749,12 +749,12 @@ void _testIncrementables() {
 </sem>''');
 
     final html.InputElement input =
-        html.document.querySelectorAll('input').single;
+        html.document.querySelectorAll('input').single as InputElement;
     input.value = '0';
     input.dispatchEvent(html.Event('change'));
 
-    expect(await logger.idLog.first, 0);
-    expect(await logger.actionLog.first, ui.SemanticsAction.decrease);
+    expect(await logger.idLog!.first, 0);
+    expect(await logger.actionLog!.first, ui.SemanticsAction.decrease);
 
     semantics().semanticsEnabled = false;
   },
@@ -776,7 +776,7 @@ void _testIncrementables() {
       value: 'd',
       increasedValue: 'e',
       decreasedValue: 'c',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -804,7 +804,7 @@ void _testTextField() {
       actions: 0 | ui.SemanticsAction.tap.index,
       flags: 0 | ui.SemanticsFlag.isTextField.index,
       value: 'hello',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -833,7 +833,7 @@ void _testTextField() {
       actions: 0 | ui.SemanticsAction.tap.index,
       flags: 0 | ui.SemanticsFlag.isTextField.index,
       value: 'hello',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -848,8 +848,8 @@ void _testTextField() {
     textField.focus();
 
     expect(html.document.activeElement, textField);
-    expect(await logger.idLog.first, 0);
-    expect(await logger.actionLog.first, ui.SemanticsAction.tap);
+    expect(await logger.idLog!.first, 0);
+    expect(await logger.actionLog!.first, ui.SemanticsAction.tap);
 
     semantics().semanticsEnabled = false;
   }, // TODO(nurhan): https://github.com/flutter/flutter/issues/46638
@@ -872,7 +872,7 @@ void _testCheckables() {
           ui.SemanticsFlag.isEnabled.index |
           ui.SemanticsFlag.hasToggledState.index |
           ui.SemanticsFlag.isToggled.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -898,7 +898,7 @@ void _testCheckables() {
       flags: 0 |
           ui.SemanticsFlag.hasToggledState.index |
           ui.SemanticsFlag.isToggled.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -924,7 +924,7 @@ void _testCheckables() {
       flags: 0 |
           ui.SemanticsFlag.hasToggledState.index |
           ui.SemanticsFlag.isEnabled.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -951,7 +951,7 @@ void _testCheckables() {
           ui.SemanticsFlag.isEnabled.index |
           ui.SemanticsFlag.hasCheckedState.index |
           ui.SemanticsFlag.isChecked.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -977,7 +977,7 @@ void _testCheckables() {
       flags: 0 |
           ui.SemanticsFlag.hasCheckedState.index |
           ui.SemanticsFlag.isChecked.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1003,7 +1003,7 @@ void _testCheckables() {
       flags: 0 |
           ui.SemanticsFlag.hasCheckedState.index |
           ui.SemanticsFlag.isEnabled.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1031,7 +1031,7 @@ void _testCheckables() {
           ui.SemanticsFlag.hasCheckedState.index |
           ui.SemanticsFlag.isInMutuallyExclusiveGroup.index |
           ui.SemanticsFlag.isChecked.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1058,7 +1058,7 @@ void _testCheckables() {
           ui.SemanticsFlag.hasCheckedState.index |
           ui.SemanticsFlag.isInMutuallyExclusiveGroup.index |
           ui.SemanticsFlag.isChecked.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1085,7 +1085,7 @@ void _testCheckables() {
           ui.SemanticsFlag.isEnabled.index |
           ui.SemanticsFlag.hasCheckedState.index |
           ui.SemanticsFlag.isInMutuallyExclusiveGroup.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1114,7 +1114,7 @@ void _testTappable() {
           ui.SemanticsFlag.hasEnabledState.index |
           ui.SemanticsFlag.isEnabled.index |
           ui.SemanticsFlag.isButton.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1140,7 +1140,7 @@ void _testTappable() {
       flags: 0 |
           ui.SemanticsFlag.hasEnabledState.index |
           ui.SemanticsFlag.isButton.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1169,7 +1169,7 @@ void _testImage() {
       actions: 0,
       flags: 0 | ui.SemanticsFlag.isImage.index,
       label: 'Test Image Label',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1194,7 +1194,7 @@ void _testImage() {
       actions: 0,
       flags: 0 | ui.SemanticsFlag.isImage.index,
       label: 'Test Image Label',
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -1225,7 +1225,7 @@ void _testImage() {
       id: 0,
       actions: 0,
       flags: 0 | ui.SemanticsFlag.isImage.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
 
@@ -1248,7 +1248,7 @@ void _testImage() {
       id: 0,
       actions: 0,
       flags: 0 | ui.SemanticsFlag.isImage.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
       childrenInHitTestOrder: Int32List.fromList(<int>[1]),
       childrenInTraversalOrder: Int32List.fromList(<int>[1]),
@@ -1282,7 +1282,7 @@ void _testLiveRegion() {
       actions: 0,
       label: 'This is a snackbar',
       flags: 0 | ui.SemanticsFlag.isLiveRegion.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
     semantics().updateSemantics(builder.build());
@@ -1306,7 +1306,7 @@ void _testLiveRegion() {
       id: 0,
       actions: 0,
       flags: 0 | ui.SemanticsFlag.isLiveRegion.index,
-      transform: Matrix4.identity().storage,
+      transform: Matrix4.identity().storage!,
       rect: const ui.Rect.fromLTRB(0, 0, 100, 50),
     );
     semantics().updateSemantics(builder.build());
@@ -1323,7 +1323,7 @@ void _testLiveRegion() {
 
 void expectSemanticsTree(String semanticsHtml) {
   expect(
-    canonicalizeHtml(html.document.querySelector('flt-semantics').outerHtml),
+    canonicalizeHtml(html.document.querySelector('flt-semantics')!.outerHtml),
     canonicalizeHtml(semanticsHtml),
   );
 }
@@ -1334,21 +1334,21 @@ html.Element findScrollable() {
             element.style.overflow == 'hidden' ||
             element.style.overflowY == 'scroll' ||
             element.style.overflowX == 'scroll',
-        orElse: () => null,
+        orElse: () => null!,
       );
 }
 
 class SemanticsActionLogger {
-  StreamController<int> idLogController;
-  StreamController<ui.SemanticsAction> actionLogController;
-  Stream<int> idLog;
-  Stream<ui.SemanticsAction> actionLog;
+  StreamController<int?>? idLogController;
+  StreamController<ui.SemanticsAction>? actionLogController;
+  Stream<int?>? idLog;
+  Stream<ui.SemanticsAction>? actionLog;
 
   SemanticsActionLogger() {
-    idLogController = StreamController<int>();
+    idLogController = StreamController<int?>();
     actionLogController = StreamController<ui.SemanticsAction>();
-    idLog = idLogController.stream.asBroadcastStream();
-    actionLog = actionLogController.stream.asBroadcastStream();
+    idLog = idLogController!.stream.asBroadcastStream();
+    actionLog = actionLogController!.stream.asBroadcastStream();
 
     // The browser kicks us out of the test zone when the browser event happens.
     // We memorize the test zone so we can call expect when the callback is
@@ -1356,9 +1356,9 @@ class SemanticsActionLogger {
     final Zone testZone = Zone.current;
 
     ui.window.onSemanticsAction =
-        (int id, ui.SemanticsAction action, ByteData args) {
-      idLogController.add(id);
-      actionLogController.add(action);
+        (int? id, ui.SemanticsAction action, ByteData? args) {
+      idLogController!.add(id);
+      actionLogController!.add(action);
       testZone.run(() {
         expect(args, null);
       });

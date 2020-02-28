@@ -29,7 +29,7 @@ void main() {
       expect(testObject.deleteCount, 0);
 
       // Check that the getter does not have side-effects
-      final JsObject skiaObject1 = testObject.skiaObject;
+      final JsObject? skiaObject1 = testObject.skiaObject;
       expect(skiaObject1, isNotNull);
       expect(SkiaObjects.managedObjects.single, testObject);
       expect(testObject.createDefaultCount, 1);
@@ -45,7 +45,7 @@ void main() {
       expect(testObject.deleteCount, 1);
 
       // Trigger resurrect
-      final JsObject skiaObject2 = testObject.skiaObject;
+      final JsObject? skiaObject2 = testObject.skiaObject;
       expect(skiaObject2, isNotNull);
       expect(skiaObject2, isNot(same(skiaObject1)));
       expect(SkiaObjects.managedObjects.single, testObject);

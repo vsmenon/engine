@@ -7,7 +7,7 @@ part of engine;
 
 bool _offsetIsValid(ui.Offset offset) {
   assert(offset != null, 'Offset argument was null.');
-  assert(!offset.dx.isNaN && !offset.dy.isNaN,
+  assert(!offset.dx!.isNaN && !offset.dy!.isNaN,
       'Offset argument contained a NaN value.');
   return true;
 }
@@ -23,14 +23,14 @@ abstract class EngineGradient implements ui.Gradient {
   EngineGradient._();
 
   /// Creates a fill style to be used in painting.
-  Object createPaintStyle(html.CanvasRenderingContext2D ctx);
+  Object createPaintStyle(html.CanvasRenderingContext2D? ctx);
 
   List<dynamic> webOnlySerializeToCssPaint() {
     throw UnsupportedError('CSS paint not implemented for this shader type');
   }
 
   /// Create a shader for use in the Skia backend.
-  js.JsObject createSkiaShader();
+  js.JsObject? createSkiaShader();
 }
 
 class GradientSweep extends EngineGradient {
@@ -48,17 +48,17 @@ class GradientSweep extends EngineGradient {
   }
 
   @override
-  Object createPaintStyle(html.CanvasRenderingContext2D ctx) {
+  Object createPaintStyle(html.CanvasRenderingContext2D? ctx) {
     throw UnimplementedError();
   }
 
   final ui.Offset center;
   final List<ui.Color> colors;
-  final List<double> colorStops;
+  final List<double>? colorStops;
   final ui.TileMode tileMode;
   final double startAngle;
   final double endAngle;
-  final Float64List matrix4;
+  final Float64List? matrix4;
 
   @override
   js.JsObject createSkiaShader() {
@@ -66,7 +66,7 @@ class GradientSweep extends EngineGradient {
   }
 }
 
-void _validateColorStops(List<ui.Color> colors, List<double> colorStops) {
+void _validateColorStops(List<ui.Color> colors, List<double>? colorStops) {
   if (colorStops == null) {
     if (colors.length != 2)
       throw ArgumentError(
@@ -96,21 +96,21 @@ class GradientLinear extends EngineGradient {
   final ui.Offset from;
   final ui.Offset to;
   final List<ui.Color> colors;
-  final List<double> colorStops;
+  final List<double>? colorStops;
   final ui.TileMode tileMode;
 
   @override
-  html.CanvasGradient createPaintStyle(html.CanvasRenderingContext2D ctx) {
+  html.CanvasGradient createPaintStyle(html.CanvasRenderingContext2D? ctx) {
     final html.CanvasGradient gradient =
-        ctx.createLinearGradient(from.dx, from.dy, to.dx, to.dy);
+        ctx!.createLinearGradient(from.dx!, from.dy!, to.dx!, to.dy!);
     if (colorStops == null) {
       assert(colors.length == 2);
-      gradient.addColorStop(0, colorToCssString(colors[0]));
-      gradient.addColorStop(1, colorToCssString(colors[1]));
+      gradient.addColorStop(0, colorToCssString(colors[0])!);
+      gradient.addColorStop(1, colorToCssString(colors[1])!);
       return gradient;
     }
     for (int i = 0; i < colors.length; i++) {
-      gradient.addColorStop(colorStops[i], colorToCssString(colors[i]));
+      gradient.addColorStop(colorStops![i], colorToCssString(colors[i])!);
     }
     return gradient;
   }
@@ -134,7 +134,7 @@ class GradientLinear extends EngineGradient {
   }
 
   @override
-  js.JsObject createSkiaShader() {
+  js.JsObject? createSkiaShader() {
     assert(experimentalUseSkia);
 
     final js.JsArray<num> jsColors = js.JsArray<num>();
@@ -143,7 +143,7 @@ class GradientLinear extends EngineGradient {
       jsColors[i] = colors[i].value;
     }
 
-    return canvasKit.callMethod('MakeLinearGradientShader', <dynamic>[
+    return canvasKit!.callMethod('MakeLinearGradientShader', <dynamic>[
       makeSkPoint(from),
       makeSkPoint(to),
       jsColors,
@@ -161,14 +161,14 @@ class GradientRadial extends EngineGradient {
       : super._();
 
   final ui.Offset center;
-  final double radius;
+  final double? radius;
   final List<ui.Color> colors;
-  final List<double> colorStops;
+  final List<double>? colorStops;
   final ui.TileMode tileMode;
-  final Float64List matrix4;
+  final Float64List? matrix4;
 
   @override
-  Object createPaintStyle(html.CanvasRenderingContext2D ctx) {
+  Object createPaintStyle(html.CanvasRenderingContext2D? ctx) {
     if (!experimentalUseSkia) {
       // The DOM backend does not (yet) support all parameters.
       if (matrix4 != null && !Matrix4.fromFloat64List(matrix4).isIdentity()) {
@@ -180,23 +180,23 @@ class GradientRadial extends EngineGradient {
             'TileMode not supported in GradientRadial shader');
       }
     }
-    final html.CanvasGradient gradient = ctx.createRadialGradient(
-        center.dx, center.dy, 0, center.dx, center.dy, radius);
+    final html.CanvasGradient gradient = ctx!.createRadialGradient(
+        center.dx!, center.dy!, 0, center.dx!, center.dy!, radius!);
     if (colorStops == null) {
       assert(colors.length == 2);
-      gradient.addColorStop(0, colorToCssString(colors[0]));
-      gradient.addColorStop(1, colorToCssString(colors[1]));
+      gradient.addColorStop(0, colorToCssString(colors[0])!);
+      gradient.addColorStop(1, colorToCssString(colors[1])!);
       return gradient;
     } else {
       for (int i = 0; i < colors.length; i++) {
-        gradient.addColorStop(colorStops[i], colorToCssString(colors[i]));
+        gradient.addColorStop(colorStops![i], colorToCssString(colors[i])!);
       }
     }
     return gradient;
   }
 
   @override
-  js.JsObject createSkiaShader() {
+  js.JsObject? createSkiaShader() {
     assert(experimentalUseSkia);
 
     final js.JsArray<num> jsColors = js.JsArray<num>();
@@ -205,7 +205,7 @@ class GradientRadial extends EngineGradient {
       jsColors[i] = colors[i].value;
     }
 
-    return canvasKit.callMethod('MakeRadialGradientShader', <dynamic>[
+    return canvasKit!.callMethod('MakeRadialGradientShader', <dynamic>[
       makeSkPoint(center),
       radius,
       jsColors,
@@ -225,14 +225,14 @@ class GradientConical extends EngineGradient {
   final ui.Offset focal;
   final double focalRadius;
   final ui.Offset center;
-  final double radius;
+  final double? radius;
   final List<ui.Color> colors;
-  final List<double> colorStops;
+  final List<double>? colorStops;
   final ui.TileMode tileMode;
-  final Float64List matrix4;
+  final Float64List? matrix4;
 
   @override
-  Object createPaintStyle(html.CanvasRenderingContext2D ctx) {
+  Object createPaintStyle(html.CanvasRenderingContext2D? ctx) {
     throw UnimplementedError();
   }
 

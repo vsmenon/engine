@@ -56,13 +56,13 @@ class SupportedBrowsers {
 
   final Map<String, String> browserToConfiguration = {
     'chrome':
-        '--configuration=${environment.webUiRootDir.path}/dart_test_chrome.yaml',
+        '--configuration=${environment!.webUiRootDir!.path}/dart_test_chrome.yaml',
     'edge':
-        '--configuration=${environment.webUiRootDir.path}/dart_test_edge.yaml',
+        '--configuration=${environment!.webUiRootDir!.path}/dart_test_edge.yaml',
     'firefox':
-        '--configuration=${environment.webUiRootDir.path}/dart_test_firefox.yaml',
+        '--configuration=${environment!.webUiRootDir!.path}/dart_test_firefox.yaml',
     'safari':
-        '--configuration=${environment.webUiRootDir.path}/dart_test_safari.yaml',
+        '--configuration=${environment!.webUiRootDir!.path}/dart_test_safari.yaml',
   };
 
   static final SupportedBrowsers _singletonInstance = SupportedBrowsers._();

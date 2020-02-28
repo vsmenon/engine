@@ -18,8 +18,8 @@
 // @dart = 2.6
 part of engine;
 
-CharProperty getCharProperty(String text, int index) {
-  if (index < 0 || index >= text.length) {
+CharProperty? getCharProperty(String? text, int index) {
+  if (index < 0 || index >= text!.length) {
     return null;
   }
   return lookup.find(text.codeUnitAt(index));

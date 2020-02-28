@@ -8,12 +8,12 @@ part of engine;
 /// A surface containing a platform view, which is an HTML element.
 class PersistedPlatformView extends PersistedLeafSurface {
   final int viewId;
-  final double dx;
-  final double dy;
+  final double? dx;
+  final double? dy;
   final double width;
   final double height;
 
-  html.ShadowRoot _shadowRoot;
+  html.ShadowRoot? _shadowRoot;
 
   PersistedPlatformView(this.viewId, this.dx, this.dy, this.width, this.height);
 
@@ -45,11 +45,11 @@ class PersistedPlatformView extends PersistedLeafSurface {
       :host {
         all: initial;
       }''';
-    _shadowRoot.append(_styleReset);
-    final html.Element platformView =
+    _shadowRoot!.append(_styleReset);
+    final html.Element? platformView =
         platformViewRegistry.getCreatedView(viewId);
     if (platformView != null) {
-      _shadowRoot.append(platformView);
+      _shadowRoot!.append(platformView);
     } else {
       html.window.console.warn('No platform view created for id $viewId');
     }
@@ -57,16 +57,16 @@ class PersistedPlatformView extends PersistedLeafSurface {
   }
 
   @override
-  Matrix4 get localTransformInverse => null;
+  Matrix4? get localTransformInverse => null;
 
   @override
   void apply() {
-    rootElement.style
+    rootElement!.style
       ..transform = 'translate(${dx}px, ${dy}px)'
       ..width = '${width}px'
       ..height = '${height}px';
     // Set size of the root element created by the PlatformView.
-    final html.Element platformView =
+    final html.Element? platformView =
         platformViewRegistry.getCreatedView(viewId);
     if (platformView != null) {
       platformView.style

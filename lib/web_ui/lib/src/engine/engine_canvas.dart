@@ -11,7 +11,7 @@ part of engine;
 /// This can be used either as an interface or super-class.
 abstract class EngineCanvas {
   /// The element that is attached to the DOM.
-  html.Element get rootElement;
+  html.Element? get rootElement;
 
   void dispose() {
     clear();
@@ -71,7 +71,7 @@ abstract class EngineCanvas {
       ui.Vertices vertices, ui.BlendMode blendMode, SurfacePaintData paint);
 
   void drawPoints(ui.PointMode pointMode, Float32List points,
-      double strokeWidth, ui.Color color);
+      double strokeWidth, ui.Color? color);
 
   /// Extension of Canvas API to mark the end of a stream of painting commands
   /// to enable re-use/dispose optimizations.
@@ -96,19 +96,19 @@ Matrix4 transformWithOffset(Matrix4 transform, ui.Offset offset) {
 
 class _SaveStackEntry {
   _SaveStackEntry({
-    @required this.transform,
+    /* @*/ required this.transform,
     @required this.clipStack,
   });
 
   final Matrix4 transform;
-  final List<_SaveClipEntry> clipStack;
+  final List<_SaveClipEntry>? clipStack;
 }
 
 /// Tagged union of clipping parameters used for canvas.
 class _SaveClipEntry {
-  final ui.Rect rect;
-  final ui.RRect rrect;
-  final ui.Path path;
+  final ui.Rect? rect;
+  final ui.RRect? rrect;
+  final ui.Path? path;
   final Matrix4 currentTransform;
   _SaveClipEntry.rect(this.rect, this.currentTransform)
       : rrect = null,
@@ -130,7 +130,7 @@ mixin SaveStackTracking on EngineCanvas {
 
   /// The stack that maintains clipping operations used when text is painted
   /// onto bitmap canvas but is composited as separate element.
-  List<_SaveClipEntry> _clipStack;
+  List<_SaveClipEntry>? _clipStack;
 
   /// Returns whether there are active clipping regions on the canvas.
   bool get isClipped => _clipStack != null;
@@ -158,7 +158,7 @@ mixin SaveStackTracking on EngineCanvas {
     _saveStack.add(_SaveStackEntry(
       transform: _currentTransform.clone(),
       clipStack:
-          _clipStack == null ? null : List<_SaveClipEntry>.from(_clipStack),
+          _clipStack == null ? null : List<_SaveClipEntry>.from(_clipStack!),
     ));
   }
 
@@ -205,7 +205,7 @@ mixin SaveStackTracking on EngineCanvas {
   @override
   void skew(double sx, double sy) {
     final Matrix4 skewMatrix = Matrix4.identity();
-    final Float64List storage = skewMatrix.storage;
+    final Float64List storage = skewMatrix.storage!;
     storage[1] = sy;
     storage[4] = sx;
     _currentTransform.multiply(skewMatrix);
@@ -225,7 +225,7 @@ mixin SaveStackTracking on EngineCanvas {
   @override
   void clipRect(ui.Rect rect) {
     _clipStack ??= <_SaveClipEntry>[];
-    _clipStack.add(_SaveClipEntry.rect(rect, _currentTransform.clone()));
+    _clipStack!.add(_SaveClipEntry.rect(rect, _currentTransform.clone()));
   }
 
   /// Adds a round rectangle to clipping stack.
@@ -234,7 +234,7 @@ mixin SaveStackTracking on EngineCanvas {
   @override
   void clipRRect(ui.RRect rrect) {
     _clipStack ??= <_SaveClipEntry>[];
-    _clipStack.add(_SaveClipEntry.rrect(rrect, _currentTransform.clone()));
+    _clipStack!.add(_SaveClipEntry.rrect(rrect, _currentTransform.clone()));
   }
 
   /// Adds a path to clipping stack.
@@ -243,18 +243,18 @@ mixin SaveStackTracking on EngineCanvas {
   @override
   void clipPath(ui.Path path) {
     _clipStack ??= <_SaveClipEntry>[];
-    _clipStack.add(_SaveClipEntry.path(path, _currentTransform.clone()));
+    _clipStack!.add(_SaveClipEntry.path(path, _currentTransform.clone()));
   }
 }
 
 html.Element _drawParagraphElement(
   EngineParagraph paragraph,
   ui.Offset offset, {
-  Matrix4 transform,
+  Matrix4? transform,
 }) {
   assert(paragraph._isLaidOut);
 
-  final html.Element paragraphElement = paragraph._paragraphElement.clone(true);
+  final html.Element paragraphElement = paragraph._paragraphElement.clone(true) as Element;
 
   final html.CssStyleDeclaration paragraphStyle = paragraphElement.style;
   paragraphStyle
@@ -268,7 +268,7 @@ html.Element _drawParagraphElement(
   if (transform != null) {
     setElementTransform(
       paragraphElement,
-      transformWithOffset(transform, offset).storage,
+      transformWithOffset(transform, offset).storage!,
     );
   }
 

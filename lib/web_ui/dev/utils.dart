@@ -15,14 +15,14 @@ class FilePath {
   FilePath.fromCwd(String relativePath)
       : _absolutePath = path.absolute(relativePath);
   FilePath.fromWebUi(String relativePath)
-      : _absolutePath = path.join(environment.webUiRootDir.path, relativePath);
+      : _absolutePath = path.join(environment!.webUiRootDir!.path, relativePath);
 
   final String _absolutePath;
 
   String get absolute => _absolutePath;
   String get relativeToCwd => path.relative(_absolutePath);
   String get relativeToWebUi =>
-      path.relative(_absolutePath, from: environment.webUiRootDir.path);
+      path.relative(_absolutePath, from: environment!.webUiRootDir!.path);
 
   @override
   bool operator ==(dynamic other) {
@@ -36,13 +36,13 @@ class FilePath {
 /// Runs [executable] merging its output into the current process' standard out and standard error.
 Future<int> runProcess(
   String executable,
-  List<String> arguments, {
-  String workingDirectory,
+  List<String?> arguments, {
+  String? workingDirectory,
   bool mustSucceed: false,
 }) async {
   final io.Process process = await io.Process.start(
     executable,
-    arguments,
+    arguments as List<String>,
     workingDirectory: workingDirectory,
     // Running the process in a system shell for Windows. Otherwise
     // the process is not able to get Dart from path.
@@ -65,10 +65,10 @@ Future<int> runProcess(
 /// Runs [executable] and returns its standard output as a string.
 ///
 /// If the process fails, throws a [ProcessException].
-Future<String> evalProcess(
+Future<String?> evalProcess(
   String executable,
   List<String> arguments, {
-  String workingDirectory,
+  String? workingDirectory,
 }) async {
   final io.ProcessResult result = await io.Process.run(
     executable,
@@ -91,16 +91,16 @@ Future<String> evalProcess(
 class ProcessException implements Exception {
   ProcessException({
     @required this.description,
-    @required this.executable,
-    @required this.arguments,
+    /* @*/ required this.executable,
+    /* @*/ required this.arguments,
     @required this.workingDirectory,
-    @required this.exitCode,
+    /* @*/ required this.exitCode,
   });
 
-  final String description;
+  final String? description;
   final String executable;
-  final List<String> arguments;
-  final String workingDirectory;
+  final List<String?> arguments;
+  final String? workingDirectory;
   final int exitCode;
 
   @override

@@ -28,7 +28,7 @@ class BrowserInstallerException implements Exception {
 }
 
 abstract class PlatformBinding {
-  static PlatformBinding get instance {
+  static PlatformBinding? get instance {
     if (_instance == null) {
       if (io.Platform.isLinux) {
         _instance = _LinuxBinding();
@@ -43,9 +43,9 @@ abstract class PlatformBinding {
     return _instance;
   }
 
-  static PlatformBinding _instance;
+  static PlatformBinding? _instance;
 
-  int getChromeBuild(YamlMap chromeLock);
+  int? getChromeBuild(YamlMap? chromeLock);
   String getChromeDownloadUrl(String version);
   String getFirefoxDownloadUrl(String version);
   String getChromeExecutablePath(io.Directory versionDir);
@@ -60,8 +60,8 @@ const String _kBaseDownloadUrl =
 
 class _WindowsBinding implements PlatformBinding {
   @override
-  int getChromeBuild(YamlMap browserLock) {
-    final YamlMap chromeMap = browserLock['chrome'];
+  int? getChromeBuild(YamlMap? browserLock) {
+    final YamlMap chromeMap = browserLock!['chrome'];
     return chromeMap['Win'];
   }
 
@@ -95,8 +95,8 @@ class _WindowsBinding implements PlatformBinding {
 
 class _LinuxBinding implements PlatformBinding {
   @override
-  int getChromeBuild(YamlMap browserLock) {
-    final YamlMap chromeMap = browserLock['chrome'];
+  int? getChromeBuild(YamlMap? browserLock) {
+    final YamlMap chromeMap = browserLock!['chrome'];
     return chromeMap['Linux'];
   }
 
@@ -131,8 +131,8 @@ class _LinuxBinding implements PlatformBinding {
 
 class _MacBinding implements PlatformBinding {
   @override
-  int getChromeBuild(YamlMap browserLock) {
-    final YamlMap chromeMap = browserLock['chrome'];
+  int? getChromeBuild(YamlMap? browserLock) {
+    final YamlMap chromeMap = browserLock!['chrome'];
     return chromeMap['Mac'];
   }
 
@@ -171,7 +171,7 @@ class _MacBinding implements PlatformBinding {
 
 class BrowserInstallation {
   const BrowserInstallation(
-      {@required this.version,
+      {/* @*/ required this.version,
       @required this.executable,
       fetchLatestChromeVersion});
 
@@ -179,7 +179,7 @@ class BrowserInstallation {
   final String version;
 
   /// Path the browser executable.
-  final String executable;
+  final String? executable;
 }
 
 abstract class BrowserArgParser {
@@ -191,7 +191,7 @@ abstract class BrowserArgParser {
   /// Populate browser with results of the arguments passed.
   void parseOptions(ArgResults argResults);
 
-  String get version;
+  String? get version;
 }
 
 /// Provides access to the contents of the `browser_lock.yaml` file.
@@ -202,12 +202,12 @@ class BrowserLock {
   /// The [Keyboard] singleton.
   static BrowserLock get instance => _singletonInstance;
 
-  YamlMap _configuration = YamlMap();
-  YamlMap get configuration => _configuration;
+  YamlMap? _configuration = YamlMap();
+  YamlMap? get configuration => _configuration;
 
   BrowserLock._() {
     final io.File lockFile = io.File(
-        path.join(environment.webUiRootDir.path, 'dev', 'browser_lock.yaml'));
+        path.join(environment!.webUiRootDir!.path, 'dev', 'browser_lock.yaml'));
     this._configuration = loadYaml(lockFile.readAsStringSync());
   }
 }
@@ -215,7 +215,7 @@ class BrowserLock {
 /// A string sink that swallows all input.
 class DevNull implements StringSink {
   @override
-  void write(Object obj) {}
+  void write(Object? obj) {}
 
   @override
   void writeAll(Iterable objects, [String separator = ""]) {}
@@ -224,7 +224,7 @@ class DevNull implements StringSink {
   void writeCharCode(int charCode) {}
 
   @override
-  void writeln([Object obj = ""]) {}
+  void writeln([Object? obj = ""]) {}
 }
 
 bool get isCirrus => io.Platform.environment['CIRRUS_CI'] == 'true';

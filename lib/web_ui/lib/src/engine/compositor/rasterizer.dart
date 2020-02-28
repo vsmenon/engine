@@ -20,14 +20,14 @@ class Rasterizer {
   /// [LayerTree] into it, and then submits the frame.
   void draw(LayerTree layerTree) {
     try {
-      if (layerTree == null) {
+      /* if (layerTree == null) {
         return;
-      }
+      } */
 
-      final ui.Size physicalSize = ui.window.physicalSize;
+      final ui.Size physicalSize = ui.window.physicalSize!;
       final ui.Size frameSize = ui.Size(
-        physicalSize.width.truncate().toDouble(),
-        physicalSize.height.truncate().toDouble(),
+        physicalSize.width!.truncate().toDouble(),
+        physicalSize.height!.truncate().toDouble(),
       );
 
       if (frameSize.isEmpty) {
@@ -36,7 +36,7 @@ class Rasterizer {
       layerTree.frameSize = frameSize;
 
       final SurfaceFrame frame = surface.acquireFrame(layerTree.frameSize);
-      surface.viewEmbedder.frameSize = layerTree.frameSize;
+      surface.viewEmbedder!.frameSize = layerTree.frameSize;
       final SkCanvas canvas = frame.skiaCanvas;
       final Frame compositorFrame =
           context.acquireFrame(canvas, surface.viewEmbedder);
@@ -44,7 +44,7 @@ class Rasterizer {
       compositorFrame.raster(layerTree, ignoreRasterCache: true);
       surface.addToScene();
       frame.submit();
-      surface.viewEmbedder.submitFrame();
+      surface.viewEmbedder!.submitFrame();
     } finally {
       _runPostFrameCallbacks();
     }

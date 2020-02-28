@@ -8,7 +8,7 @@ part of engine;
 /// A surface that applies an image filter to background.
 class PersistedBackdropFilter extends PersistedContainerSurface
     implements ui.BackdropFilterEngineLayer {
-  PersistedBackdropFilter(PersistedBackdropFilter oldLayer, this.filter)
+  PersistedBackdropFilter(PersistedBackdropFilter? oldLayer, this.filter)
       : super(oldLayer);
 
   final EngineImageFilter filter;
@@ -17,13 +17,13 @@ class PersistedBackdropFilter extends PersistedContainerSurface
   /// [rootElement] is used to host child in front of [filterElement] that
   /// is transformed to cover background.
   @override
-  html.Element get childContainer => _childContainer;
-  html.Element _childContainer;
-  html.Element _filterElement;
+  html.Element? get childContainer => _childContainer;
+  html.Element? _childContainer;
+  html.Element? _filterElement;
   // Cached inverted transform for _transform.
-  Matrix4 _invertedTransform;
+  Matrix4? _invertedTransform;
   // Reference to transform last used to cache [_invertedTransform].
-  Matrix4 _previousTransform;
+  Matrix4? _previousTransform;
 
   @override
   void adoptElements(PersistedBackdropFilter oldSurface) {
@@ -38,14 +38,14 @@ class PersistedBackdropFilter extends PersistedContainerSurface
     final html.Element element = defaultCreateElement('flt-backdrop')
       ..style.transformOrigin = '0 0 0';
     _childContainer = html.Element.tag('flt-backdrop-interior');
-    _childContainer.style.position = 'absolute';
+    _childContainer!.style.position = 'absolute';
     if (_debugExplainSurfaceStats) {
       // This creates an additional interior element. Count it too.
       _surfaceStatsFor(this).allocatedDomNodeCount++;
     }
     _filterElement = defaultCreateElement('flt-backdrop-filter');
-    _filterElement.style.transformOrigin = '0 0 0';
-    element..append(_filterElement)..append(_childContainer);
+    _filterElement!.style.transformOrigin = '0 0 0';
+    element..append(_filterElement!)..append(_childContainer!);
     return element;
   }
 
@@ -62,12 +62,12 @@ class PersistedBackdropFilter extends PersistedContainerSurface
   @override
   void apply() {
     if (_previousTransform != _transform) {
-      _invertedTransform = Matrix4.inverted(_transform);
+      _invertedTransform = Matrix4.inverted(_transform!);
       _previousTransform = _transform;
     }
-    final ui.Rect rect = transformLTRB(_invertedTransform, 0, 0,
-        ui.window.physicalSize.width, ui.window.physicalSize.height);
-    final html.CssStyleDeclaration filterElementStyle = _filterElement.style;
+    final ui.Rect rect = transformLTRB(_invertedTransform!, 0, 0,
+        ui.window.physicalSize!.width!, ui.window.physicalSize!.height!);
+    final html.CssStyleDeclaration filterElementStyle = _filterElement!.style;
     filterElementStyle
       ..position = 'absolute'
       ..transform = 'translate(${rect.left}px, ${rect.top}px)'

@@ -27,7 +27,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile(
         '$fileName.png',
@@ -46,8 +46,8 @@ void main() async {
     debugEmulateFlutterTesterEnvironment = true;
     disposeWebGl();
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   Future<void> _testVertices(String fileName, Vertices vertices,
@@ -55,7 +55,7 @@ void main() async {
       Paint paint) async {
     final RecordingCanvas rc =
         RecordingCanvas(const Rect.fromLTRB(0, 0, 500, 500));
-    rc.drawVertices(vertices, blendMode, paint);
+    rc.drawVertices(vertices, blendMode, paint as SurfacePaint);
     await _checkScreenshot(rc, fileName);
   }
 

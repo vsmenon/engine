@@ -46,7 +46,7 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.StrokeCap get strokeCap => _paintData.strokeCap;
+  ui.StrokeCap? get strokeCap => _paintData.strokeCap;
 
   @override
   set strokeCap(ui.StrokeCap value) {
@@ -58,7 +58,7 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.StrokeJoin get strokeJoin => _paintData.strokeJoin;
+  ui.StrokeJoin? get strokeJoin => _paintData.strokeJoin;
 
   @override
   set strokeJoin(ui.StrokeJoin value) {
@@ -82,16 +82,16 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.Color get color => _paintData.color;
+  ui.Color? get color => _paintData.color;
 
   @override
-  set color(ui.Color value) {
+  set color(ui.Color? value) {
     if (_frozen) {
       _paintData = _paintData.clone();
       _frozen = false;
     }
     _paintData.color =
-        value.runtimeType == ui.Color ? value : ui.Color(value.value);
+        value!.runtimeType == ui.Color ? value : ui.Color(value.value);
   }
 
   @override
@@ -105,7 +105,7 @@ class SurfacePaint implements ui.Paint {
   static const ui.Color _defaultPaintColor = ui.Color(0xFF000000);
 
   @override
-  ui.Shader get shader => _paintData.shader;
+  ui.Shader? get shader => _paintData.shader;
 
   @override
   set shader(ui.Shader value) {
@@ -117,7 +117,7 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.MaskFilter get maskFilter => _paintData.maskFilter;
+  ui.MaskFilter? get maskFilter => _paintData.maskFilter;
 
   @override
   set maskFilter(ui.MaskFilter value) {
@@ -129,7 +129,7 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.FilterQuality get filterQuality => _paintData.filterQuality;
+  ui.FilterQuality? get filterQuality => _paintData.filterQuality;
 
   @override
   set filterQuality(ui.FilterQuality value) {
@@ -141,7 +141,7 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.ColorFilter get colorFilter => _paintData.colorFilter;
+  ui.ColorFilter? get colorFilter => _paintData.colorFilter;
 
   @override
   set colorFilter(ui.ColorFilter value) {
@@ -154,7 +154,7 @@ class SurfacePaint implements ui.Paint {
 
   // TODO(flutter_web): see https://github.com/flutter/flutter/issues/33605
   @override
-  double get strokeMiterLimit {
+  double? get strokeMiterLimit {
     return null;
   }
 
@@ -164,7 +164,7 @@ class SurfacePaint implements ui.Paint {
   }
 
   @override
-  ui.ImageFilter get imageFilter {
+  ui.ImageFilter? get imageFilter {
     // TODO(flutter/flutter#35156): Implement ImageFilter.
     return null;
   }
@@ -219,17 +219,17 @@ class SurfacePaint implements ui.Paint {
 /// Private Paint context data used for recording canvas commands allowing
 /// Paint to be mutated post canvas draw operations.
 class SurfacePaintData {
-  ui.BlendMode blendMode;
-  ui.PaintingStyle style;
-  double strokeWidth;
-  ui.StrokeCap strokeCap;
-  ui.StrokeJoin strokeJoin;
+  ui.BlendMode? blendMode;
+  ui.PaintingStyle? style;
+  double? strokeWidth;
+  ui.StrokeCap? strokeCap;
+  ui.StrokeJoin? strokeJoin;
   bool isAntiAlias = true;
-  ui.Color color;
-  ui.Shader shader;
-  ui.MaskFilter maskFilter;
-  ui.FilterQuality filterQuality;
-  ui.ColorFilter colorFilter;
+  ui.Color? color;
+  ui.Shader? shader;
+  ui.MaskFilter? maskFilter;
+  ui.FilterQuality? filterQuality;
+  ui.ColorFilter? colorFilter;
 
   // Internal for recording canvas use.
   SurfacePaintData clone() {
@@ -267,11 +267,11 @@ class SurfacePaintData {
 /// used to create clip regions using [Canvas.clipPath].
 class SurfacePath implements ui.Path {
   final List<Subpath> subpaths;
-  ui.PathFillType _fillType = ui.PathFillType.nonZero;
+  ui.PathFillType? _fillType = ui.PathFillType.nonZero;
 
-  Subpath get _currentSubpath => subpaths.isEmpty ? null : subpaths.last;
+  Subpath? get _currentSubpath => subpaths.isEmpty ? null : subpaths.last;
 
-  List<PathCommand> get _commands => _currentSubpath?.commands;
+  List<PathCommand>? get _commands => _currentSubpath?.commands;
 
   /// The current x-coordinate for this path.
   double get _currentX => _currentSubpath?.currentX ?? 0.0;
@@ -280,7 +280,7 @@ class SurfacePath implements ui.Path {
   double get _currentY => _currentSubpath?.currentY ?? 0.0;
 
   /// Recorder used for hit testing paths.
-  static ui.RawRecordingCanvas _rawRecorder;
+  static ui.RawRecordingCanvas? _rawRecorder;
 
   SurfacePath() : subpaths = <Subpath>[];
 
@@ -314,29 +314,29 @@ class SurfacePath implements ui.Path {
   ///
   /// Defaults to the non-zero winding rule, [PathFillType.nonZero].
   @override
-  ui.PathFillType get fillType => _fillType;
+  ui.PathFillType? get fillType => _fillType;
   @override
-  set fillType(ui.PathFillType value) {
+  set fillType(ui.PathFillType? value) {
     _fillType = value;
   }
 
   /// Opens a new subpath with starting point (x, y).
-  void _openNewSubpath(double x, double y) {
+  void _openNewSubpath(double? x, double? y) {
     subpaths.add(Subpath(x, y));
     _setCurrentPoint(x, y);
   }
 
   /// Sets the current point to (x, y).
-  void _setCurrentPoint(double x, double y) {
-    _currentSubpath.currentX = x;
-    _currentSubpath.currentY = y;
+  void _setCurrentPoint(double? x, double? y) {
+    _currentSubpath!.currentX = x;
+    _currentSubpath!.currentY = y;
   }
 
   /// Starts a new subpath at the given coordinate.
   @override
-  void moveTo(double x, double y) {
+  void moveTo(double? x, double? y) {
     _openNewSubpath(x, y);
-    _commands.add(MoveTo(x, y));
+    _commands!.add(MoveTo(x, y));
   }
 
   /// Starts a new subpath at the given offset from the current point.
@@ -345,17 +345,17 @@ class SurfacePath implements ui.Path {
     final double newX = _currentX + dx;
     final double newY = _currentY + dy;
     _openNewSubpath(newX, newY);
-    _commands.add(MoveTo(newX, newY));
+    _commands!.add(MoveTo(newX, newY));
   }
 
   /// Adds a straight line segment from the current point to the given
   /// point.
   @override
-  void lineTo(double x, double y) {
+  void lineTo(double? x, double? y) {
     if (subpaths.isEmpty) {
       moveTo(0.0, 0.0);
     }
-    _commands.add(LineTo(x, y));
+    _commands!.add(LineTo(x, y));
     _setCurrentPoint(x, y);
   }
 
@@ -368,7 +368,7 @@ class SurfacePath implements ui.Path {
     if (subpaths.isEmpty) {
       moveTo(0.0, 0.0);
     }
-    _commands.add(LineTo(newX, newY));
+    _commands!.add(LineTo(newX, newY));
     _setCurrentPoint(newX, newY);
   }
 
@@ -382,9 +382,9 @@ class SurfacePath implements ui.Path {
   /// point to the given point (x2,y2), using the control point
   /// (x1,y1).
   @override
-  void quadraticBezierTo(double x1, double y1, double x2, double y2) {
+  void quadraticBezierTo(double? x1, double? y1, double? x2, double? y2) {
     _ensurePathStarted();
-    _commands.add(QuadraticCurveTo(x1, y1, x2, y2));
+    _commands!.add(QuadraticCurveTo(x1, y1, x2, y2));
     _setCurrentPoint(x2, y2);
   }
 
@@ -395,7 +395,7 @@ class SurfacePath implements ui.Path {
   @override
   void relativeQuadraticBezierTo(double x1, double y1, double x2, double y2) {
     _ensurePathStarted();
-    _commands.add(QuadraticCurveTo(
+    _commands!.add(QuadraticCurveTo(
         x1 + _currentX, y1 + _currentY, x2 + _currentX, y2 + _currentY));
     _setCurrentPoint(x2 + _currentX, y2 + _currentY);
   }
@@ -407,7 +407,7 @@ class SurfacePath implements ui.Path {
   void cubicTo(
       double x1, double y1, double x2, double y2, double x3, double y3) {
     _ensurePathStarted();
-    _commands.add(BezierCurveTo(x1, y1, x2, y2, x3, y3));
+    _commands!.add(BezierCurveTo(x1, y1, x2, y2, x3, y3));
     _setCurrentPoint(x3, y3);
   }
 
@@ -419,7 +419,7 @@ class SurfacePath implements ui.Path {
   void relativeCubicTo(
       double x1, double y1, double x2, double y2, double x3, double y3) {
     _ensurePathStarted();
-    _commands.add(BezierCurveTo(x1 + _currentX, y1 + _currentY, x2 + _currentX,
+    _commands!.add(BezierCurveTo(x1 + _currentX, y1 + _currentY, x2 + _currentX,
         y2 + _currentY, x3 + _currentX, y3 + _currentY));
     _setCurrentPoint(x3 + _currentX, y3 + _currentY);
   }
@@ -430,7 +430,7 @@ class SurfacePath implements ui.Path {
   /// hyperbola; if the weight equals 1, it's a parabola; and if it is
   /// less than 1, it is an ellipse.
   @override
-  void conicTo(double x1, double y1, double x2, double y2, double w) {
+  void conicTo(double? x1, double? y1, double? x2, double? y2, double w) {
     final List<ui.Offset> quads =
         Conic(_currentX, _currentY, x1, y1, x2, y2, w).toQuads();
     final int len = quads.length;
@@ -474,18 +474,18 @@ class SurfacePath implements ui.Path {
     final ui.Offset center = rect.center;
     final double radiusX = rect.width / 2;
     final double radiusY = rect.height / 2;
-    final double startX = radiusX * math.cos(startAngle) + center.dx;
-    final double startY = radiusY * math.sin(startAngle) + center.dy;
+    final double startX = radiusX * math.cos(startAngle) + center.dx!;
+    final double startY = radiusY * math.sin(startAngle) + center.dy!;
     if (forceMoveTo) {
       _openNewSubpath(startX, startY);
     } else {
       lineTo(startX, startY);
     }
-    _commands.add(Ellipse(center.dx, center.dy, radiusX, radiusY, 0.0,
+    _commands!.add(Ellipse(center.dx, center.dy, radiusX, radiusY, 0.0,
         startAngle, startAngle + sweepAngle, sweepAngle.isNegative));
 
-    _setCurrentPoint(radiusX * math.cos(startAngle + sweepAngle) + center.dx,
-        radiusY * math.sin(startAngle + sweepAngle) + center.dy);
+    _setCurrentPoint(radiusX * math.cos(startAngle + sweepAngle) + center.dx!,
+        radiusY * math.sin(startAngle + sweepAngle) + center.dy!);
   }
 
   /// Appends up to four conic curves weighted to describe an oval of `radius`
@@ -522,8 +522,8 @@ class SurfacePath implements ui.Path {
     // rotation is the angle from the x-axis of the current coordinate
     // system to the x-axis of the eclipse.
 
-    double rx = radius.x.abs();
-    double ry = radius.y.abs();
+    double rx = radius.x!.abs();
+    double ry = radius.y!.abs();
 
     // If the current point and target point for the arc are identical, it
     // should be treated as a zero length path. This ensures continuity in
@@ -534,7 +534,7 @@ class SurfacePath implements ui.Path {
     // (a "lineto") joining the endpoints.
     // http://www.w3.org/TR/SVG/implnote.html#ArcOutOfRangeParameters
     if (isSamePoint || rx.toInt() == 0 || ry.toInt() == 0) {
-      _commands.add(LineTo(arcEnd.dx, arcEnd.dy));
+      _commands!.add(LineTo(arcEnd.dx, arcEnd.dy));
       _setCurrentPoint(arcEnd.dx, arcEnd.dy);
       return;
     }
@@ -542,8 +542,8 @@ class SurfacePath implements ui.Path {
     // As an intermediate point to finding center parametrization, place the
     // origin on the midpoint between start/end points and rotate to align
     // coordinate axis with axes of the ellipse.
-    final double midPointX = (_currentX - arcEnd.dx) / 2.0;
-    final double midPointY = (_currentY - arcEnd.dy) / 2.0;
+    final double midPointX = (_currentX - arcEnd.dx!) / 2.0;
+    final double midPointY = (_currentY - arcEnd.dy!) / 2.0;
 
     // Convert rotation or radians.
     final double xAxisRotation = math.pi * rotation / 180.0;
@@ -589,10 +589,10 @@ class SurfacePath implements ui.Path {
     // Rotate to find actual center.
     final double cx = cosXAxisRotation * cxPrime -
         sinXAxisRotation * cyPrime +
-        ((_currentX + arcEnd.dx) / 2.0);
+        ((_currentX + arcEnd.dx!) / 2.0);
     final double cy = sinXAxisRotation * cxPrime +
         cosXAxisRotation * cyPrime +
-        ((_currentY + arcEnd.dy) / 2.0);
+        ((_currentY + arcEnd.dy!) / 2.0);
 
     // Calculate start angle and sweep.
     // Start vector is from midpoint of start/end points to transformed center.
@@ -610,7 +610,7 @@ class SurfacePath implements ui.Path {
       sweepAngle -= math.pi * 2.0;
     }
 
-    _commands.add(Ellipse(cx, cy, rx, ry, xAxisRotation, startAngle,
+    _commands!.add(Ellipse(cx, cy, rx, ry, xAxisRotation, startAngle,
         startAngle + sweepAngle, sweepAngle.isNegative));
 
     _setCurrentPoint(arcEnd.dx, arcEnd.dy);
@@ -641,7 +641,7 @@ class SurfacePath implements ui.Path {
     assert(offsetIsValid(arcEndDelta));
     assert(radiusIsValid(radius));
     arcToPoint(
-        ui.Offset(_currentX + arcEndDelta.dx, _currentY + arcEndDelta.dy),
+        ui.Offset(_currentX + arcEndDelta.dx!, _currentY + arcEndDelta.dy!),
         radius: radius,
         rotation: rotation,
         largeArc: largeArc,
@@ -654,7 +654,7 @@ class SurfacePath implements ui.Path {
   void addRect(ui.Rect rect) {
     assert(rectIsValid(rect));
     _openNewSubpath(rect.left, rect.top);
-    _commands.add(RectCommand(rect.left, rect.top, rect.width, rect.height));
+    _commands!.add(RectCommand(rect.left, rect.top, rect.width, rect.height));
   }
 
   /// Adds a new subpath that consists of a curve that forms the
@@ -671,8 +671,8 @@ class SurfacePath implements ui.Path {
     final double radiusY = oval.height / 2;
 
     /// At startAngle = 0, the path will begin at center + cos(0) * radius.
-    _openNewSubpath(center.dx + radiusX, center.dy);
-    _commands.add(Ellipse(
+    _openNewSubpath(center.dx! + radiusX, center.dy);
+    _commands!.add(Ellipse(
         center.dx, center.dy, radiusX, radiusY, 0.0, 0.0, 2 * math.pi, false));
   }
 
@@ -690,13 +690,13 @@ class SurfacePath implements ui.Path {
     final ui.Offset center = oval.center;
     final double radiusX = oval.width / 2;
     final double radiusY = oval.height / 2;
-    _openNewSubpath(radiusX * math.cos(startAngle) + center.dx,
-        radiusY * math.sin(startAngle) + center.dy);
-    _commands.add(Ellipse(center.dx, center.dy, radiusX, radiusY, 0.0,
+    _openNewSubpath(radiusX * math.cos(startAngle) + center.dx!,
+        radiusY * math.sin(startAngle) + center.dy!);
+    _commands!.add(Ellipse(center.dx, center.dy, radiusX, radiusY, 0.0,
         startAngle, startAngle + sweepAngle, sweepAngle.isNegative));
 
-    _setCurrentPoint(radiusX * math.cos(startAngle + sweepAngle) + center.dx,
-        radiusY * math.sin(startAngle + sweepAngle) + center.dy);
+    _setCurrentPoint(radiusX * math.cos(startAngle + sweepAngle) + center.dx!,
+        radiusY * math.sin(startAngle + sweepAngle) + center.dy!);
   }
 
   /// Adds a new subpath with a sequence of line segments that connect the given
@@ -729,15 +729,15 @@ class SurfacePath implements ui.Path {
   /// curves needed to form the rounded rectangle described by the
   /// argument.
   @override
-  void addRRect(ui.RRect rrect) {
-    assert(rrectIsValid(rrect));
+  void addRRect(ui.RRect? rrect) {
+    assert(rrectIsValid(rrect!));
 
     // Set the current point to the top left corner of the rectangle (the
     // point on the top of the rectangle farthest to the left that isn't in
     // the rounded corner).
     // TODO(het): Is this the current point in Flutter?
-    _openNewSubpath(rrect.tallMiddleRect.left, rrect.top);
-    _commands.add(RRectCommand(rrect));
+    _openNewSubpath(rrect!.tallMiddleRect.left, rrect.top);
+    _commands!.add(RRectCommand(rrect));
   }
 
   /// Adds a new subpath that consists of the given `path` offset by the given
@@ -747,32 +747,32 @@ class SurfacePath implements ui.Path {
   /// after the matrix is translated by the given offset. The matrix is a 4x4
   /// matrix stored in column major order.
   @override
-  void addPath(ui.Path path, ui.Offset offset, {Float64List matrix4}) {
+  void addPath(ui.Path? path, ui.Offset offset, {Float64List? matrix4}) {
     assert(path != null); // path is checked on the engine side
     assert(offsetIsValid(offset));
     if (matrix4 != null) {
       assert(matrix4IsValid(matrix4));
-      _addPathWithMatrix(path, offset.dx, offset.dy, matrix4);
+      _addPathWithMatrix(path as SurfacePath, offset.dx, offset.dy, matrix4);
     } else {
-      _addPath(path, offset.dx, offset.dy);
+      _addPath(path as SurfacePath?, offset.dx, offset.dy);
     }
   }
 
-  void _addPath(SurfacePath path, double dx, double dy) {
+  void _addPath(SurfacePath? path, double? dx, double? dy) {
     if (dx == 0.0 && dy == 0.0) {
-      subpaths.addAll(path.subpaths);
+      subpaths.addAll(path!.subpaths);
     } else {
-      subpaths.addAll(path
-          .transform(Matrix4.translationValues(dx, dy, 0.0).storage)
+      subpaths.addAll(path!
+          .transform(Matrix4.translationValues(dx!, dy!, 0.0).storage!)
           .subpaths);
     }
   }
 
   void _addPathWithMatrix(
-      SurfacePath path, double dx, double dy, Float64List matrix) {
+      SurfacePath path, double? dx, double? dy, Float64List matrix) {
     final Matrix4 transform = Matrix4.fromFloat64List(matrix);
     transform.translate(dx, dy);
-    subpaths.addAll(path.transform(transform.storage).subpaths);
+    subpaths.addAll(path.transform(transform.storage!).subpaths);
   }
 
   /// Adds the given path to this path by extending the current segment of this
@@ -782,22 +782,22 @@ class SurfacePath implements ui.Path {
   /// after the matrix is translated by the given `offset`.  The matrix is a 4x4
   /// matrix stored in column major order.
   @override
-  void extendWithPath(ui.Path path, ui.Offset offset, {Float64List matrix4}) {
+  void extendWithPath(ui.Path path, ui.Offset offset, {Float64List? matrix4}) {
     assert(path != null); // path is checked on the engine side
     assert(offsetIsValid(offset));
     if (matrix4 != null) {
       assert(matrix4IsValid(matrix4));
-      _extendWithPathAndMatrix(path, offset.dx, offset.dy, matrix4);
+      _extendWithPathAndMatrix(path as SurfacePath, offset.dx, offset.dy, matrix4);
     } else {
-      _extendWithPath(path, offset.dx, offset.dy);
+      _extendWithPath(path as SurfacePath, offset.dx, offset.dy);
     }
   }
 
-  void _extendWithPath(SurfacePath path, double dx, double dy) {
+  void _extendWithPath(SurfacePath path, double? dx, double? dy) {
     if (dx == 0.0 && dy == 0.0) {
       assert(path.subpaths.length == 1);
       _ensurePathStarted();
-      _commands.addAll(path.subpaths.single.commands);
+      _commands!.addAll(path.subpaths.single.commands);
       _setCurrentPoint(
           path.subpaths.single.currentX, path.subpaths.single.currentY);
     } else {
@@ -806,7 +806,7 @@ class SurfacePath implements ui.Path {
   }
 
   void _extendWithPathAndMatrix(
-      SurfacePath path, double dx, double dy, Float64List matrix) {
+      SurfacePath path, double? dx, double? dy, Float64List matrix) {
     throw UnimplementedError('Cannot extend path with transform matrix');
   }
 
@@ -815,8 +815,8 @@ class SurfacePath implements ui.Path {
   @override
   void close() {
     _ensurePathStarted();
-    _commands.add(const CloseCommand());
-    _setCurrentPoint(_currentSubpath.startX, _currentSubpath.startY);
+    _commands!.add(const CloseCommand());
+    _setCurrentPoint(_currentSubpath!.startX, _currentSubpath!.startY);
   }
 
   /// Clears the [Path] object of all subpaths, returning it to the
@@ -845,27 +845,27 @@ class SurfacePath implements ui.Path {
     if (subPathCount == 0) {
       return false;
     }
-    final double pointX = point.dx;
-    final double pointY = point.dy;
+    final double? pointX = point.dx;
+    final double? pointY = point.dy;
     if (subPathCount == 1) {
       // Optimize for rect/roundrect checks.
       final Subpath subPath = subpaths[0];
       if (subPath.commands.length == 1) {
         final PathCommand cmd = subPath.commands[0];
         if (cmd is RectCommand) {
-          if (pointY < cmd.y || pointY > (cmd.y + cmd.height)) {
+          if (pointY! < cmd.y || pointY > (cmd.y + cmd.height)) {
             return false;
           }
-          if (pointX < cmd.x || pointX > (cmd.x + cmd.width)) {
+          if (pointX! < cmd.x || pointX > (cmd.x + cmd.width)) {
             return false;
           }
           return true;
         } else if (cmd is RRectCommand) {
-          final ui.RRect rRect = cmd.rrect;
-          if (pointY < rRect.top || pointY > rRect.bottom) {
+          final ui.RRect rRect = cmd.rrect!;
+          if (pointY! < rRect.top || pointY > rRect.bottom) {
             return false;
           }
-          if (pointX < rRect.left || pointX > rRect.right) {
+          if (pointX! < rRect.left || pointX > rRect.right) {
             return false;
           }
           final double rRectWidth = rRect.width;
@@ -927,23 +927,23 @@ class SurfacePath implements ui.Path {
         // TODO: For improved performance, handle Ellipse special case.
       }
     }
-    final ui.Size size = window.physicalSize;
+    final ui.Size size = window.physicalSize!;
     // If device pixel ratio has changed we can't reuse prior raw recorder.
     if (_rawRecorder != null &&
-        _rawRecorder._devicePixelRatio !=
+        _rawRecorder!._devicePixelRatio !=
             EngineWindow.browserDevicePixelRatio) {
       _rawRecorder = null;
     }
     _rawRecorder ??= ui.RawRecordingCanvas(size);
     // Account for the shift due to padding.
-    _rawRecorder.translate(-BitmapCanvas.kPaddingPixels.toDouble(),
+    _rawRecorder!.translate(-BitmapCanvas.kPaddingPixels.toDouble(),
         -BitmapCanvas.kPaddingPixels.toDouble());
-    _rawRecorder.drawPath(
+    _rawRecorder!.drawPath(
         this, (SurfacePaint()..color = const ui.Color(0xFF000000)).paintData);
-    final double recorderDevicePixelRatio = _rawRecorder._devicePixelRatio;
-    final bool result = _rawRecorder._canvasPool.context.isPointInPath(
-        pointX * recorderDevicePixelRatio, pointY * recorderDevicePixelRatio);
-    _rawRecorder.dispose();
+    final double recorderDevicePixelRatio = _rawRecorder!._devicePixelRatio;
+    final bool result = _rawRecorder!._canvasPool.context!.isPointInPath(
+        pointX! * recorderDevicePixelRatio, pointY! * recorderDevicePixelRatio);
+    _rawRecorder!.dispose();
     return result;
   }
 
@@ -993,26 +993,26 @@ class SurfacePath implements ui.Path {
     // Sufficiently small number for curve eq.
     const double epsilon = 0.000000001;
     bool ltrbInitialized = false;
-    double left = 0.0, top = 0.0, right = 0.0, bottom = 0.0;
-    double curX = 0.0;
-    double curY = 0.0;
-    double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
+    double? left = 0.0, top = 0.0, right = 0.0, bottom = 0.0;
+    double? curX = 0.0;
+    double? curY = 0.0;
+    double? minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
     for (Subpath subpath in subpaths) {
       for (PathCommand op in subpath.commands) {
         bool skipBounds = false;
         switch (op.type) {
           case PathCommandTypes.moveTo:
-            final MoveTo cmd = op;
+            final MoveTo cmd = op as MoveTo;
             curX = minX = maxX = cmd.x;
             curY = minY = maxY = cmd.y;
             break;
           case PathCommandTypes.lineTo:
-            final LineTo cmd = op;
+            final LineTo cmd = op as LineTo;
             curX = minX = maxX = cmd.x;
             curY = minY = maxY = cmd.y;
             break;
           case PathCommandTypes.ellipse:
-            final Ellipse cmd = op;
+            final Ellipse cmd = op as Ellipse;
             // Rotate 4 corners of bounding box.
             final double rx = cmd.radiusX;
             final double ry = cmd.radiusY;
@@ -1028,8 +1028,8 @@ class SurfacePath implements ui.Path {
             final double topDeltaY = ryCos + rxSin;
             final double bottomDeltaY = ryCos - rxSin;
 
-            final double centerX = cmd.x;
-            final double centerY = cmd.y;
+            final double centerX = cmd.x!;
+            final double centerY = cmd.y!;
 
             double rotatedX = centerX + leftDeltaX;
             double rotatedY = centerY + topDeltaY;
@@ -1038,10 +1038,10 @@ class SurfacePath implements ui.Path {
 
             rotatedX = centerX + rightDeltaX;
             rotatedY = centerY + bottomDeltaY;
-            minX = math.min(minX, rotatedX);
-            maxX = math.max(maxX, rotatedX);
-            minY = math.min(minY, rotatedY);
-            maxY = math.max(maxY, rotatedY);
+            minX = math.min(minX!, rotatedX);
+            maxX = math.max(maxX!, rotatedX);
+            minY = math.min(minY!, rotatedY);
+            maxY = math.max(maxY!, rotatedY);
 
             rotatedX = centerX - leftDeltaX;
             rotatedY = centerY - topDeltaY;
@@ -1061,13 +1061,13 @@ class SurfacePath implements ui.Path {
             curY = centerY;
             break;
           case PathCommandTypes.quadraticCurveTo:
-            final QuadraticCurveTo cmd = op;
-            final double x1 = curX;
-            final double y1 = curY;
-            final double cpX = cmd.x1;
-            final double cpY = cmd.y1;
-            final double x2 = cmd.x2;
-            final double y2 = cmd.y2;
+            final QuadraticCurveTo cmd = op as QuadraticCurveTo;
+            final double x1 = curX!;
+            final double y1 = curY!;
+            final double cpX = cmd.x1!;
+            final double cpY = cmd.y1!;
+            final double x2 = cmd.x2!;
+            final double y2 = cmd.y2!;
 
             minX = math.min(x1, x2);
             minY = math.min(y1, y2);
@@ -1094,10 +1094,10 @@ class SurfacePath implements ui.Path {
                     (2 * t1 * tprime * cpY) +
                     (t1 * t1 * y2);
                 // Expand bounds.
-                minX = math.min(minX, extremaX);
-                maxX = math.max(maxX, extremaX);
-                minY = math.min(minY, extremaY);
-                maxY = math.max(maxY, extremaY);
+                minX = math.min(minX!, extremaX as double);
+                maxX = math.max(maxX!, extremaX);
+                minY = math.min(minY!, extremaY as double);
+                maxY = math.max(maxY!, extremaY);
               }
             }
             // Now calculate dy/dt = 0
@@ -1113,19 +1113,19 @@ class SurfacePath implements ui.Path {
                     (2 * t2 * tprime2 * cpY) +
                     (t2 * t2 * y2);
                 // Expand bounds.
-                minX = math.min(minX, extrema2X);
-                maxX = math.max(maxX, extrema2X);
-                minY = math.min(minY, extrema2Y);
-                maxY = math.max(maxY, extrema2Y);
+                minX = math.min(minX!, extrema2X as double);
+                maxX = math.max(maxX!, extrema2X);
+                minY = math.min(minY!, extrema2Y as double);
+                maxY = math.max(maxY!, extrema2Y);
               }
             }
             curX = x2;
             curY = y2;
             break;
           case PathCommandTypes.bezierCurveTo:
-            final BezierCurveTo cmd = op;
-            final double startX = curX;
-            final double startY = curY;
+            final BezierCurveTo cmd = op as BezierCurveTo;
+            final double startX = curX!;
+            final double startY = curY!;
             final double cpX1 = cmd.x1;
             final double cpY1 = cmd.y1;
             final double cpX2 = cmd.x2;
@@ -1169,9 +1169,9 @@ class SurfacePath implements ui.Path {
                     extremaX = ((tprime * tprime * tprime) * startX) +
                         ((3 * tprime * tprime * t) * cpX1) +
                         ((3 * tprime * t * t) * cpX2) +
-                        (t * t * t * endX);
-                    minX = math.min(extremaX, minX);
-                    maxX = math.max(extremaX, maxX);
+                        (t * t * t * endX) as double;
+                    minX = math.min(extremaX, minX!);
+                    maxX = math.max(extremaX, maxX!);
                   }
                 } else {
                   // we have 2 roots
@@ -1182,9 +1182,9 @@ class SurfacePath implements ui.Path {
                     extremaX = ((tprime * tprime * tprime) * startX) +
                         ((3 * tprime * tprime * t) * cpX1) +
                         ((3 * tprime * t * t) * cpX2) +
-                        (t * t * t * endX);
-                    minX = math.min(extremaX, minX);
-                    maxX = math.max(extremaX, maxX);
+                        (t * t * t * endX) as double;
+                    minX = math.min(extremaX, minX!);
+                    maxX = math.max(extremaX, maxX!);
                   }
                   // check 2nd root
                   t = (-b + s) / (2 * a);
@@ -1193,10 +1193,10 @@ class SurfacePath implements ui.Path {
                     extremaX = ((tprime * tprime * tprime) * startX) +
                         ((3 * tprime * tprime * t) * cpX1) +
                         ((3 * tprime * t * t) * cpX2) +
-                        (t * t * t * endX);
+                        (t * t * t * endX) as double;
 
-                    minX = math.min(extremaX, minX);
-                    maxX = math.max(extremaX, maxX);
+                    minX = math.min(extremaX, minX!);
+                    maxX = math.max(extremaX, maxX!);
                   }
                 }
               }
@@ -1227,9 +1227,9 @@ class SurfacePath implements ui.Path {
                     extremaY = ((tprime * tprime * tprime) * startY) +
                         ((3 * tprime * tprime * t) * cpY1) +
                         ((3 * tprime * t * t) * cpY2) +
-                        (t * t * t * endY);
-                    minY = math.min(extremaY, minY);
-                    maxY = math.max(extremaY, maxY);
+                        (t * t * t * endY) as double;
+                    minY = math.min(extremaY, minY!);
+                    maxY = math.max(extremaY, maxY!);
                   }
                 } else {
                   // we have 2 roots
@@ -1240,9 +1240,9 @@ class SurfacePath implements ui.Path {
                     extremaY = ((tprime * tprime * tprime) * startY) +
                         ((3 * tprime * tprime * t) * cpY1) +
                         ((3 * tprime * t * t) * cpY2) +
-                        (t * t * t * endY);
-                    minY = math.min(extremaY, minY);
-                    maxY = math.max(extremaY, maxY);
+                        (t * t * t * endY) as double;
+                    minY = math.min(extremaY, minY!);
+                    maxY = math.max(extremaY, maxY!);
                   }
                   // check 2nd root
                   final num t2 = (-b + s) / (2 * a);
@@ -1251,16 +1251,16 @@ class SurfacePath implements ui.Path {
                     extremaY = ((tprime2 * tprime2 * tprime2) * startY) +
                         ((3 * tprime2 * tprime2 * t2) * cpY1) +
                         ((3 * tprime2 * t2 * t2) * cpY2) +
-                        (t2 * t2 * t2 * endY);
-                    minY = math.min(extremaY, minY);
-                    maxY = math.max(extremaY, maxY);
+                        (t2 * t2 * t2 * endY) as double;
+                    minY = math.min(extremaY, minY!);
+                    maxY = math.max(extremaY, maxY!);
                   }
                 }
               }
             }
             break;
           case PathCommandTypes.rect:
-            final RectCommand cmd = op;
+            final RectCommand cmd = op as RectCommand;
             left = cmd.x;
             double width = cmd.width;
             if (cmd.width < 0) {
@@ -1274,13 +1274,13 @@ class SurfacePath implements ui.Path {
               height = -height;
             }
             curX = minX = left;
-            maxX = left + width;
+            maxX = left! + width;
             curY = minY = top;
             maxY = top + height;
             break;
           case PathCommandTypes.rRect:
-            final RRectCommand cmd = op;
-            final ui.RRect rRect = cmd.rrect;
+            final RRectCommand cmd = op as RRectCommand;
+            final ui.RRect rRect = cmd.rrect!;
             curX = minX = rRect.left;
             maxX = rRect.left + rRect.width;
             curY = minY = rRect.top;
@@ -1299,16 +1299,16 @@ class SurfacePath implements ui.Path {
             bottom = maxY;
             ltrbInitialized = true;
           } else {
-            left = math.min(left, minX);
-            right = math.max(right, maxX);
-            top = math.min(top, minY);
-            bottom = math.max(bottom, maxY);
+            left = math.min(left!, minX!);
+            right = math.max(right!, maxX!);
+            top = math.min(top!, minY!);
+            bottom = math.max(bottom!, maxY!);
           }
         }
       }
     }
     return ltrbInitialized
-        ? ui.Rect.fromLTRB(left, top, right, bottom)
+        ? ui.Rect.fromLTRB(left!, top!, right!, bottom!)
         : ui.Rect.zero;
   }
 
@@ -1326,7 +1326,7 @@ class SurfacePath implements ui.Path {
   ///
   /// Used for web optimization of physical shape represented as
   /// a persistent div.
-  ui.RRect get webOnlyPathAsRoundedRect {
+  ui.RRect? get webOnlyPathAsRoundedRect {
     if (subpaths.length != 1) {
       return null;
     }
@@ -1342,7 +1342,7 @@ class SurfacePath implements ui.Path {
   ///
   /// Used for web optimization of physical shape represented as
   /// a persistent div.
-  ui.Rect get webOnlyPathAsRect {
+  ui.Rect? get webOnlyPathAsRect {
     if (subpaths.length != 1) {
       return null;
     }
@@ -1360,7 +1360,7 @@ class SurfacePath implements ui.Path {
   ///
   /// Used for web optimization of physical shape represented as
   /// a persistent div.
-  Ellipse get webOnlyPathAsCircle {
+  Ellipse? get webOnlyPathAsCircle {
     if (subpaths.length != 1) {
       return null;
     }

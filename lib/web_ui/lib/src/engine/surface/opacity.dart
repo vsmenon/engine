@@ -8,7 +8,7 @@ part of engine;
 /// A surface that makes its children transparent.
 class PersistedOpacity extends PersistedContainerSurface
     implements ui.OpacityEngineLayer {
-  PersistedOpacity(PersistedOpacity oldLayer, this.alpha, this.offset)
+  PersistedOpacity(PersistedOpacity? oldLayer, this.alpha, this.offset)
       : super(oldLayer);
 
   final int alpha;
@@ -16,14 +16,14 @@ class PersistedOpacity extends PersistedContainerSurface
 
   @override
   void recomputeTransformAndClip() {
-    _transform = parent._transform;
+    _transform = parent!._transform;
 
-    final double dx = offset.dx;
-    final double dy = offset.dy;
+    final double? dx = offset.dx;
+    final double? dy = offset.dy;
 
     if (dx != 0.0 || dy != 0.0) {
-      _transform = _transform.clone();
-      _transform.translate(dx, dy);
+      _transform = _transform!.clone();
+      _transform!.translate(dx, dy);
     }
     _localTransformInverse = null;
     _projectedClip = null;
@@ -31,7 +31,7 @@ class PersistedOpacity extends PersistedContainerSurface
 
   @override
   Matrix4 get localTransformInverse => _localTransformInverse ??=
-      Matrix4.translationValues(-offset.dx, -offset.dy, 0);
+      Matrix4.translationValues(-offset.dx!, -offset.dy!, 0);
 
   @override
   html.Element createElement() {
@@ -43,8 +43,8 @@ class PersistedOpacity extends PersistedContainerSurface
     // TODO(yjbanov): evaluate using `filter: opacity(X)`. It is a longer string
     //                but it reportedly has better hardware acceleration, so may
     //                be worth the trade-off.
-    rootElement.style.opacity = '${alpha / 255}';
-    rootElement.style.transform = 'translate(${offset.dx}px, ${offset.dy}px)';
+    rootElement!.style.opacity = '${alpha / 255}';
+    rootElement!.style.transform = 'translate(${offset.dx}px, ${offset.dy}px)';
   }
 
   @override

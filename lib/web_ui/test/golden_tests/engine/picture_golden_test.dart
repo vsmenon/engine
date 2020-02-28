@@ -14,16 +14,16 @@ import 'package:web_engine_tester/golden_tester.dart';
 void main() {
   group('Picture', () {
     test('toImage produces an image', () async {
-      final EnginePictureRecorder recorder = ui.PictureRecorder();
-      final RecordingCanvas canvas = recorder.beginRecording(ui.Rect.fromLTRB(0, 0, 200, 100));
+      final EnginePictureRecorder recorder = ui.PictureRecorder() as EnginePictureRecorder;
+      final RecordingCanvas canvas = recorder.beginRecording(ui.Rect.fromLTRB(0, 0, 200, 100))!;
       canvas.drawCircle(
         const ui.Offset(100, 50),
         40,
-        ui.Paint()
+        ui.Paint() as SurfacePaint
           ..color = ui.Color.fromARGB(255, 255, 100, 100),
       );
-      final ui.Picture picture = recorder.endRecording();
-      final HtmlImage image = await picture.toImage(200, 100);
+      final ui.Picture picture = recorder.endRecording()!;
+      final HtmlImage image = await (picture.toImage(200, 100) as FutureOr<HtmlImage>);
       expect(image, isNotNull);
       html.document.body
         ..style.margin = '0'

@@ -16,7 +16,7 @@ void _printDebug(dynamic arg) {
 }
 
 class _Logger {
-  static void _printString(String s) {
+  static void _printString(String? s) {
     print(s);
   }
   static void _printDebugString(String s) {

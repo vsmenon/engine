@@ -49,8 +49,8 @@ class BrowserPlatform extends PlatformPlugin {
   ///
   /// [root] is the root directory that the server should serve. It defaults to
   /// the working directory.
-  static Future<BrowserPlatform> start(String name,
-      {String root, bool doUpdateScreenshotGoldens: false}) async {
+  static Future<BrowserPlatform> start(String? name,
+      {String? root, bool doUpdateScreenshotGoldens: false}) async {
     assert(SupportedBrowsers.instance.supportedBrowserNames.contains(name));
     var server = shelf_io.IOServer(await HttpMultiServer.loopback(0));
     return BrowserPlatform._(
@@ -71,7 +71,7 @@ class BrowserPlatform extends PlatformPlugin {
   final shelf.Server _server;
 
   /// Name for the running browser. Not final on purpose can be mutated later.
-  String browserName;
+  String? browserName;
 
   /// A randomly-generated secret.
   ///
@@ -96,24 +96,24 @@ class BrowserPlatform extends PlatformPlugin {
   final String _root;
 
   /// The HTTP client to use when caching JS files in `pub serve`.
-  final HttpClient _http;
+  final HttpClient? _http;
 
   /// Whether [close] has been called.
   bool get _closed => _closeMemo.hasRun;
 
   /// Whether to update screenshot golden files.
-  final bool doUpdateScreenshotGoldens;
+  final bool? doUpdateScreenshotGoldens;
 
   BrowserPlatform._(
-      String name, this._server, Configuration config, String faviconPath,
-      {String root, this.doUpdateScreenshotGoldens})
+      String? name, this._server, Configuration config, String faviconPath,
+      {String? root, this.doUpdateScreenshotGoldens})
       : this.browserName = name,
         _config = config,
         _root = root == null ? p.current : root,
         _http = config.pubServeUrl == null ? null : HttpClient() {
     var cascade = shelf.Cascade().add(_webSocketHandler.handler);
 
-    if (_config.pubServeUrl == null) {
+    /* if (_config.pubServeUrl == null) {
       // We server static files from here (JS, HTML, etc)
       final String staticFilePath =
           config.suiteDefaults.precompiledPath ?? _root;
@@ -129,7 +129,7 @@ class BrowserPlatform extends PlatformPlugin {
       if (name == 'chrome') {
         cascade = cascade.add(_screeshotHandler);
       }
-    }
+    } */
 
     var pipeline = shelf.Pipeline()
         .addMiddleware(PathHandler.nestedIn(_secret))
@@ -154,20 +154,20 @@ class BrowserPlatform extends PlatformPlugin {
     final String payload = await request.readAsString();
     final Map<String, dynamic> requestData = json.decode(payload);
     final String filename = requestData['filename'];
-    final bool write = requestData['write'];
-    final double maxDiffRate = requestData.containsKey('maxdiffrate')
+    final bool? write = requestData['write'];
+    final double? maxDiffRate = requestData.containsKey('maxdiffrate')
       ? requestData['maxdiffrate'].toDouble()  // can be parsed as either int or double
       : kMaxDiffRateFailure;
-    final Map<String, dynamic> region = requestData['region'];
+    final Map<String, dynamic>? region = requestData['region'];
     final PixelComparison pixelComparison = PixelComparison.values.firstWhere((value) => value.toString() == requestData['pixelComparison']);
     final String result = await _diffScreenshot(filename, write, maxDiffRate, region, pixelComparison);
     return shelf.Response.ok(json.encode(result));
   }
 
   Future<String> _diffScreenshot(
-      String filename, bool write, double maxDiffRateFailure,
-      Map<String, dynamic> region, PixelComparison pixelComparison) async {
-    if (doUpdateScreenshotGoldens) {
+      String filename, bool? write, double? maxDiffRateFailure,
+      Map<String, dynamic>? region, PixelComparison pixelComparison) async {
+    if (doUpdateScreenshotGoldens!) {
       write = true;
     }
 
@@ -175,14 +175,14 @@ class BrowserPlatform extends PlatformPlugin {
     if (filename.startsWith('__local__')) {
       filename = filename.substring('__local__/'.length);
       goldensDirectory = p.join(
-        env.environment.webUiRootDir.path,
+        env.environment!.webUiRootDir!.path,
         'test',
         'golden_files',
       );
     } else {
       await fetchGoldens();
       goldensDirectory = p.join(
-        env.environment.webUiGoldensRepositoryDirectory.path,
+        env.environment!.webUiGoldensRepositoryDirectory.path,
         'engine',
         'web',
       );
@@ -193,7 +193,7 @@ class BrowserPlatform extends PlatformPlugin {
       goldensDirectory,
       filename,
     ));
-    if (!file.existsSync() && !write) {
+    if (!file.existsSync() && !write!) {
       return '''
 Golden file $filename does not exist.
 
@@ -207,7 +207,7 @@ To automatically create this file call matchGoldenFile('$filename', write: true)
         (wip.ChromeTab chromeTab) => chromeTab.url.contains('localhost'));
     final wip.WipConnection wipConnection = await chromeTab.connect();
 
-    Map<String, dynamic> captureScreenshotParameters = null;
+    Map<String, dynamic>? captureScreenshotParameters = null;
     if (region != null) {
       captureScreenshotParameters = {
         'format': 'png',
@@ -231,16 +231,16 @@ To automatically create this file call matchGoldenFile('$filename', write: true)
       'mobile': false,
     });
     final wip.WipResponse response = await wipConnection.sendCommand(
-        'Page.captureScreenshot', captureScreenshotParameters);
+        'Page.captureScreenshot', captureScreenshotParameters!);
 
     // Compare screenshots
     final Image screenshot = decodePng(base64.decode(response.result['data']));
 
-    if (write) {
+    if (write!) {
       // Don't even bother with the comparison, just write and return
       print('Updating screenshot golden: $file');
       file.writeAsBytesSync(encodePng(screenshot), flush: true);
-      if (doUpdateScreenshotGoldens) {
+      if (doUpdateScreenshotGoldens!) {
         // Do not fail tests when bulk-updating screenshot goldens.
         return 'OK';
       } else {
@@ -258,11 +258,11 @@ To automatically create this file call matchGoldenFile('$filename', write: true)
       // Images are different, so produce some debug info
       final String testResultsPath = isCirrus
           ? p.join(
-              Platform.environment['CIRRUS_WORKING_DIR'],
+              Platform.environment['CIRRUS_WORKING_DIR']!,
               'test_results',
             )
           : p.join(
-              env.environment.webUiDartToolDir.path,
+              env.environment!.webUiDartToolDir.path,
               'test_results',
             );
       Directory(testResultsPath).createSync(recursive: true);
@@ -273,7 +273,7 @@ To automatically create this file call matchGoldenFile('$filename', write: true)
       actualFile.writeAsBytesSync(encodePng(screenshot), flush: true);
 
       final File diffFile = File(p.join(testResultsPath, '$basename.diff.png'));
-      diffFile.writeAsBytesSync(encodePng(diff.diff), flush: true);
+      diffFile.writeAsBytesSync(encodePng(diff.diff!), flush: true);
 
       final File expectedFile =
           File(p.join(testResultsPath, '$basename.expected.png'));
@@ -307,7 +307,7 @@ Golden file $filename did not match the image generated by the test.
       final StringBuffer message = StringBuffer();
       message.writeln(
           'Golden file $filename did not match the image generated by the test.');
-      message.writeln(getPrintableDiffFilesInfo(diff.rate, maxDiffRateFailure));
+      message.writeln(getPrintableDiffFilesInfo(diff.rate, maxDiffRateFailure!));
       message
           .writeln('You can view the test report in your browser by opening:');
 
@@ -315,7 +315,7 @@ Golden file $filename did not match the image generated by the test.
       // archive all the files so that they can be downloaded and inspected
       // locally.
       if (isCirrus) {
-        final String taskId = Platform.environment['CIRRUS_TASK_ID'];
+        final String? taskId = Platform.environment['CIRRUS_TASK_ID'];
         final String baseArtifactsUrl =
             'https://api.cirrus-ci.com/v1/artifact/task/$taskId/web_engine_test/test_results';
         final String cirrusReportUrl = '$baseArtifactsUrl/$basename.report.zip';
@@ -385,11 +385,11 @@ Golden file $filename did not match the image generated by the test.
   ///
   /// This will start a browser to load the suite if one isn't already running.
   /// Throws an [ArgumentError] if `platform.platform` isn't a browser.
-  Future<RunnerSuite> load(String path, SuitePlatform platform,
+  Future<RunnerSuite?> load(String path, SuitePlatform platform,
       SuiteConfiguration suiteConfig, Object message) async {
-    if (suiteConfig.precompiledPath == null) {
+    /* if (suiteConfig.precompiledPath == null) {
       throw Exception('This test platform only supports precompiled JS.');
-    }
+    } */
     var browser = platform.runtime;
     assert(suiteConfig.runtimes.contains(browser.identifier));
 
@@ -412,7 +412,7 @@ Golden file $filename did not match the image generated by the test.
 
     if (_closed) return null;
 
-    var browserManager = await _browserManagerFor(browser);
+    var browserManager = await _browserManagerFor(browser)!;
     if (_closed || browserManager == null) return null;
 
     var suite = await browserManager.load(path, suiteUrl, suiteConfig, message);
@@ -423,12 +423,12 @@ Golden file $filename did not match the image generated by the test.
   StreamChannel loadChannel(String path, SuitePlatform platform) =>
       throw UnimplementedError();
 
-  Future<BrowserManager> _browserManager;
+  Future<BrowserManager>? _browserManager;
 
   /// Returns the [BrowserManager] for [runtime], which should be a browser.
   ///
   /// If no browser manager is running yet, starts one.
-  Future<BrowserManager> _browserManagerFor(Runtime browser) {
+  Future<BrowserManager>? _browserManagerFor(Runtime browser) {
     if (_browserManager != null) return _browserManager;
 
     var completer = Completer<WebSocketChannel>.sync();
@@ -456,10 +456,10 @@ Golden file $filename did not match the image generated by the test.
   /// Note that this doesn't close the server itself. Browser tests can still be
   /// loaded, they'll just spawn new browsers.
   Future<void> closeEphemeral() async {
-    final BrowserManager result = await _browserManager;
-    if (result != null) {
-      await result.close();
-    }
+    final BrowserManager result = await _browserManager!;
+    /* if (result != null) {
+      */ await result.close(); /*
+    } */
   }
 
   /// Closes the server and releases all its resources.
@@ -470,18 +470,18 @@ Golden file $filename did not match the image generated by the test.
     return _closeMemo.runOnce(() async {
       final List<Future<void>> futures = <Future<void>>[];
       futures.add(Future<void>.microtask(() async {
-        final BrowserManager result = await _browserManager;
-        if (result != null) {
-          await result.close();
-        }
+        final BrowserManager result = await _browserManager!;
+        /* if (result != null) {
+          */ await result.close(); /*
+        } */
       }));
       futures.add(_server.close());
 
       await Future.wait(futures);
 
-      if (_config.pubServeUrl != null) {
-        _http.close();
-      }
+      /* if (_config.pubServeUrl != null) {
+        */ _http!.close(); /*
+      } */
     });
   }
 
@@ -557,12 +557,12 @@ class PathHandler {
   }
 
   FutureOr<shelf.Response> _onRequest(shelf.Request request) {
-    shelf.Handler handler;
-    int handlerIndex;
-    var node = _paths;
+    shelf.Handler? handler;
+    int? handlerIndex;
+    _Node? node = _paths;
     var components = p.url.split(request.url.path);
     for (var i = 0; i < components.length; i++) {
-      node = node.children[components[i]];
+      node = node!.children[components[i]];
       if (node == null) break;
       if (node.handler == null) continue;
       handler = node.handler;
@@ -572,13 +572,13 @@ class PathHandler {
     if (handler == null) return shelf.Response.notFound('Not found.');
 
     return handler(
-        request.change(path: p.url.joinAll(components.take(handlerIndex + 1))));
+        request.change(path: p.url.joinAll(components.take(handlerIndex! + 1))));
   }
 }
 
 /// A trie node.
 class _Node {
-  shelf.Handler handler;
+  shelf.Handler? handler;
   final children = Map<String, _Node>();
 }
 
@@ -596,7 +596,7 @@ class BrowserManager {
   /// The channel used to communicate with the browser.
   ///
   /// This is connected to a page running `static/host.dart`.
-  MultiChannel _channel;
+  MultiChannel? _channel;
 
   /// A pool that ensures that limits the number of initial connections the
   /// manager will wait for at once.
@@ -620,25 +620,25 @@ class BrowserManager {
   ///
   /// This will be `null` as long as the browser isn't displaying a pause
   /// screen.
-  CancelableCompleter _pauseCompleter;
+  CancelableCompleter? _pauseCompleter;
 
   /// The controller for [_BrowserEnvironment.onRestart].
   final _onRestartController = StreamController.broadcast();
 
   /// The environment to attach to each suite.
-  Future<_BrowserEnvironment> _environment;
+  Future<_BrowserEnvironment>? _environment;
 
   /// Controllers for every suite in this browser.
   ///
   /// These are used to mark suites as debugging or not based on the browser's
   /// pings.
-  final _controllers = Set<RunnerSuiteController>();
+  final _controllers = Set<RunnerSuiteController?>();
 
   // A timer that's reset whenever we receive a message from the browser.
   //
   // Because the browser stops running code when the user is actively debugging,
   // this lets us detect whether they're debugging reasonably accurately.
-  RestartableTimer _timer;
+  RestartableTimer? _timer;
 
   /// Starts the browser identified by [runtime] and has it connect to [url].
   ///
@@ -699,7 +699,7 @@ class BrowserManager {
     // get some response from the iframe.
     _timer = RestartableTimer(Duration(seconds: 3), () {
       for (var controller in _controllers) {
-        controller.setDebugging(true);
+        controller!.setDebugging(true);
       }
     })
       ..cancel();
@@ -709,9 +709,9 @@ class BrowserManager {
     _channel = MultiChannel(
         webSocket.cast<String>().transform(jsonDocument).changeStream((stream) {
       return stream.map((message) {
-        if (!_closed) _timer.reset();
+        if (!_closed) _timer!.reset();
         for (var controller in _controllers) {
-          controller.setDebugging(false);
+          controller!.setDebugging(false);
         }
 
         return message;
@@ -719,14 +719,14 @@ class BrowserManager {
     }));
 
     _environment = _loadBrowserEnvironment();
-    _channel.stream
+    _channel!.stream
         .listen((message) => _onMessage(message as Map), onDone: close);
   }
 
   /// Loads [_BrowserEnvironment].
   Future<_BrowserEnvironment> _loadBrowserEnvironment() async {
-    return _BrowserEnvironment(this, await _browser.observatoryUrl,
-        await _browser.remoteDebuggerUrl, _onRestartController.stream);
+    return _BrowserEnvironment(this, await _browser.observatoryUrl!,
+        await _browser.remoteDebuggerUrl!, _onRestartController.stream);
   }
 
   /// Tells the browser the load a test suite from the URL [url].
@@ -743,25 +743,25 @@ class BrowserManager {
     })));
 
     var suiteID = _suiteID++;
-    RunnerSuiteController controller;
+    RunnerSuiteController? controller;
     closeIframe() {
       if (_closed) return;
       _controllers.remove(controller);
-      _channel.sink.add({'command': 'closeSuite', 'id': suiteID});
+      _channel!.sink.add({'command': 'closeSuite', 'id': suiteID});
     }
 
     // The virtual channel will be closed when the suite is closed, in which
     // case we should unload the iframe.
-    var virtualChannel = _channel.virtualChannel();
+    var virtualChannel = _channel!.virtualChannel();
     var suiteChannelID = virtualChannel.id;
-    var suiteChannel = virtualChannel
+    StreamChannel<dynamic> suiteChannel = virtualChannel
         .transformStream(StreamTransformer.fromHandlers(handleDone: (sink) {
       closeIframe();
       sink.close();
     }));
 
     return await _pool.withResource<RunnerSuite>(() async {
-      _channel.sink.add({
+      _channel!.sink.add({
         'command': 'loadSuite',
         'url': url.toString(),
         'id': suiteID,
@@ -770,10 +770,10 @@ class BrowserManager {
 
       try {
         controller = deserializeSuite(path, currentPlatform(_runtime),
-            suiteConfig, await _environment, suiteChannel, message);
+            suiteConfig, await _environment!, suiteChannel, message);
 
         final String mapPath = p.join(
-          env.environment.webUiRootDir.path,
+          env.environment!.webUiRootDir!.path,
           'build',
           '$path.browser_test.dart.js.map',
         );
@@ -784,10 +784,10 @@ class BrowserManager {
           sdkRoot: p.toUri(sdkDir),
         );
 
-        controller.channel('test.browser.mapper').sink.add(mapper.serialize());
+        controller!.channel('test.browser.mapper').sink.add(mapper.serialize());
 
         _controllers.add(controller);
-        return await controller.suite;
+        return await controller!.suite;
       } catch (_) {
         closeIframe();
         rethrow;
@@ -797,25 +797,25 @@ class BrowserManager {
 
   /// An implementation of [Environment.displayPause].
   CancelableOperation _displayPause() {
-    if (_pauseCompleter != null) return _pauseCompleter.operation;
+    if (_pauseCompleter != null) return _pauseCompleter!.operation;
 
     _pauseCompleter = CancelableCompleter(onCancel: () {
-      _channel.sink.add({'command': 'resume'});
+      _channel!.sink.add({'command': 'resume'});
       _pauseCompleter = null;
     });
 
-    _pauseCompleter.operation.value.whenComplete(() {
+    _pauseCompleter!.operation.value.whenComplete(() {
       _pauseCompleter = null;
     });
 
-    _channel.sink.add({'command': 'displayPause'});
+    _channel!.sink.add({'command': 'displayPause'});
 
-    return _pauseCompleter.operation;
+    return _pauseCompleter!.operation;
   }
 
   /// The callback for handling messages received from the host page.
   void _onMessage(Map message) {
-    switch (message['command'] as String) {
+    switch (message['command'] as String?) {
       case 'ping':
         break;
 
@@ -824,7 +824,7 @@ class BrowserManager {
         break;
 
       case 'resume':
-        if (_pauseCompleter != null) _pauseCompleter.complete();
+        if (_pauseCompleter != null) _pauseCompleter!.complete();
         break;
 
       default:
@@ -838,8 +838,8 @@ class BrowserManager {
   /// the browser.
   Future close() => _closeMemoizer.runOnce(() {
         _closed = true;
-        _timer.cancel();
-        if (_pauseCompleter != null) _pauseCompleter.complete();
+        _timer!.cancel();
+        if (_pauseCompleter != null) _pauseCompleter!.complete();
         _pauseCompleter = null;
         _controllers.clear();
         return _browser.close();

@@ -17,19 +17,19 @@ import 'scuba.dart';
 void main() async {
   final Rect region = Rect.fromLTWH(0, 0, 500, 100);
 
-  BitmapCanvas canvas;
+  BitmapCanvas? canvas;
 
   void appendToScene() {
     // Create a <flt-scene> element to make sure our CSS reset applies correctly.
     final html.Element testScene = html.Element.tag('flt-scene');
-    testScene.append(canvas.rootElement);
-    html.document.querySelector('flt-scene-host').append(testScene);
+    testScene.append(canvas!.rootElement);
+    html.document.querySelector('flt-scene-host')!.append(testScene);
   }
 
   setUpStableTestFonts();
 
   tearDown(() {
-    html.document.querySelector('flt-scene').remove();
+    html.document.querySelector('flt-scene')!.remove();
   });
 
   /// Draws several lines, some aligned precisely with the pixel grid, and some
@@ -74,7 +74,7 @@ void main() async {
   test('renders pixels that are not aligned inside the canvas', () async {
     canvas = BitmapCanvas(const Rect.fromLTWH(0, 0, 60, 60));
 
-    drawMisalignedLines(canvas);
+    drawMisalignedLines(canvas!);
 
     appendToScene();
 
@@ -89,7 +89,7 @@ void main() async {
     // direction.
     canvas = BitmapCanvas(const Rect.fromLTWH(0.5, 0.5, 60, 60));
 
-    drawMisalignedLines(canvas);
+    drawMisalignedLines(canvas!);
 
     appendToScene();
 
@@ -99,8 +99,8 @@ void main() async {
   test('fill the whole canvas with color even when transformed', () async {
     canvas = BitmapCanvas(const Rect.fromLTWH(0, 0, 50, 50));
 
-    canvas.translate(25, 25);
-    canvas.drawColor(const Color.fromRGBO(0, 255, 0, 1.0), BlendMode.src);
+    canvas!.translate(25, 25);
+    canvas!.drawColor(const Color.fromRGBO(0, 255, 0, 1.0), BlendMode.src);
 
     appendToScene();
 
@@ -110,8 +110,8 @@ void main() async {
   test('fill the whole canvas with paint even when transformed', () async {
     canvas = BitmapCanvas(const Rect.fromLTWH(0, 0, 50, 50));
 
-    canvas.translate(25, 25);
-    canvas.drawPaint(SurfacePaintData()
+    canvas!.translate(25, 25);
+    canvas!.drawPaint(SurfacePaintData()
       ..color = const Color.fromRGBO(0, 255, 0, 1.0)
       ..style = PaintingStyle.fill);
 
@@ -142,8 +142,8 @@ void main() async {
     final Rect canvasSize = Rect.fromLTRB(
       0,
       0,
-      paragraph.maxIntrinsicWidth + 16,
-      2 * paragraph.height + 32,
+      paragraph.maxIntrinsicWidth! + 16,
+      2 * paragraph.height! + 32,
     );
     final Rect outerClip =
         Rect.fromLTRB(0.5, 0.5, canvasSize.right, canvasSize.bottom);
@@ -151,14 +151,14 @@ void main() async {
         canvasSize.right, canvasSize.bottom);
 
     canvas = BitmapCanvas(canvasSize);
-    canvas.debugChildOverdraw = true;
-    canvas.clipRect(outerClip);
-    canvas.drawParagraph(paragraph, const Offset(8.5, 8.5));
-    canvas.clipRect(innerClip);
-    canvas.drawParagraph(paragraph, Offset(8.5, 8.5 + innerClip.top));
+    canvas!.debugChildOverdraw = true;
+    canvas!.clipRect(outerClip);
+    canvas!.drawParagraph(paragraph as EngineParagraph, const Offset(8.5, 8.5));
+    canvas!.clipRect(innerClip);
+    canvas!.drawParagraph(paragraph, Offset(8.5, 8.5 + innerClip.top));
 
     expect(
-      canvas.rootElement.querySelectorAll('p').map<String>((e) => e.innerText).toList(),
+      canvas!.rootElement.querySelectorAll('p').map<String>((e) => e.innerText).toList(),
       <String>['Am I blurry?', 'Am I blurry?'],
       reason: 'Expected to render text using HTML',
     );
@@ -192,7 +192,7 @@ void main() async {
     final Rect canvasSize = Offset.zero & Size(500, 500);
 
     canvas = BitmapCanvas(canvasSize);
-    canvas.debugChildOverdraw = true;
+    canvas!.debugChildOverdraw = true;
 
     final SurfacePaintData pathPaint = SurfacePaintData()
       ..color = const Color(0xFF7F7F7F)
@@ -212,11 +212,11 @@ void main() async {
       ..lineTo(-r, 0)
       ..close()).shift(const Offset(250, 250));
 
-    canvas.drawPath(path, pathPaint);
-    canvas.drawParagraph(paragraph, const Offset(180, 50));
+    canvas!.drawPath(path, pathPaint);
+    canvas!.drawParagraph(paragraph as EngineParagraph, const Offset(180, 50));
 
     expect(
-      canvas.rootElement.querySelectorAll('p').map<String>((e) => e.innerText).toList(),
+      canvas!.rootElement.querySelectorAll('p').map<String>((e) => e.innerText).toList(),
       <String>[text],
       reason: 'Expected to render text using HTML',
     );
@@ -228,11 +228,11 @@ void main() async {
     sb.pop();
     sb.pop();
     sb.pop();
-    final SurfaceScene scene = sb.build();
-    final html.Element sceneElement = scene.webOnlyRootElement;
+    final SurfaceScene scene = sb.build() as SurfaceScene;
+    final html.Element sceneElement = scene.webOnlyRootElement!;
 
-    sceneElement.querySelector('flt-clip').append(canvas.rootElement);
-    html.document.querySelector('flt-scene-host').append(sceneElement);
+    sceneElement.querySelector('flt-clip')!.append(canvas!.rootElement);
+    html.document.querySelector('flt-scene-host')!.append(sceneElement);
 
     await matchGoldenFile(
       'bitmap_canvas_draws_text_on_top_of_canvas.png',

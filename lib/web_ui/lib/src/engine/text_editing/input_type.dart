@@ -14,7 +14,7 @@ part of engine;
 abstract class EngineInputType {
   const EngineInputType();
 
-  static EngineInputType fromName(String name) {
+  static EngineInputType fromName(String? name) {
     switch (name) {
       case 'TextInputType.number':
         return number;
@@ -67,16 +67,16 @@ abstract class EngineInputType {
   html.HtmlElement createDomElement() => html.InputElement();
 
   /// Given a [domElement], set attributes that are specific to this input type.
-  void configureInputMode(html.HtmlElement domElement) {
-    if (inputmodeAttribute == null) {
+  void configureInputMode(html.HtmlElement? domElement) {
+    /* if (inputmodeAttribute == null) {
       return;
-    }
+    } */
 
     // Only apply `inputmode` in mobile browsers so that the right virtual
     // keyboard shows up.
     if (operatingSystem == OperatingSystem.iOs ||
         operatingSystem == OperatingSystem.android) {
-      domElement.setAttribute('inputmode', inputmodeAttribute);
+      domElement!.setAttribute('inputmode', inputmodeAttribute);
     }
   }
 }
@@ -126,7 +126,7 @@ class MultilineInputType extends EngineInputType {
   const MultilineInputType();
 
   @override
-  final String inputmodeAttribute = null;
+  final String? inputmodeAttribute = null;
 
   @override
   bool get submitActionOnEnter => false;

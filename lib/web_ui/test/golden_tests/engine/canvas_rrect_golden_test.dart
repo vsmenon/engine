@@ -14,7 +14,7 @@ import 'package:web_engine_tester/golden_tester.dart';
 void main() async {
   final Rect region = Rect.fromLTWH(8, 8, 500, 100); // Compensate for old scuba tester padding
 
-  BitmapCanvas canvas;
+  BitmapCanvas? canvas;
 
   final SurfacePaintData niceRRectPaint = SurfacePaintData()
     ..color = const Color.fromRGBO(250, 186, 218, 1.0) // #fabada
@@ -27,22 +27,22 @@ void main() async {
 
   setUp(() {
     canvas = BitmapCanvas(const Rect.fromLTWH(0, 0, 500, 100));
-    canvas.translate(10, 10); // Center
+    canvas!.translate(10, 10); // Center
   });
 
   tearDown(() {
-    canvas.rootElement.remove();
+    canvas!.rootElement.remove();
   });
 
   test('round square with big (equal) radius ends up as a circle', () async {
     for (int i = 0; i < 5; i++) {
-      canvas.drawRRect(
+      canvas!.drawRRect(
           RRect.fromRectAndRadius(Rect.fromLTWH(100 * i.toDouble(), 0, 80, 80),
               Radius.circular(rRectRadii[i])),
           niceRRectPaint);
     }
 
-    html.document.body.append(canvas.rootElement);
+    html.document.body.append(canvas!.rootElement);
     await matchGoldenFile('canvas_rrect_round_square.png', region: region);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
@@ -55,10 +55,10 @@ void main() async {
           topRight: growingRadius,
           bottomLeft: growingRadius);
 
-      canvas.drawRRect(rrect, niceRRectPaint);
+      canvas!.drawRRect(rrect, niceRRectPaint);
     }
 
-    html.document.body.append(canvas.rootElement);
+    html.document.body.append(canvas!.rootElement);
     await matchGoldenFile('canvas_rrect_overlapping_radius.png', region: region);
   }, timeout: const Timeout(Duration(seconds: 10)));
 
@@ -78,10 +78,10 @@ void main() async {
           topRight: growingRadius / 2,
           bottomLeft: growingRadius / 2);
 
-      canvas.drawDRRect(outerRRect, innerRRect, niceRRectPaint);
+      canvas!.drawDRRect(outerRRect, innerRRect, niceRRectPaint);
     }
 
-    html.document.body.append(canvas.rootElement);
+    html.document.body.append(canvas!.rootElement);
     await matchGoldenFile('canvas_drrect_overlapping_radius.png', region: region);
   }, timeout: const Timeout(Duration(seconds: 10)));
 }

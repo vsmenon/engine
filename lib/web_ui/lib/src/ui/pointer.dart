@@ -102,19 +102,19 @@ class PointerData {
   });
 
   /// Time of event dispatch, relative to an arbitrary timeline.
-  final Duration timeStamp;
+  final Duration? timeStamp;
 
   /// How the pointer has changed since the last report.
-  final PointerChange change;
+  final PointerChange? change;
 
   /// The kind of input device for which the event was generated.
-  final PointerDeviceKind kind;
+  final PointerDeviceKind? kind;
 
   /// The kind of signal for a pointer signal event.
-  final PointerSignalKind signalKind;
+  final PointerSignalKind? signalKind;
 
   /// Unique identifier for the pointing device, reused across interactions.
-  final int device;
+  final int? device;
 
   /// Unique identifier for the pointer.
   ///
@@ -140,12 +140,12 @@ class PointerData {
   /// secondaryStylusButton, etc). For example, if this has the value 6 and the
   /// [kind] is [PointerDeviceKind.invertedStylus], then this indicates an
   /// upside-down stylus with both its primary and secondary buttons pressed.
-  final int buttons;
+  final int? buttons;
 
   /// Set if an application from a different security domain is in any way
   /// obscuring this application's window. (Aspirational; not currently
   /// implemented.)
-  final bool obscured;
+  final bool? obscured;
 
   /// Set if this pointer data was synthesized by pointer data packet converter.
   /// pointer data packet converter will synthesize additional pointer datas if
@@ -159,28 +159,28 @@ class PointerData {
   /// with no discernible pressure, to 1.0, indicating a touch with "normal"
   /// pressure, and possibly beyond, indicating a stronger touch. For devices
   /// that do not detect pressure (e.g. mice), returns 1.0.
-  final double pressure;
+  final double? pressure;
 
   /// The minimum value that [pressure] can return for this pointer. For devices
   /// that do not detect pressure (e.g. mice), returns 1.0. This will always be
   /// a number less than or equal to 1.0.
-  final double pressureMin;
+  final double? pressureMin;
 
   /// The maximum value that [pressure] can return for this pointer. For devices
   /// that do not detect pressure (e.g. mice), returns 1.0. This will always be
   /// a greater than or equal to 1.0.
-  final double pressureMax;
+  final double? pressureMax;
 
   /// The distance of the detected object from the input surface (e.g. the
   /// distance of a stylus or finger from a touch screen), in arbitrary units on
   /// an arbitrary (not necessarily linear) scale. If the pointer is down, this
   /// is 0.0 by definition.
-  final double distance;
+  final double? distance;
 
   /// The maximum value that a distance can return for this pointer. If this
   /// input device cannot detect "hover touch" input events, then this will be
   /// 0.0.
-  final double distanceMax;
+  final double? distanceMax;
 
   /// The area of the screen being pressed, scaled to a value between 0 and 1.
   /// The value of size can be used to determine fat touch events. This value
@@ -188,21 +188,21 @@ class PointerData {
   /// the range of detectable values. So, for example, the value of 0.1 could
   /// mean a touch with the tip of the finger, 0.2 a touch with full finger,
   /// and 0.3 the full palm.
-  final double size;
+  final double? size;
 
   /// The radius of the contact ellipse along the major axis, in logical pixels.
-  final double radiusMajor;
+  final double? radiusMajor;
 
   /// The radius of the contact ellipse along the minor axis, in logical pixels.
-  final double radiusMinor;
+  final double? radiusMinor;
 
   /// The minimum value that could be reported for radiusMajor and radiusMinor
   /// for this pointer, in logical pixels.
-  final double radiusMin;
+  final double? radiusMin;
 
   /// The minimum value that could be reported for radiusMajor and radiusMinor
   /// for this pointer, in logical pixels.
-  final double radiusMax;
+  final double? radiusMax;
 
   /// For PointerDeviceKind.touch events:
   ///
@@ -229,7 +229,7 @@ class PointerData {
   /// indicate that the stylus would go down in the negative y-axis direction;
   /// pi/4 would indicate that the stylus goes up and to the right, -pi/2 would
   /// indicate that the stylus goes to the left, etc).
-  final double orientation;
+  final double? orientation;
 
   /// For PointerDeviceKind.stylus and PointerDeviceKind.invertedStylus events:
   ///
@@ -241,20 +241,20 @@ class PointerData {
   /// perpendicular to the input surface (thus 0.0 indicates the stylus is
   /// orthogonal to the plane of the input surface, while pi/2 indicates that
   /// the stylus is flat on that surface).
-  final double tilt;
+  final double? tilt;
 
   /// Opaque platform-specific data associated with the event.
-  final int platformData;
+  final int? platformData;
 
   /// For events with signalKind of PointerSignalKind.scroll:
   ///
   /// The amount to scroll in the x direction, in physical pixels.
-  final double scrollDeltaX;
+  final double? scrollDeltaX;
 
   /// For events with signalKind of PointerSignalKind.scroll:
   ///
   /// The amount to scroll in the y direction, in physical pixels.
-  final double scrollDeltaY;
+  final double? scrollDeltaY;
 
   @override
   String toString() => '$runtimeType(x: $physicalX, y: $physicalY)';

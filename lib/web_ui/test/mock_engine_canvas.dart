@@ -17,7 +17,7 @@ class MockCanvasCall {
     this.arguments,
   });
 
-  final String methodName;
+  final String? methodName;
   final dynamic arguments;
 
   @override
@@ -35,7 +35,7 @@ class MockEngineCanvas implements EngineCanvas {
   final List<MockCanvasCall> methodCallLog = <MockCanvasCall>[];
 
   @override
-  html.Element get rootElement => null;
+  html.Element? get rootElement => null;
 
   void _called(String methodName, {dynamic arguments}) {
     methodCallLog.add(MockCanvasCall._(
@@ -232,7 +232,7 @@ class MockEngineCanvas implements EngineCanvas {
 
   @override
   void drawPoints(PointMode pointMode, Float32List points, double strokeWidth,
-      Color color) {
+      Color? color) {
     _called('drawPoints', arguments: <String, dynamic>{
       'pointMode': pointMode,
       'points': points,

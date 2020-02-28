@@ -8,7 +8,7 @@ part of ui;
 // ignore: unused_element, Used in Shader assert.
 bool _offsetIsValid(Offset offset) {
   assert(offset != null, 'Offset argument was null.');
-  assert(!offset.dx.isNaN && !offset.dy.isNaN,
+  assert(!offset.dx!.isNaN && !offset.dy!.isNaN,
       'Offset argument contained a NaN value.');
   return true;
 }
@@ -20,7 +20,7 @@ bool _matrix4IsValid(Float64List matrix4) {
   return true;
 }
 
-void _validateColorStops(List<Color> colors, List<double> colorStops) {
+void _validateColorStops(List<Color> colors, List<double>? colorStops) {
   if (colorStops == null) {
     if (colors.length != 2)
       throw ArgumentError(
@@ -33,7 +33,7 @@ void _validateColorStops(List<Color> colors, List<double> colorStops) {
 }
 
 Color _scaleAlpha(Color a, double factor) {
-  return a.withAlpha((a.alpha * factor).round().clamp(0, 255));
+  return a.withAlpha((a.alpha * factor).round().clamp(0, 255) as int);
 }
 
 /// An immutable 32 bit color value in ARGB
@@ -131,7 +131,7 @@ class Color {
     if (component <= 0.03928) {
       return component / 12.92;
     }
-    return math.pow((component + 0.055) / 1.055, 2.4);
+    return math.pow((component + 0.055) / 1.055, 2.4) as double;
   }
 
   /// Returns a brightness value between 0 for darkest and 1 for lightest.
@@ -170,22 +170,22 @@ class Color {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Color lerp(Color a, Color b, double t) {
+  static Color? lerp(Color a, Color b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return _scaleAlpha(b, t);
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       return _scaleAlpha(a, 1.0 - t);
-    }
+    } */
     return Color.fromARGB(
-      lerpDouble(a.alpha, b.alpha, t).toInt().clamp(0, 255),
-      lerpDouble(a.red, b.red, t).toInt().clamp(0, 255),
-      lerpDouble(a.green, b.green, t).toInt().clamp(0, 255),
-      lerpDouble(a.blue, b.blue, t).toInt().clamp(0, 255),
+      lerpDouble(a.alpha, b.alpha, t)!.toInt().clamp(0, 255) as int,
+      lerpDouble(a.red, b.red, t)!.toInt().clamp(0, 255) as int,
+      lerpDouble(a.green, b.green, t)!.toInt().clamp(0, 255) as int,
+      lerpDouble(a.blue, b.blue, t)!.toInt().clamp(0, 255) as int,
     );
   }
 
@@ -960,7 +960,7 @@ abstract class Paint {
   /// [PaintingStyle.strokeAndFill].
   ///
   /// If null, defaults to [StrokeCap.butt], i.e. no caps.
-  StrokeCap get strokeCap;
+  StrokeCap? get strokeCap;
   set strokeCap(StrokeCap value);
 
   /// The kind of finish to use for line segment joins.
@@ -968,7 +968,7 @@ abstract class Paint {
   /// [PaintingStyle.strokeAndFill]. Only applies to drawPath not drawPoints.
   ///
   /// If null, defaults to [StrokeCap.butt], i.e. no caps.
-  StrokeJoin get strokeJoin;
+  StrokeJoin? get strokeJoin;
   set strokeJoin(StrokeJoin value);
 
   /// Whether to apply anti-aliasing to lines and images drawn on the
@@ -978,8 +978,8 @@ abstract class Paint {
   bool get isAntiAlias;
   set isAntiAlias(bool value);
 
-  Color get color;
-  set color(Color value);
+  Color? get color;
+  set color(Color? value);
 
   /// Whether the colors of the image are inverted when drawn.
   ///
@@ -1000,14 +1000,14 @@ abstract class Paint {
   ///  * [ImageShader], a shader that tiles an [Image].
   ///  * [colorFilter], which overrides [shader].
   ///  * [color], which is used if [shader] and [colorFilter] are null.
-  Shader get shader;
+  Shader? get shader;
   set shader(Shader value);
 
   /// A mask filter (for example, a blur) to apply to a shape after it has been
   /// drawn but before it has been composited into the image.
   ///
   /// See [MaskFilter] for details.
-  MaskFilter get maskFilter;
+  MaskFilter? get maskFilter;
   set maskFilter(MaskFilter value);
 
   /// Controls the performance vs quality trade-off to use when applying
@@ -1016,7 +1016,7 @@ abstract class Paint {
   ///
   /// Defaults to [FilterQuality.none].
   // TODO(ianh): verify that the image drawing methods actually respect this
-  FilterQuality get filterQuality;
+  FilterQuality? get filterQuality;
   set filterQuality(FilterQuality value);
 
   /// A color filter to apply when a shape is drawn or when a layer is
@@ -1025,10 +1025,10 @@ abstract class Paint {
   /// See [ColorFilter] for details.
   ///
   /// When a shape is being drawn, [colorFilter] overrides [color] and [shader].
-  ColorFilter get colorFilter;
+  ColorFilter? get colorFilter;
   set colorFilter(ColorFilter value);
 
-  double get strokeMiterLimit;
+  double? get strokeMiterLimit;
   set strokeMiterLimit(double value);
 
   /// The [ImageFilter] to use when drawing raster images.
@@ -1053,7 +1053,7 @@ abstract class Paint {
   /// See also:
   ///
   ///  * [MaskFilter], which is used for drawing geometry.
-  ImageFilter get imageFilter;
+  ImageFilter? get imageFilter;
   set imageFilter(ImageFilter value);
 }
 
@@ -1093,9 +1093,9 @@ abstract class Gradient extends Shader {
     Offset from,
     Offset to,
     List<Color> colors, [
-    List<double> colorStops,
+    List<double>? colorStops,
     TileMode tileMode = TileMode.clamp,
-    Float64List
+    Float64List?
         matrix4, // TODO(flutter_web): see https://github.com/flutter/flutter/issues/32819
   ]) =>
       engine.GradientLinear(from, to, colors, colorStops, tileMode);
@@ -1129,11 +1129,11 @@ abstract class Gradient extends Shader {
   /// circle and `focalRadius` being the radius of that circle. If `focal` is
   /// provided and not equal to `center`, at least one of the two offsets must
   /// not be equal to [Offset.zero].
-  factory Gradient.radial(Offset center, double radius, List<Color> colors,
-      [List<double> colorStops,
+  factory Gradient.radial(Offset center, double? radius, List<Color> colors,
+      [List<double>? colorStops,
       TileMode tileMode = TileMode.clamp,
-      Float64List matrix4,
-      Offset focal,
+      Float64List? matrix4,
+      Offset? focal,
       double focalRadius = 0.0]) {
     focalRadius ??= 0.0;
     _validateColorStops(colors, colorStops);
@@ -1179,11 +1179,11 @@ abstract class Gradient extends Shader {
   factory Gradient.sweep(
     Offset center,
     List<Color> colors, [
-    List<double> colorStops,
+    List<double>? colorStops,
     TileMode tileMode = TileMode.clamp,
     double startAngle = 0.0,
     double endAngle = math.pi * 2,
-    Float64List matrix4,
+    Float64List? matrix4,
   ]) =>
       engine.GradientSweep(
           center, colors, colorStops, tileMode, startAngle, endAngle, matrix4);
@@ -1197,10 +1197,10 @@ abstract class Gradient extends Shader {
 /// [Canvas.drawImage].
 abstract class Image {
   /// The number of image pixels along the image's horizontal axis.
-  int get width;
+  int? get width;
 
   /// The number of image pixels along the image's vertical axis.
-  int get height;
+  int? get height;
 
   /// Converts the [Image] object into a byte array.
   ///
@@ -1209,7 +1209,7 @@ abstract class Image {
   ///
   /// Returns a future that completes with the binary image data or an error
   /// if encoding fails.
-  Future<ByteData> toByteData(
+  Future<ByteData?> toByteData(
       {ImageByteFormat format = ImageByteFormat.rawRgba});
 
   /// Release the resources used by this object. The object is no longer usable
@@ -1391,7 +1391,7 @@ class MaskFilter {
   int get hashCode => hashValues(_style, _sigma);
 
   List<dynamic> webOnlySerializeToCssPaint() {
-    return <dynamic>[_style?.index, _sigma];
+    return <dynamic>[_style.index, _sigma];
   }
 
   @override
@@ -1505,11 +1505,11 @@ class _ImageInfo {
   int width;
   int height;
   int format;
-  int rowBytes;
+  int? rowBytes;
 }
 
 /// Callback signature for [decodeImageFromList].
-typedef ImageDecoderCallback = void Function(Image result);
+typedef ImageDecoderCallback = void Function(Image? result);
 
 /// Information for a single frame of an animation.
 ///
@@ -1528,7 +1528,7 @@ abstract class FrameInfo {
   int get _durationMillis => 0;
 
   /// The [Image] object for this frame.
-  Image get image => null;
+  Image? get image => null;
 }
 
 /// A handle to an image codec.
@@ -1541,13 +1541,13 @@ class Codec {
   Codec._();
 
   /// Number of frames in this image.
-  int get frameCount => 0;
+  int? get frameCount => 0;
 
   /// Number of times to repeat the animation.
   ///
   /// * 0 when the animation should be played once.
   /// * -1 for infinity repetitions.
-  int get repetitionCount => 0;
+  int? get repetitionCount => 0;
 
   /// Fetches the next animation frame.
   ///
@@ -1559,7 +1559,7 @@ class Codec {
   }
 
   /// Returns an error message on failure, null on success.
-  String _getNextFrame(engine.Callback<FrameInfo> callback) => null;
+  String? _getNextFrame(engine.Callback<FrameInfo> callback) => null;
 
   /// Release the resources used by this object. The object is no longer usable
   /// after this method is called.
@@ -1577,8 +1577,8 @@ class Codec {
 /// failed.
 Future<Codec> instantiateImageCodec(
   Uint8List list, {
-  int targetWidth,
-  int targetHeight,
+  int? targetWidth,
+  int? targetHeight,
 }) {
   return engine.futurize((engine.Callback<Codec> callback) =>
       // TODO: Implement targetWidth and targetHeight support.
@@ -1588,8 +1588,8 @@ Future<Codec> instantiateImageCodec(
 /// Instantiates a [Codec] object for an image binary data.
 ///
 /// Returns an error message if the instantiation has failed, null otherwise.
-String _instantiateImageCodec(
-    Uint8List list, engine.Callback<Codec> callback, _ImageInfo imageInfo) {
+String? _instantiateImageCodec(
+    Uint8List list, engine.Callback<Codec> callback, _ImageInfo? imageInfo) {
   if (engine.experimentalUseSkia) {
     if (imageInfo == null) {
       engine.skiaInstantiateImageCodec(list, callback);
@@ -1609,7 +1609,7 @@ Future<Codec> webOnlyInstantiateImageCodecFromUrl(Uri uri) {
       _instantiateImageCodecFromUrl(uri, callback));
 }
 
-String _instantiateImageCodecFromUrl(Uri uri, engine.Callback<Codec> callback) {
+String? _instantiateImageCodecFromUrl(Uri uri, engine.Callback<Codec> callback) {
   callback(engine.HtmlCodec(uri.toString()));
   return null;
 }
@@ -1638,7 +1638,7 @@ Future<void> _decodeImageFromListAsync(
 /// number of bytes per pixel in the provided [format].
 void decodeImageFromPixels(Uint8List pixels, int width, int height,
     PixelFormat format, ImageDecoderCallback callback,
-    {int rowBytes}) {
+    {int? rowBytes}) {
   final _ImageInfo imageInfo =
       _ImageInfo(width, height, format.index, rowBytes);
   final Future<Codec> codecFuture = engine.futurize(
@@ -1749,21 +1749,21 @@ class Shadow {
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
   /// {@endtemplate}
-  static Shadow lerp(Shadow a, Shadow b, double t) {
+  static Shadow? lerp(Shadow a, Shadow b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return b.scale(t);
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       return a.scale(1.0 - t);
-    }
+    } */
     return Shadow(
-      color: Color.lerp(a.color, b.color, t),
-      offset: Offset.lerp(a.offset, b.offset, t),
-      blurRadius: lerpDouble(a.blurRadius, b.blurRadius, t),
+      color: Color.lerp(a.color, b.color, t)!,
+      offset: Offset.lerp(a.offset, b.offset, t)!,
+      blurRadius: lerpDouble(a.blurRadius, b.blurRadius, t)!,
     );
   }
 
@@ -1772,14 +1772,14 @@ class Shadow {
   /// If the lists differ in length, excess items are lerped with null.
   ///
   /// {@macro dart.ui.shadow.lerp}
-  static List<Shadow> lerpList(List<Shadow> a, List<Shadow> b, double t) {
+  static List<Shadow?>? lerpList(List<Shadow> a, List<Shadow> b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
     a ??= <Shadow>[];
     b ??= <Shadow>[];
-    final List<Shadow> result = <Shadow>[];
+    final List<Shadow?> result = <Shadow?>[];
     final int commonLength = math.min(a.length, b.length);
     for (int i = 0; i < commonLength; i += 1)
       result.add(Shadow.lerp(a[i], b[i], t));

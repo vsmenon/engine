@@ -27,7 +27,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('$fileName.png', region: region);
     } finally {
@@ -40,8 +40,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   test('Should draw transformed line.', () async {
@@ -52,7 +52,7 @@ void main() async {
     path.lineTo(300, 200);
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));
@@ -63,7 +63,7 @@ void main() async {
         matrix4: testMatrixTranslateRotate.storage);
     rc.drawPath(
         transformedPath,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color.fromRGBO(0, 128, 255, 1.0));
@@ -77,7 +77,7 @@ void main() async {
     path.addRect(Rect.fromLTRB(50, 40, 300, 100));
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));
@@ -88,7 +88,7 @@ void main() async {
         matrix4: testMatrixTranslateRotate.storage);
     rc.drawPath(
         transformedPath,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color.fromRGBO(0, 128, 255, 1.0));
@@ -103,7 +103,7 @@ void main() async {
     path.quadraticBezierTo(100, 300, 400, 300);
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));
@@ -114,7 +114,7 @@ void main() async {
         matrix4: testMatrixTranslateRotate.storage);
     rc.drawPath(
         transformedPath,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color.fromRGBO(0, 128, 255, 1.0));
@@ -134,13 +134,13 @@ void main() async {
     path.moveTo(p0.dx, p0.dy);
     path.conicTo(pc.dx, pc.dy, p2.dx, p2.dy, 0.5);
     path.close();
-    path.moveTo(p0.dx, p0.dy + 100);
-    path.conicTo(pc.dx, pc.dy + 100, p2.dx, p2.dy + 100, 10);
+    path.moveTo(p0.dx, p0.dy! + 100);
+    path.conicTo(pc.dx, pc.dy! + 100, p2.dx, p2.dy! + 100, 10);
     path.close();
 
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));
@@ -151,7 +151,7 @@ void main() async {
         matrix4: testMatrixTranslateRotate.storage);
     rc.drawPath(
         transformedPath,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color.fromRGBO(0, 128, 255, 1.0));
@@ -173,7 +173,7 @@ void main() async {
 
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));
@@ -185,7 +185,7 @@ void main() async {
         matrix4: testMatrixTranslateRotate.storage);
     rc.drawPath(
         transformedPath,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color.fromRGBO(0, 128, 255, 1.0));
@@ -201,7 +201,7 @@ void main() async {
 
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));
@@ -213,7 +213,7 @@ void main() async {
         matrix4: testMatrixTranslateRotate.storage);
     rc.drawPath(
         transformedPath,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color.fromRGBO(0, 128, 255, 1.0));

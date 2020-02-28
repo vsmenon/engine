@@ -61,17 +61,17 @@ enum VertexMode {
 /// A set of vertex data used by [Canvas.drawVertices].
 class Vertices {
   final VertexMode _mode;
-  final Float32List _positions;
-  final Float32List _textureCoordinates;
-  final Int32List _colors;
-  final Uint16List _indices; // ignore: unused_field
+  final Float32List? _positions;
+  final Float32List? _textureCoordinates;
+  final Int32List? _colors;
+  final Uint16List? _indices; // ignore: unused_field
 
   Vertices._(
     VertexMode mode,
     List<Offset> positions, {
-    List<Offset> textureCoordinates,
-    List<Color> colors,
-    List<int> indices,
+    List<Offset>? textureCoordinates,
+    required List<Color> colors,
+    List<int>? indices,
   })  : assert(mode != null),
         assert(positions != null),
         _mode = mode,
@@ -95,28 +95,28 @@ class Vertices {
   factory Vertices(
     VertexMode mode,
     List<Offset> positions, {
-    List<Offset> textureCoordinates,
-    List<Color> colors,
-    List<int> indices,
+    List<Offset>? textureCoordinates,
+    List<Color>? colors,
+    List<int>? indices,
   }) {
     if (engine.experimentalUseSkia) {
       return engine.SkVertices(mode, positions,
           textureCoordinates: textureCoordinates,
-          colors: colors,
+          colors: colors!,
           indices: indices);
     }
     return Vertices._(mode, positions,
         textureCoordinates: textureCoordinates,
-        colors: colors,
+        colors: colors!,
         indices: indices);
   }
 
   Vertices._raw(
     VertexMode mode,
     Float32List positions, {
-    Float32List textureCoordinates,
-    Int32List colors,
-    Uint16List indices,
+    Float32List? textureCoordinates,
+    Int32List? colors,
+    Uint16List? indices,
   })  : assert(mode != null),
         assert(positions != null),
         _mode = mode,
@@ -156,9 +156,9 @@ class Vertices {
   factory Vertices.raw(
     VertexMode mode,
     Float32List positions, {
-    Float32List textureCoordinates,
-    Int32List colors,
-    Uint16List indices,
+    Float32List? textureCoordinates,
+    Int32List? colors,
+    Uint16List? indices,
   }) {
     if (engine.experimentalUseSkia) {
       return engine.SkVertices.raw(mode, positions,
@@ -173,10 +173,10 @@ class Vertices {
   }
 
   VertexMode get mode => _mode;
-  Int32List get colors => _colors;
-  Float32List get positions => _positions;
-  Float32List get textureCoordinates => _textureCoordinates;
-  Uint16List get indices => _indices;
+  Int32List? get colors => _colors;
+  Float32List? get positions => _positions;
+  Float32List? get textureCoordinates => _textureCoordinates;
+  Uint16List? get indices => _indices;
 }
 
 /// Records a [Picture] containing a sequence of graphical operations.
@@ -211,7 +211,7 @@ abstract class PictureRecorder {
   /// and the canvas objects are invalid and cannot be used further.
   ///
   /// Returns null if the PictureRecorder is not associated with a canvas.
-  Picture endRecording();
+  Picture? endRecording();
 }
 
 /// An interface for recording graphical operations.
@@ -232,13 +232,13 @@ abstract class PictureRecorder {
 /// The current transform and clip can be saved and restored using the stack
 /// managed by the [save], [saveLayer], and [restore] methods.
 class Canvas {
-  engine.RecordingCanvas _canvas;
+  engine.RecordingCanvas? _canvas;
 
-  factory Canvas(PictureRecorder recorder, [Rect cullRect]) {
+  factory Canvas(PictureRecorder recorder, [Rect? cullRect]) {
     if (engine.experimentalUseSkia) {
       return engine.CanvasKitCanvas(recorder, cullRect);
     } else {
-      return Canvas._(recorder, cullRect);
+      return Canvas._(recorder as EnginePictureRecorder, cullRect);
     }
   }
 
@@ -254,7 +254,7 @@ class Canvas {
   ///
   /// To end the recording, call [PictureRecorder.endRecording] on the
   /// given recorder.
-  Canvas._(engine.EnginePictureRecorder recorder, [Rect cullRect])
+  Canvas._(engine.EnginePictureRecorder recorder, [Rect? cullRect])
       : assert(recorder != null) {
     if (recorder.isRecording) {
       throw ArgumentError(
@@ -273,7 +273,7 @@ class Canvas {
   ///  * [saveLayer], which does the same thing but additionally also groups the
   ///    commands done until the matching [restore].
   void save() {
-    _canvas.save();
+    _canvas!.save();
   }
 
   /// Saves a copy of the current transform and clip on the save stack, and then
@@ -387,20 +387,20 @@ class Canvas {
   ///    [saveLayer].
   void saveLayer(Rect bounds, Paint paint) {
     assert(paint != null);
-    if (bounds == null) {
+    /* if (bounds == null) {
       _saveLayerWithoutBounds(paint);
-    } else {
+    } else */ {
       assert(engine.rectIsValid(bounds));
       _saveLayer(bounds, paint);
     }
   }
 
   void _saveLayerWithoutBounds(Paint paint) {
-    _canvas.saveLayerWithoutBounds(paint);
+    _canvas!.saveLayerWithoutBounds(paint as SurfacePaint);
   }
 
   void _saveLayer(Rect bounds, Paint paint) {
-    _canvas.saveLayer(bounds, paint);
+    _canvas!.saveLayer(bounds, paint as SurfacePaint);
   }
 
   /// Pops the current save stack, if there is anything to pop.
@@ -411,7 +411,7 @@ class Canvas {
   /// If the state was pushed with with [saveLayer], then this call will also
   /// cause the new layer to be composited into the previous layer.
   void restore() {
-    _canvas.restore();
+    _canvas!.restore();
   }
 
   /// Returns the number of items on the save stack, including the
@@ -420,12 +420,12 @@ class Canvas {
   /// each matching call to [restore] decrements it.
   ///
   /// This number cannot go below 1.
-  int getSaveCount() => _canvas.saveCount;
+  int? getSaveCount() => _canvas!.saveCount;
 
   /// Add a translation to the current transform, shifting the coordinate space
   /// horizontally by the first argument and vertically by the second argument.
   void translate(double dx, double dy) {
-    _canvas.translate(dx, dy);
+    _canvas!.translate(dx, dy);
   }
 
   /// Add an axis-aligned scale to the current transform, scaling by the first
@@ -434,15 +434,15 @@ class Canvas {
   ///
   /// If [sy] is unspecified, [sx] will be used for the scale in both
   /// directions.
-  void scale(double sx, [double sy]) => _scale(sx, sy ?? sx);
+  void scale(double sx, [double? sy]) => _scale(sx, sy ?? sx);
 
   void _scale(double sx, double sy) {
-    _canvas.scale(sx, sy);
+    _canvas!.scale(sx, sy);
   }
 
   /// Add a rotation to the current transform. The argument is in radians clockwise.
   void rotate(double radians) {
-    _canvas.rotate(radians);
+    _canvas!.rotate(radians);
   }
 
   /// Add an axis-aligned skew to the current transform, with the first argument
@@ -450,7 +450,7 @@ class Canvas {
   /// second argument being the vertical skew in radians clockwise around the
   /// origin.
   void skew(double sx, double sy) {
-    _canvas.skew(sx, sy);
+    _canvas!.skew(sx, sy);
   }
 
   /// Multiply the current transform by the specified 4⨉4 transformation matrix
@@ -464,7 +464,7 @@ class Canvas {
   }
 
   void _transform(Float64List matrix4) {
-    _canvas.transform(matrix4);
+    _canvas!.transform(matrix4);
   }
 
   /// Reduces the clip region to the intersection of the current clip and the
@@ -487,7 +487,7 @@ class Canvas {
   }
 
   void _clipRect(Rect rect, ClipOp clipOp, bool doAntiAlias) {
-    _canvas.clipRect(rect);
+    _canvas!.clipRect(rect);
   }
 
   /// Reduces the clip region to the intersection of the current clip and the
@@ -505,7 +505,7 @@ class Canvas {
   }
 
   void _clipRRect(RRect rrect, bool doAntiAlias) {
-    _canvas.clipRRect(rrect);
+    _canvas!.clipRRect(rrect);
   }
 
   /// Reduces the clip region to the intersection of the current clip and the
@@ -524,7 +524,7 @@ class Canvas {
   }
 
   void _clipPath(Path path, bool doAntiAlias) {
-    _canvas.clipPath(path, doAntiAlias: doAntiAlias);
+    _canvas!.clipPath(path, doAntiAlias: doAntiAlias);
   }
 
   /// Paints the given [Color] onto the canvas, applying the given
@@ -537,7 +537,7 @@ class Canvas {
   }
 
   void _drawColor(Color color, BlendMode blendMode) {
-    _canvas.drawColor(color, blendMode);
+    _canvas!.drawColor(color, blendMode);
   }
 
   /// Draws a line between the given points using the given paint. The line is
@@ -552,7 +552,7 @@ class Canvas {
   }
 
   void _drawLine(Offset p1, Offset p2, Paint paint) {
-    _canvas.drawLine(p1, p2, paint);
+    _canvas!.drawLine(p1, p2, paint as SurfacePaint);
   }
 
   /// Fills the canvas with the given [Paint].
@@ -565,7 +565,7 @@ class Canvas {
   }
 
   void _drawPaint(Paint paint) {
-    _canvas.drawPaint(paint);
+    _canvas!.drawPaint(paint as SurfacePaint);
   }
 
   /// Draws a rectangle with the given [Paint]. Whether the rectangle is filled
@@ -577,7 +577,7 @@ class Canvas {
   }
 
   void _drawRect(Rect rect, Paint paint) {
-    _canvas.drawRect(rect, paint);
+    _canvas!.drawRect(rect, paint as SurfacePaint);
   }
 
   /// Draws a rounded rectangle with the given [Paint]. Whether the rectangle is
@@ -589,7 +589,7 @@ class Canvas {
   }
 
   void _drawRRect(RRect rrect, Paint paint) {
-    _canvas.drawRRect(rrect, paint);
+    _canvas!.drawRRect(rrect, paint as SurfacePaint);
   }
 
   /// Draws a shape consisting of the difference between two rounded rectangles
@@ -605,7 +605,7 @@ class Canvas {
   }
 
   void _drawDRRect(RRect outer, RRect inner, Paint paint) {
-    _canvas.drawDRRect(outer, inner, paint);
+    _canvas!.drawDRRect(outer, inner, paint as SurfacePaint);
   }
 
   /// Draws an axis-aligned oval that fills the given axis-aligned rectangle
@@ -618,7 +618,7 @@ class Canvas {
   }
 
   void _drawOval(Rect rect, Paint paint) {
-    _canvas.drawOval(rect, paint);
+    _canvas!.drawOval(rect, paint as SurfacePaint);
   }
 
   /// Draws a circle centered at the point given by the first argument and
@@ -632,7 +632,7 @@ class Canvas {
   }
 
   void _drawCircle(Offset c, double radius, Paint paint) {
-    _canvas.drawCircle(c, radius, paint);
+    _canvas!.drawCircle(c, radius, paint as SurfacePaint);
   }
 
   /// Draw an arc scaled to fit inside the given rectangle. It starts from
@@ -678,7 +678,7 @@ class Canvas {
     if (useCenter) {
       path.close();
     }
-    _canvas.drawPath(path, paint);
+    _canvas!.drawPath(path, paint as SurfacePaint);
   }
 
   /// Draws the given [Path] with the given [Paint]. Whether this shape is
@@ -691,7 +691,7 @@ class Canvas {
   }
 
   void _drawPath(Path path, Paint paint) {
-    _canvas.drawPath(path, paint);
+    _canvas!.drawPath(path, paint as SurfacePaint);
   }
 
   /// Draws the given [Image] into the canvas with its top-left corner at the
@@ -704,7 +704,7 @@ class Canvas {
   }
 
   void _drawImage(Image image, Offset p, Paint paint) {
-    _canvas.drawImage(image, p, paint);
+    _canvas!.drawImage(image, p, paint as SurfacePaint);
   }
 
   /// Draws the subset of the given image described by the `src` argument into
@@ -725,7 +725,7 @@ class Canvas {
   }
 
   void _drawImageRect(Image image, Rect src, Rect dst, Paint paint) {
-    _canvas.drawImageRect(image, src, dst, paint);
+    _canvas!.drawImageRect(image, src, dst, paint as SurfacePaint);
   }
 
   /// Draws the given [Image] into the canvas using the given [Paint].
@@ -748,8 +748,8 @@ class Canvas {
     assert(paint != null);
 
     // Assert you can fit the scaled image into dst.
-    assert(image.width - center.width >= dst.width);
-    assert(image.height - center.height >= dst.height);
+    assert(image.width! - center.width >= dst.width);
+    assert(image.height! - center.height >= dst.height);
 
     // The four unscaled corner rectangles in the from the src.
     final Rect srcTopLeft = Rect.fromLTWH(
@@ -761,20 +761,20 @@ class Canvas {
     final Rect srcTopRight = Rect.fromLTWH(
       center.right,
       0,
-      image.width - center.right,
+      image.width! - center.right,
       center.top,
     );
     final Rect srcBottomLeft = Rect.fromLTWH(
       0,
       center.bottom,
       center.left,
-      image.height - center.bottom,
+      image.height! - center.bottom,
     );
     final Rect srcBottomRight = Rect.fromLTWH(
       center.right,
       center.bottom,
-      image.width - center.right,
-      image.height - center.bottom,
+      image.width! - center.right,
+      image.height! - center.bottom,
     );
 
     final Rect dstTopLeft = srcTopLeft.shift(dst.topLeft);
@@ -924,7 +924,7 @@ class Canvas {
   }
 
   void _drawParagraph(Paragraph paragraph, Offset offset) {
-    _canvas.drawParagraph(paragraph, offset);
+    _canvas!.drawParagraph(paragraph, offset);
   }
 
   /// Draws a sequence of points according to the given [PointMode].
@@ -939,7 +939,7 @@ class Canvas {
     assert(pointMode != null);
     assert(points != null);
     assert(paint != null);
-    final Float32List pointList = engine.offsetListToFloat32List(points);
+    final Float32List pointList = engine.offsetListToFloat32List(points)!;
     drawRawPoints(pointMode, pointList, paint);
   }
 
@@ -959,15 +959,15 @@ class Canvas {
     if (points.length % 2 != 0) {
       throw ArgumentError('"points" must have an even number of values.');
     }
-    _canvas.drawRawPoints(pointMode, points, paint);
+    _canvas!.drawRawPoints(pointMode, points, paint);
   }
 
   void drawVertices(Vertices vertices, BlendMode blendMode, Paint paint) {
-    if (vertices == null) return;
+    /* if (vertices == null) return; */
     //assert(vertices != null); // vertices is checked on the engine side
     assert(paint != null);
     assert(blendMode != null);
-    _canvas.drawVertices(vertices, blendMode, paint);
+    _canvas!.drawVertices(vertices, blendMode, paint as SurfacePaint);
   }
 
   /// Draws part of an image - the [atlas] - onto the canvas.
@@ -1061,7 +1061,7 @@ class Canvas {
     assert(path != null); // path is checked on the engine side
     assert(color != null);
     assert(transparentOccluder != null);
-    _canvas.drawShadow(path, color, elevation, transparentOccluder);
+    _canvas!.drawShadow(path, color, elevation, transparentOccluder);
   }
 }
 
@@ -1081,7 +1081,7 @@ abstract class Picture {
   ///
   /// Although the image is returned synchronously, the picture is actually
   /// rasterized the first time the image is drawn and then cached.
-  Future<Image> toImage(int width, int height);
+  Future<Image>? toImage(int width, int height);
 
   /// Release the resources used by this object. The object is no longer usable
   /// after this method is called.
@@ -1194,12 +1194,12 @@ class RawRecordingCanvas extends engine.BitmapCanvas
   @override
   Picture endRecording() => throw UnsupportedError('');
 
-  engine.RecordingCanvas _canvas; // ignore: unused_field
+  engine.RecordingCanvas? _canvas; // ignore: unused_field
 
   bool _isRecording = true; // ignore: unused_field
 
   @override
   bool get isRecording => true;
 
-  Rect cullRect;
+  Rect? cullRect;
 }

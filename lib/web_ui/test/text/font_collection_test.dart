@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('$FontManager', () {
-    FontManager fontManager;
+    FontManager? fontManager;
     const String _testFontUrl = 'packages/ui/assets/ahem.ttf';
 
     setUp(() {
@@ -27,9 +27,9 @@ void main() {
         final String _testFontFamily = "Ahem";
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             _testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);
@@ -45,9 +45,9 @@ void main() {
         final String _testFontFamily = "Ahem ahem ahem";
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             _testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);
@@ -65,9 +65,9 @@ void main() {
         final String _testFontFamily = "AhEm";
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             _testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);
@@ -85,9 +85,9 @@ void main() {
         final String _testFontFamily = '/Ahem';
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             _testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);
@@ -111,9 +111,9 @@ void main() {
         final String _testFontFamily = 'Ahem!!ahem';
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             _testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);
@@ -137,9 +137,9 @@ void main() {
         final String _testFontFamily = 'Ahem ,ahem';
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             _testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);
@@ -164,9 +164,9 @@ void main() {
         final String testFontFamily = 'Ahem 1998';
         final List<String> fontFamilyList = List<String>();
 
-        fontManager.registerAsset(
+        fontManager!.registerAsset(
             testFontFamily, 'url($_testFontUrl)', const <String, String>{});
-        await fontManager.ensureFontsLoaded();
+        await fontManager!.ensureFontsLoaded();
         html.document.fonts
             .forEach((html.FontFace f, html.FontFace f2, html.FontFaceSet s) {
           fontFamilyList.add(f.family);

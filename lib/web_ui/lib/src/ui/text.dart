@@ -134,9 +134,9 @@ class FontWeight {
   static FontWeight lerp(FontWeight a, FontWeight b, double t) {
     assert(t != null);
     return values[
-        lerpDouble(a?.index ?? normal.index, b?.index ?? normal.index, t)
+        lerpDouble(a.index ?? normal.index, b.index ?? normal.index, t)!
             .round()
-            .clamp(0, 8)];
+            .clamp(0, 8) as int];
   }
 
   @override
@@ -151,7 +151,7 @@ class FontWeight {
       6: 'FontWeight.w700',
       7: 'FontWeight.w800',
       8: 'FontWeight.w900',
-    }[index];
+    }[index]!;
   }
 }
 
@@ -539,25 +539,25 @@ abstract class TextStyle {
   /// * `background`: The paint drawn as a background for the text.
   /// * `foreground`: The paint used to draw the text. If this is specified, `color` must be null.
   factory TextStyle({
-    Color color,
-    TextDecoration decoration,
-    Color decorationColor,
-    TextDecorationStyle decorationStyle,
-    double decorationThickness,
-    FontWeight fontWeight,
-    FontStyle fontStyle,
-    TextBaseline textBaseline,
-    String fontFamily,
-    List<String> fontFamilyFallback,
-    double fontSize,
-    double letterSpacing,
-    double wordSpacing,
-    double height,
-    Locale locale,
-    Paint background,
-    Paint foreground,
-    List<Shadow> shadows,
-    List<FontFeature> fontFeatures,
+    Color? color,
+    TextDecoration? decoration,
+    Color? decorationColor,
+    TextDecorationStyle? decorationStyle,
+    double? decorationThickness,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    TextBaseline? textBaseline,
+    String? fontFamily,
+    List<String>? fontFamilyFallback,
+    double? fontSize,
+    double? letterSpacing,
+    double? wordSpacing,
+    double? height,
+    Locale? locale,
+    Paint? background,
+    Paint? foreground,
+    List<Shadow>? shadows,
+    List<FontFeature>? fontFeatures,
   }) {
     if (engine.experimentalUseSkia) {
       return engine.SkTextStyle(
@@ -576,8 +576,8 @@ abstract class TextStyle {
           wordSpacing: wordSpacing,
           height: height,
           locale: locale,
-          background: background,
-          foreground: foreground,
+          background: background as SkPaint?,
+          foreground: foreground as SkPaint?,
           shadows: shadows,
           fontFeatures: fontFeatures,
       );
@@ -665,18 +665,18 @@ abstract class ParagraphStyle {
   ///
   /// * `locale`: The locale used to select region-specific glyphs.
   factory ParagraphStyle({
-    TextAlign textAlign,
-    TextDirection textDirection,
-    int maxLines,
-    String fontFamily,
-    double fontSize,
-    double height,
-    TextHeightBehavior textHeightBehavior,
-    FontWeight fontWeight,
-    FontStyle fontStyle,
-    StrutStyle strutStyle,
-    String ellipsis,
-    Locale locale,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    int? maxLines,
+    String? fontFamily,
+    double? fontSize,
+    double? height,
+    TextHeightBehavior? textHeightBehavior,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    StrutStyle? strutStyle,
+    String? ellipsis,
+    Locale? locale,
   }) {
     if (engine.experimentalUseSkia) {
       return engine.SkParagraphStyle(
@@ -749,14 +749,14 @@ abstract class StrutStyle {
   ///   of the [fontFamily] and `(lineHeight + leading) * fontSize`. Otherwise, it
   ///   will be determined by the Ascent + half-leading of the first text.
   factory StrutStyle({
-    String fontFamily,
-    List<String> fontFamilyFallback,
-    double fontSize,
-    double height,
-    double leading,
-    FontWeight fontWeight,
-    FontStyle fontStyle,
-    bool forceStrutHeight,
+    String? fontFamily,
+    List<String>? fontFamilyFallback,
+    double? fontSize,
+    double? height,
+    double? leading,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    bool? forceStrutHeight,
   }) = engine.EngineStrutStyle;
 }
 
@@ -877,31 +877,31 @@ class TextBox {
   /// The left edge of the text box, irrespective of direction.
   ///
   /// To get the leading edge (which may depend on the [direction]), consider [start].
-  final double left;
+  final double? left;
 
   /// The top edge of the text box.
-  final double top;
+  final double? top;
 
   /// The right edge of the text box, irrespective of direction.
   ///
   /// To get the trailing edge (which may depend on the [direction]), consider [end].
-  final double right;
+  final double? right;
 
   /// The bottom edge of the text box.
-  final double bottom;
+  final double? bottom;
 
   /// The direction in which text inside this box flows.
-  final TextDirection direction;
+  final TextDirection? direction;
 
   /// Returns a rect of the same size as this box.
-  Rect toRect() => Rect.fromLTRB(left, top, right, bottom);
+  Rect toRect() => Rect.fromLTRB(left!, top!, right!, bottom!);
 
   /// The [left] edge of the box for left-to-right text; the [right] edge of the box for right-to-left text.
   ///
   /// See also:
   ///
   ///  * [direction], which specifies the text direction.
-  double get start {
+  double? get start {
     return (direction == TextDirection.ltr) ? left : right;
   }
 
@@ -910,7 +910,7 @@ class TextBox {
   /// See also:
   ///
   ///  * [direction], which specifies the text direction.
-  double get end {
+  double? get end {
     return (direction == TextDirection.ltr) ? right : left;
   }
 
@@ -935,7 +935,7 @@ class TextBox {
 
   @override
   String toString() {
-    return 'TextBox.fromLTRBD(${left.toStringAsFixed(1)}, ${top.toStringAsFixed(1)}, ${right.toStringAsFixed(1)}, ${bottom.toStringAsFixed(1)}, $direction)';
+    return 'TextBox.fromLTRBD(${left!.toStringAsFixed(1)}, ${top!.toStringAsFixed(1)}, ${right!.toStringAsFixed(1)}, ${bottom!.toStringAsFixed(1)}, $direction)';
   }
 }
 
@@ -1008,7 +1008,7 @@ class TextPosition {
   ///
   /// The arguments must not be null (so the [offset] argument is required).
   const TextPosition({
-    this.offset,
+    required this.offset,
     this.affinity = TextAffinity.downstream,
   })  : assert(offset != null),
         assert(affinity != null);
@@ -1077,21 +1077,21 @@ class TextRange {
   /// The index of the first character in the range.
   ///
   /// If [start] and [end] are both -1, the text range is empty.
-  final int start;
+  final int? start;
 
   /// The next index after the characters in this range.
   ///
   /// If [start] and [end] are both -1, the text range is empty.
-  final int end;
+  final int? end;
 
   /// Whether this range represents a valid position in the text.
-  bool get isValid => start >= 0 && end >= 0;
+  bool get isValid => start! >= 0 && end! >= 0;
 
   /// Whether this range is empty (but still potentially placed inside the text).
   bool get isCollapsed => start == end;
 
   /// Whether the start of this range precedes the end.
-  bool get isNormalized => end >= start;
+  bool get isNormalized => end! >= start!;
 
   /// The text before this range.
   String textBefore(String text) {
@@ -1102,13 +1102,13 @@ class TextRange {
   /// The text after this range.
   String textAfter(String text) {
     assert(isNormalized);
-    return text.substring(end);
+    return text.substring(end!);
   }
 
   /// The text inside this range.
   String textInside(String text) {
     assert(isNormalized);
-    return text.substring(start, end);
+    return text.substring(start!, end);
   }
 
   @override
@@ -1121,8 +1121,8 @@ class TextRange {
 
   @override
   int get hashCode => hashValues(
-        start.hashCode,
-        end.hashCode,
+        start!.hashCode,
+        end!.hashCode,
       );
 
   @override
@@ -1140,7 +1140,7 @@ class ParagraphConstraints {
   ///
   /// The [width] argument must not be null.
   const ParagraphConstraints({
-    this.width,
+    required this.width,
   }) : assert(width != null);
 
   /// The width the paragraph should use whey computing the positions of glyphs.
@@ -1249,15 +1249,15 @@ enum BoxWidthStyle {
 
 abstract class LineMetrics {
   factory LineMetrics({
-    bool hardBreak,
-    double ascent,
-    double descent,
-    double unscaledAscent,
-    double height,
-    double width,
-    double left,
-    double baseline,
-    int lineNumber,
+    required bool hardBreak,
+    double? ascent,
+    double? descent,
+    double? unscaledAscent,
+    double? height,
+    required double width,
+    required double left,
+    double? baseline,
+    int? lineNumber,
   }) = engine.EngineLineMetrics;
 
   /// {@template dart.ui.LineMetrics.hardBreak}
@@ -1358,18 +1358,18 @@ abstract class Paragraph {
   /// The amount of horizontal space this paragraph occupies.
   ///
   /// Valid only after [layout] has been called.
-  double get width;
+  double? get width;
 
   /// The amount of vertical space this paragraph occupies.
   ///
   /// Valid only after [layout] has been called.
-  double get height;
+  double? get height;
 
   /// The distance from the left edge of the leftmost glyph to the right edge of
   /// the rightmost glyph in the paragraph.
   ///
   /// Valid only after [layout] has been called.
-  double get longestLine;
+  double? get longestLine;
 
   /// {@template dart.ui.paragraph.minIntrinsicWidth}
   /// The minimum width that this paragraph could be without failing to paint
@@ -1377,7 +1377,7 @@ abstract class Paragraph {
   /// {@endtemplate}
   ///
   /// Valid only after [layout] has been called.
-  double get minIntrinsicWidth;
+  double? get minIntrinsicWidth;
 
   /// {@template dart.ui.paragraph.maxIntrinsicWidth}
   /// Returns the smallest width beyond which increasing the width never
@@ -1385,7 +1385,7 @@ abstract class Paragraph {
   /// {@endtemplate}
   ///
   /// Valid only after [layout] has been called.
-  double get maxIntrinsicWidth;
+  double? get maxIntrinsicWidth;
 
   /// {@template dart.ui.paragraph.alphabeticBaseline}
   /// The distance from the top of the paragraph to the alphabetic
@@ -1393,7 +1393,7 @@ abstract class Paragraph {
   /// {@endtemplate}
   ///
   /// Valid only after [layout] has been called.
-  double get alphabeticBaseline;
+  double? get alphabeticBaseline;
 
   /// {@template dart.ui.paragraph.ideographicBaseline}
   /// The distance from the top of the paragraph to the ideographic
@@ -1401,7 +1401,7 @@ abstract class Paragraph {
   /// {@endtemplate}
   ///
   /// Valid only after [layout] has been called.
-  double get ideographicBaseline;
+  double? get ideographicBaseline;
 
   /// True if there is more vertical content, but the text was truncated, either
   /// because we reached `maxLines` lines of text or because the `maxLines` was
@@ -1410,7 +1410,7 @@ abstract class Paragraph {
   ///
   /// See the discussion of the `maxLines` and `ellipsis` arguments at [new
   /// ParagraphStyle].
-  bool get didExceedMaxLines;
+  bool? get didExceedMaxLines;
 
   /// Computes the size and position of each glyph in the paragraph.
   ///
@@ -1427,7 +1427,7 @@ abstract class Paragraph {
   /// The [boxHeightStyle] and [boxWidthStyle] parameters must not be null.
   ///
   /// See [BoxHeightStyle] and [BoxWidthStyle] for full descriptions of each option.
-  List<TextBox> getBoxesForRange(int start, int end,
+  List<TextBox?> getBoxesForRange(int start, int end,
       {BoxHeightStyle boxHeightStyle = BoxHeightStyle.tight,
       BoxWidthStyle boxWidthStyle = BoxWidthStyle.tight});
 
@@ -1470,7 +1470,7 @@ abstract class Paragraph {
   ///
   /// This can potentially return a large amount of data, so it is not recommended
   /// to repeatedly call this. Instead, cache the results.
-  List<LineMetrics> computeLineMetrics();
+  List<LineMetrics>? computeLineMetrics();
 }
 
 /// Builds a [Paragraph] containing text with the given styling information.
@@ -1494,7 +1494,7 @@ abstract class ParagraphBuilder {
     if (engine.experimentalUseSkia) {
       return engine.SkParagraphBuilder(style);
     } else {
-      return engine.EngineParagraphBuilder(style);
+      return engine.EngineParagraphBuilder(style as EngineParagraphStyle);
     }
   }
 
@@ -1524,7 +1524,7 @@ abstract class ParagraphBuilder {
   Paragraph build();
 
   /// The number of placeholders currently in the paragraph.
-  int get placeholderCount;
+  int? get placeholderCount;
 
   /// The scales of the placeholders in the paragraph.
   List<double> get placeholderScales;
@@ -1576,9 +1576,9 @@ abstract class ParagraphBuilder {
     double width,
     double height,
     PlaceholderAlignment alignment, {
-    double scale,
-    double baselineOffset,
-    TextBaseline baseline,
+    double? scale,
+    double? baselineOffset,
+    TextBaseline? baseline,
   });
 }
 
@@ -1587,23 +1587,23 @@ abstract class ParagraphBuilder {
 /// * `list`: A list of bytes containing the font file.
 /// * `fontFamily`: The family name used to identify the font in text styles.
 ///  If this is not provided, then the family name will be extracted from the font file.
-Future<void> loadFontFromList(Uint8List list, {String fontFamily}) {
+Future<void> loadFontFromList(Uint8List list, {String? fontFamily}) {
   if (engine.experimentalUseSkia) {
-    return engine.skiaFontCollection.loadFontFromList(list, fontFamily: fontFamily).then(
+    return engine.skiaFontCollection!.loadFontFromList(list, fontFamily: fontFamily).then(
         (_) => _sendFontChangeMessage()
     );
   } else {
-    return _fontCollection.loadFontFromList(list, fontFamily: fontFamily).then(
+    return _fontCollection!.loadFontFromList(list, fontFamily: fontFamily!).then(
       (_) => _sendFontChangeMessage()
     );
   }
 }
 
-final ByteData _fontChangeMessage = engine.JSONMessageCodec().encodeMessage(<String, dynamic>{'type': 'fontsChange'});
+final ByteData? _fontChangeMessage = engine.JSONMessageCodec().encodeMessage(<String, dynamic>{'type': 'fontsChange'});
 
 FutureOr<void> _sendFontChangeMessage() async {
   if (window.onPlatformMessage != null)
-    window.onPlatformMessage(
+    window.onPlatformMessage!(
       'flutter/system',
       _fontChangeMessage,
       (_) {},

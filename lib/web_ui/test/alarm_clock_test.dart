@@ -72,13 +72,13 @@ void _alarmClockTests() {
     expect(fakeAsync.nonPeriodicTimerCount, 1);
     expect(callCount, 0);
 
-    alarm.datetime = alarm.datetime.add(Duration.zero);
+    alarm.datetime = alarm.datetime!.add(Duration.zero);
     expect(fakeAsync.nonPeriodicTimerCount, 1);
     expect(callCount, 0);
 
     fakeAsync.elapse(const Duration(seconds: 30));
 
-    alarm.datetime = alarm.datetime.add(Duration.zero);
+    alarm.datetime = alarm.datetime!.add(Duration.zero);
     expect(fakeAsync.nonPeriodicTimerCount, 1);
     expect(callCount, 0);
 
@@ -112,7 +112,7 @@ void _alarmClockTests() {
     expect(callCount, 0);
 
     // Reschedule.
-    alarm.datetime = alarm.datetime.add(const Duration(minutes: 1));
+    alarm.datetime = alarm.datetime!.add(const Duration(minutes: 1));
 
     fakeAsync.elapse(const Duration(minutes: 1));
 
@@ -137,7 +137,7 @@ void _alarmClockTests() {
     expect(callCount, 0);
 
     // Reschedule to an earlier time that's still in the future.
-    alarm.datetime = alarm.datetime.subtract(const Duration(seconds: 15));
+    alarm.datetime = alarm.datetime!.subtract(const Duration(seconds: 15));
 
     fakeAsync.elapse(const Duration(seconds: 45));
     expect(callCount, 1);

@@ -17,10 +17,10 @@ class AssetManager {
 
   const AssetManager({this.assetsDir = _defaultAssetsDir});
 
-  String get _baseUrl {
+  String? get _baseUrl {
     return html.window.document
         .querySelectorAll('meta')
-        .whereType<html.MetaElement>()
+        .whereType<html.MetaElement?>()
         .firstWhere((dynamic e) => e.name == 'assetBase', orElse: () => null)
         ?.content;
   }
@@ -58,7 +58,7 @@ class AssetManager {
       final ByteBuffer response = request.response;
       return response.asByteData();
     } on html.ProgressEvent catch (e) {
-      final html.EventTarget target = e.target;
+      final html.EventTarget? target = e.target;
       if (target is html.HttpRequest) {
         if (target.status == 404 && asset == 'AssetManifest.json') {
           html.window.console

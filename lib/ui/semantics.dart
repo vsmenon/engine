@@ -263,7 +263,7 @@ class SemanticsAction {
       case _kMoveCursorBackwardByWordIndex:
         return 'SemanticsAction.moveCursorBackwardByWord';
     }
-    return null;
+    return null!;
   }
 }
 
@@ -596,7 +596,7 @@ class SemanticsFlag {
       case _kIsLinkIndex:
         return 'SemanticsFlag.isLink';
     }
-    return null;
+    return null!;
   }
 }
 
@@ -682,32 +682,32 @@ class SemanticsUpdateBuilder extends NativeFieldWrapperClass2 {
   /// node starts at `elevation` above the parent and ends at `elevation` +
   /// `thickness` above the parent.
   void updateNode({
-    int id,
-    int flags,
-    int actions,
-    int maxValueLength,
-    int currentValueLength,
-    int textSelectionBase,
-    int textSelectionExtent,
-    int platformViewId,
-    int scrollChildren,
-    int scrollIndex,
-    double scrollPosition,
-    double scrollExtentMax,
-    double scrollExtentMin,
-    double elevation,
-    double thickness,
-    Rect rect,
-    String label,
-    String hint,
-    String value,
-    String increasedValue,
-    String decreasedValue,
-    TextDirection textDirection,
-    Float64List transform,
-    Int32List childrenInTraversalOrder,
-    Int32List childrenInHitTestOrder,
-    Int32List additionalActions,
+    int? id,
+    int? flags,
+    int? actions,
+    int? maxValueLength,
+    int? currentValueLength,
+    int? textSelectionBase,
+    int? textSelectionExtent,
+    int? platformViewId,
+    int? scrollChildren,
+    int? scrollIndex,
+    double? scrollPosition,
+    double? scrollExtentMax,
+    double? scrollExtentMin,
+    double? elevation,
+    double? thickness,
+    required Rect rect,
+    String? label,
+    String? hint,
+    String? value,
+    String? increasedValue,
+    String? decreasedValue,
+    TextDirection? textDirection,
+    required Float64List transform,
+    Int32List? childrenInTraversalOrder,
+    Int32List? childrenInHitTestOrder,
+    Int32List? additionalActions,
   }) {
     assert(_matrix4IsValid(transform));
     assert(
@@ -747,35 +747,35 @@ class SemanticsUpdateBuilder extends NativeFieldWrapperClass2 {
     );
   }
   void _updateNode(
-    int id,
-    int flags,
-    int actions,
-    int maxValueLength,
-    int currentValueLength,
-    int textSelectionBase,
-    int textSelectionExtent,
-    int platformViewId,
-    int scrollChildren,
-    int scrollIndex,
-    double scrollPosition,
-    double scrollExtentMax,
-    double scrollExtentMin,
+    int? id,
+    int? flags,
+    int? actions,
+    int? maxValueLength,
+    int? currentValueLength,
+    int? textSelectionBase,
+    int? textSelectionExtent,
+    int? platformViewId,
+    int? scrollChildren,
+    int? scrollIndex,
+    double? scrollPosition,
+    double? scrollExtentMax,
+    double? scrollExtentMin,
     double left,
     double top,
     double right,
     double bottom,
-    double elevation,
-    double thickness,
-    String label,
-    String hint,
-    String value,
-    String increasedValue,
-    String decreasedValue,
+    double? elevation,
+    double? thickness,
+    String? label,
+    String? hint,
+    String? value,
+    String? increasedValue,
+    String? decreasedValue,
     int textDirection,
     Float64List transform,
-    Int32List childrenInTraversalOrder,
-    Int32List childrenInHitTestOrder,
-    Int32List additionalActions,
+    Int32List? childrenInTraversalOrder,
+    Int32List? childrenInHitTestOrder,
+    Int32List? additionalActions,
   ) native 'SemanticsUpdateBuilder_updateNode';
 
   /// Update the custom semantics action associated with the given `id`.
@@ -793,12 +793,12 @@ class SemanticsUpdateBuilder extends NativeFieldWrapperClass2 {
   /// For overridden standard actions, `overrideId` corresponds with a
   /// [SemanticsAction.index] value. For custom actions this argument should not be
   /// provided.
-  void updateCustomAction({int id, String label, String hint, int overrideId = -1}) {
+  void updateCustomAction({required int id, String? label, String? hint, int overrideId = -1}) {
     assert(id != null);
     assert(overrideId != null);
     _updateCustomAction(id, label, hint, overrideId);
   }
-  void _updateCustomAction(int id, String label, String hint, int overrideId) native 'SemanticsUpdateBuilder_updateCustomAction';
+  void _updateCustomAction(int id, String? label, String? hint, int overrideId) native 'SemanticsUpdateBuilder_updateCustomAction';
 
   /// Creates a [SemanticsUpdate] object that encapsulates the updates recorded
   /// by this object.

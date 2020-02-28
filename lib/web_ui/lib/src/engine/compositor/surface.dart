@@ -25,7 +25,7 @@ class SurfaceFrame {
     return submitCallback(this, skiaCanvas);
   }
 
-  SkCanvas get skiaCanvas => skiaSurface?.getCanvas();
+  SkCanvas get skiaCanvas => skiaSurface.getCanvas()!;
 }
 
 /// A surface which can be drawn into by the compositor.
@@ -34,23 +34,23 @@ class SurfaceFrame {
 /// successive frames if they are the same size. Otherwise, a new [SkSurface] is
 /// created.
 class Surface {
-  SkSurface _surface;
-  html.Element htmlElement;
+  SkSurface? _surface;
+  html.Element? htmlElement;
 
   bool _addedToScene = false;
 
   /// The default view embedder. Coordinates embedding platform views and
   /// overlaying subsequent draw operations on top.
-  HtmlViewEmbedder viewEmbedder;
+  HtmlViewEmbedder? viewEmbedder;
 
   /// Acquire a frame of the given [size] containing a drawable canvas.
   ///
   /// The given [size] is in physical pixels.
-  SurfaceFrame acquireFrame(ui.Size size) {
-    final SkSurface surface = acquireRenderSurface(size);
-    canvasKit.callMethod('setCurrentContext', <int>[surface.context]);
+  SurfaceFrame acquireFrame(ui.Size? size) {
+    final SkSurface surface = acquireRenderSurface(size)!;
+    canvasKit!.callMethod('setCurrentContext', <int?>[surface.context]);
 
-    if (surface == null) return null;
+    /* if (surface == null) return null; */
 
     SubmitCallback submitCallback =
         (SurfaceFrame surfaceFrame, SkCanvas canvas) {
@@ -60,7 +60,7 @@ class Surface {
     return SurfaceFrame(surface, submitCallback);
   }
 
-  SkSurface acquireRenderSurface(ui.Size size) {
+  SkSurface? acquireRenderSurface(ui.Size? size) {
     if (!_createOrUpdateSurfaces(size)) {
       return null;
     }
@@ -69,17 +69,17 @@ class Surface {
 
   void addToScene() {
     if (!_addedToScene) {
-      skiaSceneHost.children.insert(0, htmlElement);
+      skiaSceneHost!.children.insert(0, htmlElement!);
     }
     _addedToScene = true;
   }
 
-  bool _createOrUpdateSurfaces(ui.Size size) {
+  bool _createOrUpdateSurfaces(ui.Size? size) {
     if (_surface != null &&
         size ==
             ui.Size(
-              _surface.width().toDouble(),
-              _surface.height().toDouble(),
+              _surface!.width()!.toDouble(),
+              _surface!.height()!.toDouble(),
             )) {
       return true;
     }
@@ -90,7 +90,7 @@ class Surface {
     htmlElement = null;
     _addedToScene = false;
 
-    if (size.isEmpty) {
+    if (size!.isEmpty) {
       html.window.console.error('Cannot create surfaces of empty size.');
       return false;
     }
@@ -104,20 +104,20 @@ class Surface {
     return true;
   }
 
-  SkSurface _wrapHtmlCanvas(ui.Size size) {
-    final ui.Size logicalSize = size / ui.window.devicePixelRatio;
+  SkSurface? _wrapHtmlCanvas(ui.Size size) {
+    final ui.Size logicalSize = size / ui.window.devicePixelRatio!;
     final html.CanvasElement htmlCanvas = html.CanvasElement(
-        width: size.width.ceil(), height: size.height.ceil());
+        width: size.width!.ceil(), height: size.height!.ceil());
     htmlCanvas.style
       ..position = 'absolute'
-      ..width = '${logicalSize.width.ceil()}px'
-      ..height = '${logicalSize.height.ceil()}px';
-    final int glContext = canvasKit
+      ..width = '${logicalSize.width!.ceil()}px'
+      ..height = '${logicalSize.height!.ceil()}px';
+    final int? glContext = canvasKit!
         .callMethod('GetWebGLContext', <html.CanvasElement>[htmlCanvas]);
-    final js.JsObject grContext =
-        canvasKit.callMethod('MakeGrContext', [glContext]);
-    final js.JsObject skSurface =
-        canvasKit.callMethod('MakeOnScreenGLSurface', <dynamic>[
+    final js.JsObject? grContext =
+        canvasKit!.callMethod('MakeGrContext', [glContext]);
+    final js.JsObject? skSurface =
+        canvasKit!.callMethod('MakeOnScreenGLSurface', <dynamic>[
       grContext,
       size.width,
       size.height,
@@ -133,12 +133,12 @@ class Surface {
   }
 
   bool _presentSurface(SkCanvas canvas) {
-    if (canvas == null) {
+    /* if (canvas == null) {
       return false;
-    }
+    } */
 
-    canvasKit.callMethod('setCurrentContext', [_surface.context]);
-    _surface.getCanvas().flush();
+    canvasKit!.callMethod('setCurrentContext', [_surface!.context]);
+    _surface!.getCanvas().flush();
     return true;
   }
 }
@@ -146,19 +146,19 @@ class Surface {
 /// A Dart wrapper around Skia's SkSurface.
 class SkSurface {
   final js.JsObject _surface;
-  final int _glContext;
+  final int? _glContext;
 
   SkSurface(this._surface, this._glContext);
 
   SkCanvas getCanvas() {
-    final js.JsObject skCanvas = _surface.callMethod('getCanvas');
+    final js.JsObject? skCanvas = _surface.callMethod('getCanvas');
     return SkCanvas(skCanvas);
   }
 
-  int get context => _glContext;
+  int? get context => _glContext;
 
-  int width() => _surface.callMethod('width');
-  int height() => _surface.callMethod('height');
+  int? width() => _surface.callMethod('width');
+  int? height() => _surface.callMethod('height');
 
   void dispose() {
     _surface.callMethod('dispose');

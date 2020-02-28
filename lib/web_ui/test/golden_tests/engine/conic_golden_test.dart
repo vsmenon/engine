@@ -23,9 +23,9 @@ void main() async {
       ..color = const Color(0x7F7F7F7F)
       ..style = PaintingStyle.fill;
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, paint as SurfacePaint);
 
-    paint = Paint()
+    paint = Paint() as SurfacePaint
       ..strokeWidth = 2.0
       ..color = const Color(0xFF7F007F)
       ..style = PaintingStyle.stroke;
@@ -49,8 +49,8 @@ void main() async {
     path.moveTo(p0.dx, p0.dy);
     path.conicTo(pc.dx, pc.dy, p2.dx, p2.dy, 0.5);
     path.close();
-    path.moveTo(p0.dx, p0.dy + 200);
-    path.conicTo(pc.dx, pc.dy + 200, p2.dx, p2.dy + 200, 10);
+    path.moveTo(p0.dx, p0.dy! + 200);
+    path.conicTo(pc.dx, pc.dy! + 200, p2.dx, p2.dy! + 200, 10);
     path.close();
 
     await testPath(path, 'render_conic_1_w10');
@@ -67,8 +67,8 @@ void main() async {
     path.moveTo(p0.dx, p0.dy);
     path.conicTo(pc.dx, pc.dy, p2.dx, p2.dy, 0.5);
     path.close();
-    path.moveTo(p0.dx, p0.dy + 200);
-    path.conicTo(pc.dx, pc.dy + 200, p2.dx, p2.dy + 200, 10);
+    path.moveTo(p0.dx, p0.dy! + 200);
+    path.conicTo(pc.dx, pc.dy! + 200, p2.dx, p2.dy! + 200, 10);
     path.close();
 
     await testPath(path, 'render_conic_2_w10');
@@ -85,8 +85,8 @@ void main() async {
     path.moveTo(p0.dx, p0.dy);
     path.conicTo(pc.dx, pc.dy, p2.dx, p2.dy, 0.5);
     path.close();
-    path.moveTo(p0.dx, p0.dy + 200);
-    path.conicTo(pc.dx, pc.dy + 200, p2.dx, p2.dy + 200, 10);
+    path.moveTo(p0.dx, p0.dy! + 200);
+    path.conicTo(pc.dx, pc.dy! + 200, p2.dx, p2.dy! + 200, 10);
     path.close();
 
     await testPath(path, 'render_conic_2');

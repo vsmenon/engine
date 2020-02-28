@@ -53,16 +53,16 @@ class ImageDiff {
   ///  * white: when both pixels are the same
   ///  * red: when a pixel is found in other, but not in golden
   ///  * green: when a pixel is found in golden, but not in other
-  Image diff;
+  Image? diff;
 
   /// The ratio of wrong pixels to all pixels in golden (between 0 and 1)
   /// This gets set to 1 (100% difference) when golden and other aren't the same size.
   double get rate => _wrongPixels / _pixelCount;
 
   ImageDiff({
-    @required this.golden,
-    @required this.other,
-    @required this.pixelComparison,
+    /* @*/ required this.golden,
+    /* @*/ required this.other,
+    /* @*/ required this.pixelComparison,
   }) {
     _computeDiff();
   }
@@ -75,7 +75,7 @@ class ImageDiff {
     <int>[255, 255, 255],  // white
     <int>[0, 0, 0],  // black
     false,
-  );
+  ) as double;
 
   // If the normalized color difference of a pixel is greater than this number,
   // we consider it a wrong pixel.
@@ -163,14 +163,14 @@ class ImageDiff {
           final double colorDistance = Color.distance(goldenPixel, otherPixel, false) / _maxTheoreticalColorDistance;
           final bool isFuzzySame = colorDistance < _kColorDistanceThreshold;
           if (isExactlySame || isFuzzySame) {
-            diff.setPixel(x, y, _colorOk);
+            diff!.setPixel(x, y, _colorOk);
           } else {
             final int goldenLuminance = getLuminanceRgb(goldenPixel[0], goldenPixel[1], goldenPixel[2]);
             final int otherLuminance = getLuminanceRgb(otherPixel[0], otherPixel[1], otherPixel[2]);
             if (goldenLuminance < otherLuminance) {
-              diff.setPixel(x, y, _colorExpectedPixel);
+              diff!.setPixel(x, y, _colorExpectedPixel);
             } else {
-              diff.setPixel(x, y, _colorBadPixel);
+              diff!.setPixel(x, y, _colorBadPixel);
             }
             _wrongPixels++;
           }
@@ -196,36 +196,36 @@ Future<void> fetchGoldens() async {
 }
 
 class _GoldensRepoFetcher {
-  String _repository;
-  String _revision;
+  String? _repository;
+  String? _revision;
 
   Future<void> fetch() async {
     final io.File lockFile = io.File(
-      path.join(environment.webUiDevDir.path, 'goldens_lock.yaml')
+      path.join(environment!.webUiDevDir.path, 'goldens_lock.yaml')
     );
     final YamlMap lock = loadYaml(lockFile.readAsStringSync());
     _repository = lock['repository'];
     _revision = lock['revision'];
 
-    final String localRevision = await _getLocalRevision();
+    final String? localRevision = await _getLocalRevision();
     if (localRevision == _revision) {
       return;
     }
 
     print('Fetching $_repository@$_revision');
 
-    if (!environment.webUiGoldensRepositoryDirectory.existsSync()) {
-      environment.webUiGoldensRepositoryDirectory.createSync(recursive: true);
+    if (!environment!.webUiGoldensRepositoryDirectory.existsSync()) {
+      environment!.webUiGoldensRepositoryDirectory.createSync(recursive: true);
       await runProcess(
         'git',
         <String>['init'],
-        workingDirectory: environment.webUiGoldensRepositoryDirectory.path,
+        workingDirectory: environment!.webUiGoldensRepositoryDirectory.path,
         mustSucceed: true,
       );
       await runProcess(
         'git',
-        <String>['remote', 'add', 'origin', _repository],
-        workingDirectory: environment.webUiGoldensRepositoryDirectory.path,
+        <String?>['remote', 'add', 'origin', _repository],
+        workingDirectory: environment!.webUiGoldensRepositoryDirectory.path,
         mustSucceed: true,
       );
     }
@@ -233,20 +233,20 @@ class _GoldensRepoFetcher {
     await runProcess(
       'git',
       <String>['fetch', 'origin', 'master'],
-      workingDirectory: environment.webUiGoldensRepositoryDirectory.path,
+      workingDirectory: environment!.webUiGoldensRepositoryDirectory.path,
       mustSucceed: true,
     );
     await runProcess(
       'git',
-      <String>['checkout', _revision],
-      workingDirectory: environment.webUiGoldensRepositoryDirectory.path,
+      <String?>['checkout', _revision],
+      workingDirectory: environment!.webUiGoldensRepositoryDirectory.path,
       mustSucceed: true,
     );
   }
 
-  Future<String> _getLocalRevision() async {
+  Future<String?> _getLocalRevision() async {
     final io.File head = io.File(path.join(
-      environment.webUiGoldensRepositoryDirectory.path, '.git', 'HEAD'
+      environment!.webUiGoldensRepositoryDirectory.path, '.git', 'HEAD'
     ));
 
     if (!head.existsSync()) {

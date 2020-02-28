@@ -83,18 +83,18 @@ class TestCommand extends Command<bool> {
   ///
   /// In this mode the browser pauses before running the test to allow
   /// you set breakpoints or inspect the code.
-  bool get isDebug => argResults['debug'];
+  bool? get isDebug => argResults['debug'];
 
   /// Paths to targets to run, e.g. a single test.
   List<String> get targets => argResults.rest;
 
-  String get browser => argResults['browser'];
+  String? get browser => argResults['browser'];
 
   bool get isChrome => argResults['browser'] == 'chrome';
 
   /// When running screenshot tests writes them to the file system into
   /// ".dart_tool/goldens".
-  bool get doUpdateScreenshotGoldens => argResults['update-screenshot-goldens'];
+  bool? get doUpdateScreenshotGoldens => argResults['update-screenshot-goldens'];
 
   Future<void> _runTargetTests(List<FilePath> targets) async {
     await _runTestBatch(targets, concurrency: 1, expectFailure: false);
@@ -103,7 +103,7 @@ class TestCommand extends Command<bool> {
 
   Future<void> _runAllTests() async {
     final io.Directory testDir = io.Directory(path.join(
-      environment.webUiRootDir.path,
+      environment!.webUiRootDir!.path,
       'test',
     ));
 
@@ -190,11 +190,11 @@ class TestCommand extends Command<bool> {
 
   Future<void> _runPubGet() async {
     final int exitCode = await runProcess(
-      environment.pubExecutable,
+      environment!.pubExecutable,
       <String>[
         'get',
       ],
-      workingDirectory: environment.webUiRootDir.path,
+      workingDirectory: environment!.webUiRootDir!.path,
     );
 
     if (exitCode != 0) {
@@ -207,11 +207,11 @@ class TestCommand extends Command<bool> {
   Future<void> _buildHostPage() async {
     final String hostDartPath = path.join('lib', 'static', 'host.dart');
     final io.File hostDartFile = io.File(path.join(
-      environment.webEngineTesterRootDir.path,
+      environment!.webEngineTesterRootDir.path,
       hostDartPath,
     ));
     final io.File timestampFile = io.File(path.join(
-      environment.webEngineTesterRootDir.path,
+      environment!.webEngineTesterRootDir.path,
       '$hostDartPath.js.timestamp',
     ));
 
@@ -231,13 +231,13 @@ class TestCommand extends Command<bool> {
     }
 
     final int exitCode = await runProcess(
-      environment.dart2jsExecutable,
+      environment!.dart2jsExecutable,
       <String>[
         hostDartPath,
         '-o',
         '$hostDartPath.js',
       ],
-      workingDirectory: environment.webEngineTesterRootDir.path,
+      workingDirectory: environment!.webEngineTesterRootDir.path,
     );
 
     if (exitCode != 0) {
@@ -250,7 +250,7 @@ class TestCommand extends Command<bool> {
     timestampFile.writeAsStringSync(timestamp);
   }
 
-  Future<void> _buildTests({List<FilePath> targets}) async {
+  Future<void> _buildTests({List<FilePath>? targets}) async {
     List<String> arguments = <String>[
         'run',
         'build_runner',
@@ -265,9 +265,9 @@ class TestCommand extends Command<bool> {
           ],
       ];
     final int exitCode = await runProcess(
-      environment.pubExecutable,
+      environment!.pubExecutable,
       arguments,
-      workingDirectory: environment.webUiRootDir.path,
+      workingDirectory: environment!.webUiRootDir!.path,
     );
 
     if (exitCode != 0) {
@@ -282,35 +282,35 @@ class TestCommand extends Command<bool> {
   /// Unless [expectFailure] is set to false, sets [io.exitCode] to a non-zero value if any tests fail.
   Future<void> _runTestBatch(
     List<FilePath> testFiles, {
-    @required int concurrency,
-    @required bool expectFailure,
+    /* @*/ required int concurrency,
+    /* @*/ required bool expectFailure,
   }) async {
-    final List<String> testArgs = <String>[
+    final List<String?> testArgs = <String?>[
       ...<String>['-r', 'compact'],
       '--concurrency=$concurrency',
-      if (isDebug) '--pause-after-load',
+      if (isDebug!) '--pause-after-load',
       '--platform=${SupportedBrowsers.instance.supportedBrowserToPlatform[browser]}',
-      '--precompiled=${environment.webUiRootDir.path}/build',
+      '--precompiled=${environment!.webUiRootDir!.path}/build',
       SupportedBrowsers.instance.browserToConfiguration[browser],
       '--',
       ...testFiles.map((f) => f.relativeToWebUi).toList(),
     ];
 
-    hack.registerPlatformPlugin(<Runtime>[
+    hack.registerPlatformPlugin(<Runtime?>[
       SupportedBrowsers.instance.supportedBrowsersToRuntimes[browser]
     ], () {
       return BrowserPlatform.start(
         browser,
         root: io.Directory.current.path,
         // It doesn't make sense to update a screenshot for a test that is expected to fail.
-        doUpdateScreenshotGoldens: !expectFailure && doUpdateScreenshotGoldens,
+        doUpdateScreenshotGoldens: !expectFailure && doUpdateScreenshotGoldens!,
       );
     });
 
     // We want to run tests with `web_ui` as a working directory.
     final dynamic backupCwd = io.Directory.current;
-    io.Directory.current = environment.webUiRootDir.path;
-    await test.main(testArgs);
+    io.Directory.current = environment!.webUiRootDir!.path;
+    await test.main(testArgs as List<String>);
     io.Directory.current = backupCwd;
 
     if (expectFailure) {
@@ -331,7 +331,7 @@ const List<String> _kTestFonts = <String>['ahem.ttf', 'Roboto-Regular.ttf'];
 
 void _copyTestFontsIntoWebUi() {
   final String fontsPath = path.join(
-    environment.flutterDirectory.path,
+    environment!.flutterDirectory.path,
     'third_party',
     'txt',
     'third_party',
@@ -341,7 +341,7 @@ void _copyTestFontsIntoWebUi() {
   for (String fontFile in _kTestFonts) {
     final io.File sourceTtf = io.File(path.join(fontsPath, fontFile));
     final String destinationTtfPath =
-        path.join(environment.webUiRootDir.path, 'lib', 'assets', fontFile);
+        path.join(environment!.webUiRootDir!.path, 'lib', 'assets', fontFile);
     sourceTtf.copySync(destinationTtfPath);
   }
 }

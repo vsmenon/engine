@@ -38,27 +38,27 @@ abstract class Path {
   /// the `source` path or the path returned by this constructor are modified.
   factory Path.from(Path source) {
     if (engine.experimentalUseSkia) {
-      return engine.SkPath.from(source);
+      return engine.SkPath.from(source as SkPath);
     } else {
-      return engine.SurfacePath.from(source);
+      return engine.SurfacePath.from(source as SurfacePath);
     }
   }
 
   /// Determines how the interior of this path is calculated.
   ///
   /// Defaults to the non-zero winding rule, [PathFillType.nonZero].
-  PathFillType get fillType;
-  set fillType(PathFillType value);
+  PathFillType? get fillType;
+  set fillType(PathFillType? value);
 
   /// Starts a new subpath at the given coordinate.
-  void moveTo(double x, double y);
+  void moveTo(double? x, double? y);
 
   /// Starts a new subpath at the given offset from the current point.
   void relativeMoveTo(double dx, double dy);
 
   /// Adds a straight line segment from the current point to the given
   /// point.
-  void lineTo(double x, double y);
+  void lineTo(double? x, double? y);
 
   /// Adds a straight line segment from the current point to the point
   /// at the given offset from the current point.
@@ -93,7 +93,7 @@ abstract class Path {
   /// weight w. If the weight is greater than 1, then the curve is a
   /// hyperbola; if the weight equals 1, it's a parabola; and if it is
   /// less than 1, it is an ellipse.
-  void conicTo(double x1, double y1, double x2, double y2, double w);
+  void conicTo(double? x1, double? y1, double? x2, double? y2, double w);
 
   /// Adds a bezier segment that curves from the current point to the
   /// point at the offset (x2,y2) from the current point, using the
@@ -201,7 +201,7 @@ abstract class Path {
   /// Adds a new subpath that consists of the straight lines and
   /// curves needed to form the rounded rectangle described by the
   /// argument.
-  void addRRect(RRect rrect);
+  void addRRect(RRect? rrect);
 
   /// Adds a new subpath that consists of the given `path` offset by the given
   /// `offset`.
@@ -209,7 +209,7 @@ abstract class Path {
   /// If `matrix4` is specified, the path will be transformed by this matrix
   /// after the matrix is translated by the given offset. The matrix is a 4x4
   /// matrix stored in column major order.
-  void addPath(Path path, Offset offset, {Float64List matrix4});
+  void addPath(Path? path, Offset offset, {Float64List? matrix4});
 
   /// Adds the given path to this path by extending the current segment of this
   /// path with the first segment of the given path.
@@ -217,7 +217,7 @@ abstract class Path {
   /// If `matrix4` is specified, the path will be transformed by this matrix
   /// after the matrix is translated by the given `offset`.  The matrix is a 4x4
   /// matrix stored in column major order.
-  void extendWithPath(Path path, Offset offset, {Float64List matrix4});
+  void extendWithPath(Path path, Offset offset, {Float64List? matrix4});
 
   /// Closes the last subpath, as if a straight line had been drawn
   /// from the current point to the first point of the subpath.
@@ -239,7 +239,7 @@ abstract class Path {
   /// Note: Not very efficient, it creates a canvas, plays path and calls
   /// Context2D isPointInPath. If performance becomes issue, retaining
   /// RawRecordingCanvas can remove create/remove rootElement cost.
-  bool contains(Offset point);
+  bool? contains(Offset point);
 
   /// Returns a copy of the path with all the segments of every
   /// subpath translated by the given offset.

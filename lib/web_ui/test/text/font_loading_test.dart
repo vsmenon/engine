@@ -51,7 +51,7 @@ Future<void> main() async {
       final ui.Paragraph paragraph = builder.build();
       // Triggers the measuring and verifies the result has been cached.
       paragraph.layout(constraints);
-      expect(TextMeasurementService.rulerManager.rulers.length, 1);
+      expect(TextMeasurementService.rulerManager!.rulers.length, 1);
 
       // Now, loads a new font using loadFontFromList. This should clear the
       // cache
@@ -63,19 +63,19 @@ Future<void> main() async {
 
       // Verifies the font is loaded, and the cache is cleaned.
       expect(_containsFontFamily('Blehm'), true);
-      expect(TextMeasurementService.rulerManager.rulers.length, 0);
+      expect(TextMeasurementService.rulerManager!.rulers.length, 0);
     },
         // TODO(nurhan): https://github.com/flutter/flutter/issues/50770
         skip: browserEngine == BrowserEngine.edge);
 
     test('loading font should send font change message', () async {
-      final ui.PlatformMessageCallback oldHandler = ui.window.onPlatformMessage;
-      String actualName;
-      String message;
-      window.onPlatformMessage = (String name, ByteData data,
+      final ui.PlatformMessageCallback? oldHandler = ui.window.onPlatformMessage;
+      String? actualName;
+      String? message;
+      window.onPlatformMessage = (String name, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         actualName = name;
-        final buffer = data.buffer;
+        final buffer = data!.buffer;
         final Uint8List list =
             buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
         message = utf8.decode(list);

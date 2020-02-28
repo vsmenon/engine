@@ -180,23 +180,23 @@ abstract class _RRectRenderer {
 
 /// Renders RRect to a 2d canvas.
 class _RRectToCanvasRenderer extends _RRectRenderer {
-  final html.CanvasRenderingContext2D context;
+  final html.CanvasRenderingContext2D? context;
   _RRectToCanvasRenderer(this.context);
   void beginPath() {
-    context.beginPath();
+    context!.beginPath();
   }
 
   void moveTo(double x, double y) {
-    context.moveTo(x, y);
+    context!.moveTo(x, y);
   }
 
   void lineTo(double x, double y) {
-    context.lineTo(x, y);
+    context!.lineTo(x, y);
   }
 
   void ellipse(double centerX, double centerY, double radiusX, double radiusY,
       double rotation, double startAngle, double endAngle, bool antiClockwise) {
-    context.ellipse(centerX, centerY, radiusX, radiusY, rotation, startAngle,
+    context!.ellipse(centerX, centerY, radiusX, radiusY, rotation, startAngle,
         endAngle, antiClockwise);
   }
 }
@@ -231,19 +231,19 @@ typedef RRectRendererCallback = void Function(double x, double y);
 class RRectMetricsRenderer extends _RRectRenderer {
   RRectMetricsRenderer({this.moveToCallback, this.lineToCallback, this.ellipseCallback});
 
-  final RRectRendererEllipseCallback ellipseCallback;
-  final RRectRendererCallback lineToCallback;
-  final RRectRendererCallback moveToCallback;
+  final RRectRendererEllipseCallback? ellipseCallback;
+  final RRectRendererCallback? lineToCallback;
+  final RRectRendererCallback? moveToCallback;
   @override
   void beginPath() {}
 
   @override
-  void ellipse(double centerX, double centerY, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool antiClockwise) => ellipseCallback(
+  void ellipse(double centerX, double centerY, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool antiClockwise) => ellipseCallback!(
       centerX, centerY, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise);
 
   @override
-  void lineTo(double x, double y) => lineToCallback(x, y);
+  void lineTo(double x, double y) => lineToCallback!(x, y);
 
   @override
-  void moveTo(double x, double y) => moveToCallback(x, y);
+  void moveTo(double x, double y) => moveToCallback!(x, y);
 }

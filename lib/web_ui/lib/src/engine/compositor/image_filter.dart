@@ -9,17 +9,17 @@ part of engine;
 ///
 /// Currently only supports `blur`.
 class SkImageFilter implements ui.ImageFilter {
-  js.JsObject skImageFilter;
+  js.JsObject? skImageFilter;
 
   SkImageFilter.blur({double sigmaX = 0.0, double sigmaY = 0.0})
       : _sigmaX = sigmaX,
         _sigmaY = sigmaY {
-    skImageFilter = canvasKit['SkImageFilter'].callMethod(
+    skImageFilter = canvasKit!['SkImageFilter'].callMethod(
       'MakeBlur',
       <dynamic>[
         sigmaX,
         sigmaY,
-        canvasKit['TileMode']['Clamp'],
+        canvasKit!['TileMode']['Clamp'],
         null,
       ],
     );

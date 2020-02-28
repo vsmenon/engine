@@ -9,8 +9,8 @@ const bool _debugLogHistoryActions = false;
 
 class TestHistoryEntry {
   final dynamic state;
-  final String title;
-  final String url;
+  final String? title;
+  final String? url;
 
   const TestHistoryEntry(this.state, this.title, this.url);
 
@@ -37,7 +37,7 @@ class TestLocationStrategy extends LocationStrategy {
         history = <TestHistoryEntry>[initialEntry];
 
   @override
-  String get path => ensureLeading(currentEntry.url, '/');
+  String get path => ensureLeading(currentEntry.url!, '/');
 
   int _currentEntryIndex;
   int get currentEntryIndex => _currentEntryIndex;
@@ -60,7 +60,7 @@ class TestLocationStrategy extends LocationStrategy {
   bool get withinAppHistory => _currentEntryIndex >= 0;
 
   @override
-  void pushState(dynamic state, String title, String url) {
+  void pushState(dynamic state, String title, String? url) {
     assert(withinAppHistory);
     _currentEntryIndex++;
     // When pushing a new state, we need to remove all entries that exist after
@@ -77,7 +77,7 @@ class TestLocationStrategy extends LocationStrategy {
   }
 
   @override
-  void replaceState(dynamic state, String title, String url) {
+  void replaceState(dynamic state, String? title, String? url) {
     assert(withinAppHistory);
     if (url == null || url == '') {
       url = currentEntry.url;
@@ -157,7 +157,7 @@ class TestLocationStrategy extends LocationStrategy {
 
   @override
   String toString() {
-    final List<String> lines = List<String>(history.length);
+    final List<String?> lines = List<String?>(history.length);
     for (int i = 0; i < history.length; i++) {
       final TestHistoryEntry entry = history[i];
       lines[i] = _currentEntryIndex == i ? '* $entry' : '  $entry';

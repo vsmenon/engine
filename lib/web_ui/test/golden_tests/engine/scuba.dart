@@ -26,12 +26,12 @@ class EngineScubaTester {
     assert(viewportSize != null);
 
     assert(() {
-      if (viewportSize.width.ceil() != viewportSize.width ||
-          viewportSize.height.ceil() != viewportSize.height) {
+      if (viewportSize.width!.ceil() != viewportSize.width ||
+          viewportSize.height!.ceil() != viewportSize.height) {
         throw Exception(
             'Scuba only supports integer screen sizes, but found: $viewportSize');
       }
-      if (viewportSize.width < 472) {
+      if (viewportSize.width! < 472) {
         throw Exception('Scuba does not support screen width smaller than 472');
       }
       return true;
@@ -41,12 +41,12 @@ class EngineScubaTester {
   }
 
   ui.Rect get viewportRegion =>
-      ui.Rect.fromLTWH(0, 0, viewportSize.width, viewportSize.height);
+      ui.Rect.fromLTWH(0, 0, viewportSize.width!, viewportSize.height!);
 
   Future<void> diffScreenshot(
     String fileName, {
-    ui.Rect region,
-    double maxDiffRatePercent,
+    ui.Rect? region,
+    required double maxDiffRatePercent,
   }) async {
     await matchGoldenFile(
       '$fileName.png',
@@ -62,13 +62,13 @@ class EngineScubaTester {
   Future<void> diffCanvasScreenshot(
     EngineCanvas canvas,
     String fileName, {
-    ui.Rect region,
-    double maxDiffRatePercent,
+    ui.Rect? region,
+    required double maxDiffRatePercent,
   }) async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(canvas.rootElement);
+      sceneElement.append(canvas.rootElement!);
       html.document.body.append(sceneElement);
       String screenshotName = '${fileName}_${canvas.runtimeType}';
       if (TextMeasurementService.enableExperimentalCanvasImplementation) {
@@ -87,11 +87,11 @@ class EngineScubaTester {
   }
 }
 
-typedef CanvasTest = FutureOr<void> Function(EngineCanvas canvas);
+typedef CanvasTest = FutureOr<void>? Function(EngineCanvas canvas);
 
 /// Runs the given test [body] with each type of canvas.
 void testEachCanvas(String description, CanvasTest body,
-    {double maxDiffRate, bool bSkipHoudini = false}) {
+    {double? maxDiffRate, bool bSkipHoudini = false}) {
   const ui.Rect bounds = ui.Rect.fromLTWH(0, 0, 600, 800);
   test('$description (bitmap)', () {
     try {
@@ -139,8 +139,8 @@ final ui.TextStyle _defaultTextStyle = ui.TextStyle(
 
 ui.Paragraph paragraph(
   String text, {
-  ui.ParagraphStyle paragraphStyle,
-  ui.TextStyle textStyle,
+  ui.ParagraphStyle? paragraphStyle,
+  ui.TextStyle? textStyle,
   double maxWidth = double.infinity,
 }) {
   final ui.ParagraphBuilder builder =
@@ -156,7 +156,7 @@ ui.Paragraph paragraph(
 void setUpStableTestFonts() {
   setUp(() async {
     await ui.webOnlyInitializePlatform();
-    ui.webOnlyFontCollection.debugRegisterTestFonts();
-    await ui.webOnlyFontCollection.ensureFontsLoaded();
+    ui.webOnlyFontCollection!.debugRegisterTestFonts();
+    await ui.webOnlyFontCollection!.ensureFontsLoaded();
   });
 }

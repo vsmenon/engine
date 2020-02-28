@@ -15,7 +15,7 @@ class Tappable extends RoleManager {
   Tappable(SemanticsObject semanticsObject)
       : super(Role.tappable, semanticsObject);
 
-  html.EventListener _clickListener;
+  html.EventListener? _clickListener;
 
   @override
   void update() {
@@ -39,7 +39,7 @@ class Tappable extends RoleManager {
                 GestureMode.browserGestures) {
               return;
             }
-            ui.window.onSemanticsAction(
+            ui.window.onSemanticsAction!(
                 semanticsObject.id, ui.SemanticsAction.tap, null);
           };
           element.addEventListener('click', _clickListener);

@@ -8,13 +8,13 @@ part of engine;
 /// A tree of [Layer]s that, together with a [Size] compose a frame.
 class LayerTree {
   /// The root of the layer tree.
-  Layer rootLayer;
+  Layer? rootLayer;
 
   /// The size (in physical pixels) of the frame to paint this layer tree into.
-  ui.Size frameSize;
+  ui.Size? frameSize;
 
   /// The devicePixelRatio of the frame to paint this layer tree into.
-  double devicePixelRatio;
+  double? devicePixelRatio;
 
   /// Performs a preroll phase before painting the layer tree.
   ///
@@ -27,7 +27,7 @@ class LayerTree {
       ignoreRasterCache ? null : frame.rasterCache,
       frame.viewEmbedder,
     );
-    rootLayer.preroll(context, Matrix4.identity());
+    rootLayer!.preroll(context, Matrix4.identity());
   }
 
   /// Paints the layer tree into the given [frame].
@@ -37,8 +37,8 @@ class LayerTree {
   void paint(Frame frame, {bool ignoreRasterCache = false}) {
     final SkNWayCanvas internalNodesCanvas = SkNWayCanvas();
     internalNodesCanvas.addCanvas(frame.canvas);
-    final List<SkCanvas> overlayCanvases =
-        frame.viewEmbedder.getCurrentCanvases();
+    final List<SkCanvas?> overlayCanvases =
+        frame.viewEmbedder!.getCurrentCanvases();
     for (int i = 0; i < overlayCanvases.length; i++) {
       internalNodesCanvas.addCanvas(overlayCanvases[i]);
     }
@@ -48,8 +48,8 @@ class LayerTree {
       ignoreRasterCache ? null : frame.rasterCache,
       frame.viewEmbedder,
     );
-    if (rootLayer.needsPainting) {
-      rootLayer.paint(context);
+    if (rootLayer!.needsPainting) {
+      rootLayer!.paint(context);
     }
   }
 }
@@ -60,10 +60,10 @@ class Frame {
   final SkCanvas canvas;
 
   /// A cache of pre-rastered pictures.
-  final RasterCache rasterCache;
+  final RasterCache? rasterCache;
 
   /// The platform view embedder.
-  final HtmlViewEmbedder viewEmbedder;
+  final HtmlViewEmbedder? viewEmbedder;
 
   Frame(this.canvas, this.rasterCache, this.viewEmbedder);
 
@@ -78,10 +78,10 @@ class Frame {
 /// The state of the compositor, which is persisted between frames.
 class CompositorContext {
   /// A cache of pictures, which is shared between successive frames.
-  RasterCache rasterCache;
+  RasterCache? rasterCache;
 
   /// Acquire a frame using this compositor's settings.
-  Frame acquireFrame(SkCanvas canvas, HtmlViewEmbedder viewEmbedder) {
+  Frame acquireFrame(SkCanvas canvas, HtmlViewEmbedder? viewEmbedder) {
     return Frame(canvas, rasterCache, viewEmbedder);
   }
 }

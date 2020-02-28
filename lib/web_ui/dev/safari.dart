@@ -21,7 +21,7 @@ class Safari extends Browser {
   @override
   final name = 'Safari';
 
-  static String version;
+  static String? version;
 
   /// Starts a new instance of Safari open to the given [url], which may be a
   /// [Uri] or a [String].
@@ -44,7 +44,7 @@ class Safari extends Browser {
       // provide Safari bundles identifier.
       // The details copied from `man open` on MacOS.
       // TODO(nurhan): https://github.com/flutter/flutter/issues/50809
-      var process = await Process.start(installation.executable, [
+      var process = await Process.start(installation.executable!, [
         '-F', // Open a fresh application with no persistant state.
         '-W', // Open to wait until the applications it opens.
         '-n', // Open a new instance of the application.

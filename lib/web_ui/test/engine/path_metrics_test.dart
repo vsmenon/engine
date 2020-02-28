@@ -24,9 +24,9 @@ void main() {
       path.moveTo(100.0, 50.0);
       path.lineTo(200.0, 100.0);
       expect(path.computeMetrics().isEmpty, isFalse);
-      final List<PathMetric> metrics = path.computeMetrics().toList();
+      final List<PathMetric?> metrics = path.computeMetrics().toList();
       expect(metrics.length, 1);
-      expect(metrics[0].length, within(distance: kTolerance, from: 111.803));
+      expect(metrics[0]!.length, within(distance: kTolerance, from: 111.803));
     });
 
     test('2 lines', () {
@@ -35,9 +35,9 @@ void main() {
       path.lineTo(200.0, 50.0);
       path.lineTo(100.0, 200.0);
       expect(path.computeMetrics().isEmpty, isFalse);
-      final List<PathMetric> metrics = path.computeMetrics().toList();
+      final List<PathMetric?> metrics = path.computeMetrics().toList();
       expect(metrics.length, 1);
-      expect(metrics[0].length, within(distance: kTolerance, from: 280.277));
+      expect(metrics[0]!.length, within(distance: kTolerance, from: 280.277));
     });
 
     test('2 lines forceClosed', () {
@@ -46,10 +46,10 @@ void main() {
       path.lineTo(200.0, 50.0);
       path.lineTo(100.0, 200.0);
       expect(path.computeMetrics(forceClosed: true).isEmpty, isFalse);
-      final List<PathMetric> metrics =
+      final List<PathMetric?> metrics =
           path.computeMetrics(forceClosed: true).toList();
       expect(metrics.length, 1);
-      expect(metrics[0].length, within(distance: kTolerance, from: 430.277));
+      expect(metrics[0]!.length, within(distance: kTolerance, from: 430.277));
     });
 
     test('2 subpaths', () {
@@ -226,8 +226,8 @@ void main() {
 
 List<double> computeLengths(PathMetrics pathMetrics) {
   final List<double> lengths = <double>[];
-  for (PathMetric metric in pathMetrics) {
-    lengths.add(metric.length);
+  for (PathMetric? metric in pathMetrics) {
+    lengths.add(metric!.length);
   }
   return lengths;
 }

@@ -14,7 +14,7 @@ part of ui;
 abstract class Scene {
   /// Creates a raster image representation of the current state of the scene.
   /// This is a slow operation that is performed on a background thread.
-  Future<Image> toImage(int width, int height);
+  Future<Image>? toImage(int width, int height);
 
   /// Releases the resources used by this scene.
   ///
@@ -128,7 +128,7 @@ abstract class SceneBuilder {
   OffsetEngineLayer pushOffset(
     double dx,
     double dy, {
-    OffsetEngineLayer oldLayer,
+    OffsetEngineLayer? oldLayer,
   });
 
   /// Pushes a transform operation onto the operation stack.
@@ -136,9 +136,9 @@ abstract class SceneBuilder {
   /// The objects are transformed by the given matrix before rasterization.
   ///
   /// See [pop] for details about the operation stack.
-  TransformEngineLayer pushTransform(
-    Float64List matrix4, {
-    TransformEngineLayer oldLayer,
+  TransformEngineLayer? pushTransform(
+    Float64List? matrix4, {
+    TransformEngineLayer? oldLayer,
   });
 
   /// Pushes a rectangular clip operation onto the operation stack.
@@ -147,10 +147,10 @@ abstract class SceneBuilder {
   ///
   /// See [pop] for details about the operation stack, and [Clip] for different clip modes.
   /// By default, the clip will be anti-aliased (clip = [Clip.antiAlias]).
-  ClipRectEngineLayer pushClipRect(
+  ClipRectEngineLayer? pushClipRect(
     Rect rect, {
     Clip clipBehavior = Clip.antiAlias,
-    ClipRectEngineLayer oldLayer,
+    ClipRectEngineLayer? oldLayer,
   });
 
   /// Pushes a rounded-rectangular clip operation onto the operation stack.
@@ -158,10 +158,10 @@ abstract class SceneBuilder {
   /// Rasterization outside the given rounded rectangle is discarded.
   ///
   /// See [pop] for details about the operation stack.
-  ClipRRectEngineLayer pushClipRRect(
+  ClipRRectEngineLayer? pushClipRRect(
     RRect rrect, {
-    Clip clipBehavior,
-    ClipRRectEngineLayer oldLayer,
+    Clip? clipBehavior,
+    ClipRRectEngineLayer? oldLayer,
   });
 
   /// Pushes a path clip operation onto the operation stack.
@@ -169,10 +169,10 @@ abstract class SceneBuilder {
   /// Rasterization outside the given path is discarded.
   ///
   /// See [pop] for details about the operation stack.
-  ClipPathEngineLayer pushClipPath(
+  ClipPathEngineLayer? pushClipPath(
     Path path, {
     Clip clipBehavior = Clip.antiAlias,
-    ClipPathEngineLayer oldLayer,
+    ClipPathEngineLayer? oldLayer,
   });
 
   /// Pushes an opacity operation onto the operation stack.
@@ -186,7 +186,7 @@ abstract class SceneBuilder {
   OpacityEngineLayer pushOpacity(
     int alpha, {
     Offset offset = Offset.zero,
-    OpacityEngineLayer oldLayer,
+    OpacityEngineLayer? oldLayer,
   });
 
   /// Pushes a color filter operation onto the operation stack.
@@ -201,7 +201,7 @@ abstract class SceneBuilder {
   /// See [pop] for details about the operation stack.
   ColorFilterEngineLayer pushColorFilter(
     ColorFilter filter, {
-    ColorFilterEngineLayer oldLayer,
+    ColorFilterEngineLayer? oldLayer,
   });
 
   /// Pushes an image filter operation onto the operation stack.
@@ -214,9 +214,9 @@ abstract class SceneBuilder {
   /// {@macro dart.ui.sceneBuilder.oldLayerVsRetained}
   ///
   /// See [pop] for details about the operation stack.
-  ImageFilterEngineLayer pushImageFilter(
+  ImageFilterEngineLayer? pushImageFilter(
     ImageFilter filter, {
-    ImageFilterEngineLayer oldLayer,
+    ImageFilterEngineLayer? oldLayer,
   });
 
   /// Pushes a backdrop filter operation onto the operation stack.
@@ -225,9 +225,9 @@ abstract class SceneBuilder {
   /// rasterizing the given objects.
   ///
   /// See [pop] for details about the operation stack.
-  BackdropFilterEngineLayer pushBackdropFilter(
+  BackdropFilterEngineLayer? pushBackdropFilter(
     ImageFilter filter, {
-    BackdropFilterEngineLayer oldLayer,
+    BackdropFilterEngineLayer? oldLayer,
   });
 
   /// Pushes a shader mask operation onto the operation stack.
@@ -240,7 +240,7 @@ abstract class SceneBuilder {
     Shader shader,
     Rect maskRect,
     BlendMode blendMode, {
-    ShaderMaskEngineLayer oldLayer,
+    ShaderMaskEngineLayer? oldLayer,
   });
 
   /// Pushes a physical layer operation for an arbitrary shape onto the
@@ -256,12 +256,12 @@ abstract class SceneBuilder {
   ///
   /// See [pop] for details about the operation stack, and [Clip] for different clip modes.
   PhysicalShapeEngineLayer pushPhysicalShape({
-    Path path,
-    double elevation,
-    Color color,
-    Color shadowColor,
+    Path? path,
+    double? elevation,
+    Color? color,
+    Color? shadowColor,
     Clip clipBehavior = Clip.none,
-    PhysicalShapeEngineLayer oldLayer,
+    PhysicalShapeEngineLayer? oldLayer,
   });
 
   /// Add a retained engine layer subtree from previous frames.
@@ -272,7 +272,7 @@ abstract class SceneBuilder {
   /// Therefore, when implementing a subclass of the [Layer] concept defined in
   /// the rendering layer of Flutter's framework, once this is called, there's
   /// no need to call [addToScene] for its children layers.
-  void addRetained(EngineLayer retainedLayer);
+  void addRetained(EngineLayer? retainedLayer);
 
   /// Ends the effect of the most recently pushed operation.
   ///
@@ -312,7 +312,7 @@ abstract class SceneBuilder {
   /// The picture is rasterized at the given offset.
   void addPicture(
     Offset offset,
-    Picture picture, {
+    Picture? picture, {
     bool isComplexHint = false,
     bool willChangeHint = false,
   });
@@ -358,7 +358,7 @@ abstract class SceneBuilder {
     Offset offset = Offset.zero,
     double width = 0.0,
     double height = 0.0,
-    SceneHost sceneHost,
+    SceneHost? sceneHost,
     bool hitTestable = true,
   });
 

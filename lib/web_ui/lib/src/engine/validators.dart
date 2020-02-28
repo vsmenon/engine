@@ -29,7 +29,7 @@ bool rrectIsValid(ui.RRect rrect) {
 
 bool offsetIsValid(ui.Offset offset) {
   assert(offset != null, 'Offset argument was null.');
-  assert(!offset.dx.isNaN && !offset.dy.isNaN,
+  assert(!offset.dx!.isNaN && !offset.dy!.isNaN,
       'Offset argument contained a NaN value.');
   return true;
 }
@@ -42,7 +42,7 @@ bool matrix4IsValid(Float64List matrix4) {
 
 bool radiusIsValid(ui.Radius radius) {
   assert(radius != null, 'Radius argument was null.');
-  assert(!radius.x.isNaN && !radius.y.isNaN,
+  assert(!radius.x!.isNaN && !radius.y!.isNaN,
       'Radius argument contained a NaN value.');
   return true;
 }

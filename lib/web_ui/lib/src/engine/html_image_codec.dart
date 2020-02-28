@@ -48,8 +48,8 @@ class HtmlCodec implements ui.Codec {
   }
 
   void _decodeUsingOnLoad(Completer completer) {
-    StreamSubscription<html.Event> loadSubscription;
-    StreamSubscription<html.Event> errorSubscription;
+    StreamSubscription<html.Event>? loadSubscription;
+    StreamSubscription<html.Event>? errorSubscription;
     final html.ImageElement imgElement = html.ImageElement();
     // If the browser doesn't support asynchronous decoding of an image,
     // then use the `onload` event to decide when it's ready to paint to the
@@ -57,12 +57,12 @@ class HtmlCodec implements ui.Codec {
     // on the main thread, and may cause dropped framed.
     errorSubscription = imgElement.onError.listen((html.Event event) {
       loadSubscription?.cancel();
-      errorSubscription.cancel();
+      errorSubscription!.cancel();
       completer.completeError(event);
     });
     loadSubscription = imgElement.onLoad.listen((html.Event event) {
-      loadSubscription.cancel();
-      errorSubscription.cancel();
+      loadSubscription!.cancel();
+      errorSubscription!.cancel();
       final HtmlImage image = HtmlImage(
         imgElement,
         imgElement.naturalWidth,
@@ -116,11 +116,11 @@ class HtmlImage implements ui.Image {
   final int height;
 
   @override
-  Future<ByteData> toByteData(
+  Future<ByteData?> toByteData(
       {ui.ImageByteFormat format = ui.ImageByteFormat.rawRgba}) {
-    return futurize((Callback<ByteData> callback) {
-      return _toByteData(format.index, (Uint8List encoded) {
-        callback(encoded?.buffer?.asByteData());
+    return futurize((Callback<ByteData?> callback) {
+      return _toByteData(format.index, (Uint8List? encoded) {
+        callback(encoded?.buffer.asByteData());
       });
     });
   }
@@ -129,7 +129,7 @@ class HtmlImage implements ui.Image {
   // clones on subsequent calls.
   html.ImageElement cloneImageElement() {
     if (_requiresClone) {
-      return imgElement.clone(true);
+      return imgElement.clone(true) as ImageElement;
     } else {
       _requiresClone = true;
       imgElement.style..position = 'absolute';
@@ -140,7 +140,7 @@ class HtmlImage implements ui.Image {
   // TODO(het): Support this for asset images and images generated from
   // `Picture`s.
   /// Returns an error message on failure, null on success.
-  String _toByteData(int format, Callback<Uint8List> callback) {
+  String _toByteData(int format, Callback<Uint8List?> callback) {
     callback(null);
     return 'Image.toByteData is not supported in Flutter for Web';
   }

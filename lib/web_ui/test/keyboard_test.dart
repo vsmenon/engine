@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 void main() {
   group('Keyboard', () {
     /// Used to save and restore [ui.window.onPlatformMessage] after each test.
-    ui.PlatformMessageCallback savedCallback;
+    ui.PlatformMessageCallback? savedCallback;
 
     setUp(() {
       savedCallback = ui.window.onPlatformMessage;
@@ -29,16 +29,16 @@ void main() {
       expect(Keyboard.instance, isNull);
       Keyboard.initialize();
       expect(Keyboard.instance, isA<Keyboard>());
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
       expect(Keyboard.instance, isNull);
     });
 
     test('dispatches keyup to flutter/keyevent channel', () {
       Keyboard.initialize();
 
-      String channelReceived;
-      Map<String, dynamic> dataReceived;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      String? channelReceived;
+      Map<String, dynamic>? dataReceived;
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         channelReceived = channel;
         dataReceived = const JSONMessageCodec().decodeMessage(data);
@@ -58,7 +58,7 @@ void main() {
         'metaState': 0x0,
       });
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     },
         // TODO(nurhan): https://github.com/flutter/flutter/issues/50815
         skip: browserEngine == BrowserEngine.edge);
@@ -66,9 +66,9 @@ void main() {
     test('dispatches keydown to flutter/keyevent channel', () {
       Keyboard.initialize();
 
-      String channelReceived;
-      Map<String, dynamic> dataReceived;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      String? channelReceived;
+      Map<String, dynamic>? dataReceived;
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         channelReceived = channel;
         dataReceived = const JSONMessageCodec().decodeMessage(data);
@@ -89,7 +89,7 @@ void main() {
       });
       expect(event.defaultPrevented, isFalse);
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     },
         // TODO(nurhan): https://github.com/flutter/flutter/issues/50815
         skip: browserEngine == BrowserEngine.edge);
@@ -97,8 +97,8 @@ void main() {
     test('dispatches correct meta state', () {
       Keyboard.initialize();
 
-      Map<String, dynamic> dataReceived;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      Map<String, dynamic>? dataReceived;
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         dataReceived = const JSONMessageCodec().decodeMessage(data);
       };
@@ -139,7 +139,7 @@ void main() {
         'metaState': 0x1 | 0x2 | 0x8,
       });
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     },
         // TODO(nurhan): https://github.com/flutter/flutter/issues/50815
         skip: browserEngine == BrowserEngine.edge);
@@ -147,8 +147,8 @@ void main() {
     test('dispatches repeat events', () {
       Keyboard.initialize();
 
-      List<Map<String, dynamic>> messages = <Map<String, dynamic>>[];
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      List<Map<String, dynamic>?> messages = <Map<String, dynamic>?>[];
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         messages.add(const JSONMessageCodec().decodeMessage(data));
       };
@@ -192,7 +192,7 @@ void main() {
         expectedMessage,
       ]);
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     },
         // TODO(nurhan): https://github.com/flutter/flutter/issues/50815
         skip: browserEngine == BrowserEngine.edge);
@@ -201,7 +201,7 @@ void main() {
       Keyboard.initialize();
 
       int count = 0;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         count += 1;
       };
@@ -211,7 +211,7 @@ void main() {
       dispatchKeyboardEvent('keyup');
       expect(count, 2);
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
       expect(Keyboard.instance, isNull);
 
       // No more event dispatching.
@@ -225,7 +225,7 @@ void main() {
       Keyboard.initialize();
 
       int count = 0;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         count += 1;
       };
@@ -239,14 +239,14 @@ void main() {
       expect(event.defaultPrevented, isTrue);
       expect(count, 1);
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     });
 
     test('ignores keyboard events triggered on text fields', () {
       Keyboard.initialize();
 
       int count = 0;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         count += 1;
       };
@@ -263,14 +263,14 @@ void main() {
         expect(count, 0);
       });
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     });
 
     test('the "Tab" key should never be ignored', () {
       Keyboard.initialize();
 
       int count = 0;
-      ui.window.onPlatformMessage = (String channel, ByteData data,
+      ui.window.onPlatformMessage = (String channel, ByteData? data,
           ui.PlatformMessageResponseCallback callback) {
         count += 1;
       };
@@ -287,7 +287,7 @@ void main() {
         expect(count, 1);
       });
 
-      Keyboard.instance.dispose();
+      Keyboard.instance!.dispose();
     });
   });
 }
@@ -308,9 +308,9 @@ void useTextEditingElement(ElementCallback callback) {
 
 html.KeyboardEvent dispatchKeyboardEvent(
   String type, {
-  html.EventTarget target,
-  String key,
-  String code,
+  html.EventTarget? target,
+  String? key,
+  String? code,
   bool repeat = false,
   bool isShiftPressed = false,
   bool isAltPressed = false,

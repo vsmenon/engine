@@ -38,7 +38,7 @@ void main() async {
         paragraph.ideographicBaseline,
         within(
             distance: 0.001,
-            from: paragraph.alphabeticBaseline * baselineRatio),
+            from: paragraph.alphabeticBaseline! * baselineRatio),
       );
     }
   });
@@ -68,7 +68,7 @@ void main() async {
         paragraph.ideographicBaseline,
         within(
             distance: 0.001,
-            from: paragraph.alphabeticBaseline * baselineRatio),
+            from: paragraph.alphabeticBaseline! * baselineRatio),
       );
     }
   });
@@ -81,7 +81,7 @@ void main() async {
       fontSize: 14.0,
     ));
     builder.addText('How do you do this fine morning?');
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
 
     expect(paragraph.paragraphElement.parent, isNull);
     expect(paragraph.height, 0.0);
@@ -147,7 +147,7 @@ void main() async {
       fontSize: 15.0,
     ));
     builder.addText('hi');
-    EngineParagraph paragraph = builder.build();
+    EngineParagraph paragraph = builder.build() as EngineParagraph;
     expect(paragraph.plainText, isNotNull);
     expect(paragraph.geometricStyle.fontWeight, FontWeight.normal);
 
@@ -159,7 +159,7 @@ void main() async {
     ));
     builder.pushStyle(TextStyle(fontWeight: FontWeight.bold));
     builder.addText('hi');
-    paragraph = builder.build();
+    paragraph = builder.build() as EngineParagraph;
     expect(paragraph.plainText, isNotNull);
     expect(paragraph.geometricStyle.fontWeight, FontWeight.bold);
   });
@@ -174,7 +174,7 @@ void main() async {
     builder.addText('h');
     builder.pushStyle(TextStyle(fontWeight: FontWeight.bold));
     builder.addText('i');
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     expect(paragraph.plainText, isNull);
     expect(paragraph.geometricStyle.fontWeight, FontWeight.normal);
   });
@@ -187,7 +187,7 @@ void main() async {
       fontSize: 15.0,
     ));
     builder.pushStyle(TextStyle(fontWeight: FontWeight.bold));
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     expect(paragraph.plainText, '');
     expect(paragraph.geometricStyle.fontWeight, FontWeight.bold);
   });
@@ -208,7 +208,7 @@ void main() async {
     builder.addText(secondSpanText);
     builder.pushStyle(TextStyle(fontStyle: FontStyle.italic));
     builder.addText('followed by a link');
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     paragraph.layout(const ParagraphConstraints(width: 800.0));
     expect(paragraph.plainText, isNull);
     const int secondSpanStartPosition = firstSpanText.length;
@@ -356,7 +356,7 @@ void main() async {
     builder.pushStyle(TextStyle(fontSize: 30.0, fontWeight: FontWeight.normal));
     const String secondSpanText = 'def';
     builder.addText(secondSpanText);
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     paragraph.layout(const ParagraphConstraints(width: 800.0));
     expect(paragraph.plainText, isNull);
     final List<SpanElement> spans =
@@ -381,7 +381,7 @@ void main() async {
 
     builder.addText('Hello');
 
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     expect(paragraph.paragraphElement.style.fontFamily,
         'SomeFont, Arial, sans-serif');
 
@@ -403,7 +403,7 @@ void main() async {
 
     builder.addText('Hello');
 
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     expect(paragraph.paragraphElement.style.fontFamily, 'serif');
 
     debugEmulateFlutterTesterEnvironment = true;
@@ -420,7 +420,7 @@ void main() async {
 
     builder.addText('Hello');
 
-    final EngineParagraph paragraph = builder.build();
+    final EngineParagraph paragraph = builder.build() as EngineParagraph;
     expect(paragraph.paragraphElement.style.fontFamily,
         '"MyFont 2000", Arial, sans-serif');
 

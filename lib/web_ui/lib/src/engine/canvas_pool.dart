@@ -21,22 +21,22 @@ part of engine;
 /// can be reused, [_CanvasPool] will move canvas(s) from pool to reusablePool
 /// to prevent reallocation.
 class _CanvasPool extends _SaveStackTracking {
-  html.CanvasRenderingContext2D _context;
-  ContextStateHandle _contextHandle;
+  html.CanvasRenderingContext2D? _context;
+  ContextStateHandle? _contextHandle;
   final int _widthInBitmapPixels, _heightInBitmapPixels;
   // List of canvases that have been allocated and used in this paint cycle.
-  List<html.CanvasElement> _pool;
+  List<html.CanvasElement?>? _pool;
   // List of canvases available to reuse from prior paint cycle.
-  List<html.CanvasElement> _reusablePool;
+  List<html.CanvasElement?>? _reusablePool;
   // Current canvas element or null if marked for lazy allocation.
-  html.CanvasElement _canvas;
+  html.CanvasElement? _canvas;
 
-  html.HtmlElement _rootElement;
+  html.HtmlElement? _rootElement;
   int _saveContextCount = 0;
 
   _CanvasPool(this._widthInBitmapPixels, this._heightInBitmapPixels);
 
-  html.CanvasRenderingContext2D get context {
+  html.CanvasRenderingContext2D? get context {
     if (_canvas == null) {
       _createCanvas();
       assert(_context != null);
@@ -45,7 +45,7 @@ class _CanvasPool extends _SaveStackTracking {
     return _context;
   }
 
-  ContextStateHandle get contextHandle {
+  ContextStateHandle? get contextHandle {
     if (_canvas == null) {
       _createCanvas();
       assert(_context != null);
@@ -62,9 +62,9 @@ class _CanvasPool extends _SaveStackTracking {
     // reset into pool.
     if (_canvas != null) {
       _restoreContextSave();
-      _contextHandle.reset();
+      _contextHandle!.reset();
       _pool ??= [];
-      _pool.add(_canvas);
+      _pool!.add(_canvas);
       _canvas = null;
       _context = null;
       _contextHandle = null;
@@ -77,8 +77,8 @@ class _CanvasPool extends _SaveStackTracking {
 
   void _createCanvas() {
     bool requiresClearRect = false;
-    if (_reusablePool != null && _reusablePool.isNotEmpty) {
-      _canvas = _reusablePool.removeAt(0);
+    if (_reusablePool != null && _reusablePool!.isNotEmpty) {
+      _canvas = _reusablePool!.removeAt(0);
       requiresClearRect = true;
     } else {
       // Compute the final CSS canvas size given the actual pixel count we
@@ -103,7 +103,7 @@ class _CanvasPool extends _SaveStackTracking {
           height: _heightInBitmapPixels,
         );
       }
-      _canvas.style
+      _canvas!.style
         ..position = 'absolute'
         ..width = '${cssWidth}px'
         ..height = '${cssHeight}px';
@@ -119,12 +119,12 @@ class _CanvasPool extends _SaveStackTracking {
     // Possible Blink bugs that are causing this:
     // * https://bugs.chromium.org/p/chromium/issues/detail?id=370604
     // * https://bugs.chromium.org/p/chromium/issues/detail?id=586601
-    final bool isFirstChildElement = _rootElement.firstChild == null;
+    final bool isFirstChildElement = _rootElement!.firstChild == null;
     if (isFirstChildElement) {
-      _canvas.style.zIndex = '-1';
+      _canvas!.style.zIndex = '-1';
     }
-    _rootElement.append(_canvas);
-    _context = _canvas.context2D;
+    _rootElement!.append(_canvas!);
+    _context = _canvas!.context2D;
     _contextHandle = ContextStateHandle(_context);
     _initializeViewport(requiresClearRect);
     _replayClipStack();
@@ -136,7 +136,7 @@ class _CanvasPool extends _SaveStackTracking {
 
     if (_canvas != null) {
       // Restore to the state where we have only applied the scaling.
-      html.CanvasRenderingContext2D ctx = _context;
+      html.CanvasRenderingContext2D? ctx = _context;
       if (ctx != null) {
         try {
           ctx.font = '';
@@ -158,8 +158,8 @@ class _CanvasPool extends _SaveStackTracking {
   }
 
   int _replaySingleSaveEntry(int clipDepth, Matrix4 prevTransform,
-      Matrix4 transform, List<_SaveClipEntry> clipStack) {
-    final html.CanvasRenderingContext2D ctx = _context;
+      Matrix4 transform, List<_SaveClipEntry>? clipStack) {
+    final html.CanvasRenderingContext2D? ctx = _context;
     if (clipStack != null) {
       for (int clipCount = clipStack.length;
           clipDepth < clipCount;
@@ -175,7 +175,7 @@ class _CanvasPool extends _SaveStackTracking {
             clipTimeTransform[12] != prevTransform[12] ||
             clipTimeTransform[13] != prevTransform[13]) {
           final double ratio = EngineWindow.browserDevicePixelRatio;
-          ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+          ctx!.setTransform(ratio, 0, 0, ratio, 0, 0);
           ctx.transform(
               clipTimeTransform[0],
               clipTimeTransform[1],
@@ -186,11 +186,11 @@ class _CanvasPool extends _SaveStackTracking {
           prevTransform = clipTimeTransform;
         }
         if (clipEntry.rect != null) {
-          _clipRect(ctx, clipEntry.rect);
+          _clipRect(ctx!, clipEntry.rect!);
         } else if (clipEntry.rrect != null) {
-          _clipRRect(ctx, clipEntry.rrect);
+          _clipRRect(ctx!, clipEntry.rrect);
         } else if (clipEntry.path != null) {
-          _runPath(ctx, clipEntry.path);
+          _runPath(ctx!, clipEntry.path as SurfacePath);
           ctx.clip();
         }
       }
@@ -204,7 +204,7 @@ class _CanvasPool extends _SaveStackTracking {
         transform[12] != prevTransform[12] ||
         transform[13] != prevTransform[13]) {
       final double ratio = EngineWindow.browserDevicePixelRatio;
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx!.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.transform(transform[0], transform[1], transform[4], transform[5],
           transform[12], transform[13]);
     }
@@ -213,7 +213,7 @@ class _CanvasPool extends _SaveStackTracking {
 
   void _replayClipStack() {
     // Replay save/clip stack on this canvas now.
-    html.CanvasRenderingContext2D ctx = _context;
+    html.CanvasRenderingContext2D? ctx = _context;
     int clipDepth = 0;
     Matrix4 prevTransform = Matrix4.identity();
     for (int saveStackIndex = 0, len = _saveStack.length;
@@ -223,7 +223,7 @@ class _CanvasPool extends _SaveStackTracking {
       clipDepth = _replaySingleSaveEntry(
           clipDepth, prevTransform, saveEntry.transform, saveEntry.clipStack);
       prevTransform = saveEntry.transform;
-      ctx.save();
+      ctx!.save();
       ++_saveContextCount;
     }
     _replaySingleSaveEntry(
@@ -234,9 +234,9 @@ class _CanvasPool extends _SaveStackTracking {
   void reuse() {
     if (_canvas != null) {
       _restoreContextSave();
-      _contextHandle.reset();
+      _contextHandle!.reset();
       _pool ??= [];
-      _pool.add(_canvas);
+      _pool!.add(_canvas);
       _context = null;
       _contextHandle = null;
     }
@@ -249,11 +249,11 @@ class _CanvasPool extends _SaveStackTracking {
 
   void endOfPaint() {
     if (_reusablePool != null) {
-      for (html.CanvasElement e in _reusablePool) {
+      for (html.CanvasElement? e in _reusablePool!) {
         if (browserEngine == BrowserEngine.webkit) {
-          e.width = e.height = 0;
+          e!.width = e.height = 0;
         }
-        e.remove();
+        e!.remove();
       }
       _reusablePool = null;
     }
@@ -262,7 +262,7 @@ class _CanvasPool extends _SaveStackTracking {
 
   void _restoreContextSave() {
     while (_saveContextCount != 0) {
-      _context.restore();
+      _context!.restore();
       --_saveContextCount;
     }
   }
@@ -271,7 +271,7 @@ class _CanvasPool extends _SaveStackTracking {
   /// coordinate system, and the pixel ratio is applied such that CSS pixels are
   /// translated to bitmap pixels.
   void _initializeViewport(bool clearCanvas) {
-    html.CanvasRenderingContext2D ctx = context;
+    html.CanvasRenderingContext2D ctx = context!;
     // Save the canvas state with top-level transforms so we can undo
     // any clips later when we reuse the canvas.
     ctx.save();
@@ -292,20 +292,20 @@ class _CanvasPool extends _SaveStackTracking {
 
   void resetTransform() {
     if (_canvas != null) {
-      _canvas.style.transformOrigin = '';
-      _canvas.style.transform = '';
+      _canvas!.style.transformOrigin = '';
+      _canvas!.style.transform = '';
     }
   }
 
   // Returns a data URI containing a representation of the image in this
   // canvas.
-  String toDataUrl() => _canvas.toDataUrl();
+  String toDataUrl() => _canvas!.toDataUrl();
 
   @override
   void save() {
     super.save();
     if (_canvas != null) {
-      context.save();
+      context!.save();
       ++_saveContextCount;
     }
   }
@@ -314,17 +314,17 @@ class _CanvasPool extends _SaveStackTracking {
   void restore() {
     super.restore();
     if (_canvas != null) {
-      context.restore();
-      contextHandle.reset();
+      context!.restore();
+      contextHandle!.reset();
       --_saveContextCount;
     }
   }
 
   @override
-  void translate(double dx, double dy) {
+  void translate(double? dx, double? dy) {
     super.translate(dx, dy);
     if (_canvas != null) {
-      context.translate(dx, dy);
+      context!.translate(dx!, dy!);
     }
   }
 
@@ -332,7 +332,7 @@ class _CanvasPool extends _SaveStackTracking {
   void scale(double sx, double sy) {
     super.scale(sx, sy);
     if (_canvas != null) {
-      context.scale(sx, sy);
+      context!.scale(sx, sy);
     }
   }
 
@@ -340,7 +340,7 @@ class _CanvasPool extends _SaveStackTracking {
   void rotate(double radians) {
     super.rotate(radians);
     if (_canvas != null) {
-      context.rotate(radians);
+      context!.rotate(radians);
     }
   }
 
@@ -348,7 +348,7 @@ class _CanvasPool extends _SaveStackTracking {
   void skew(double sx, double sy) {
     super.skew(sx, sy);
     if (_canvas != null) {
-      context.transform(1, sy, sx, 1, 0, 0);
+      context!.transform(1, sy, sx, 1, 0, 0);
       //                |  |   |   |  |  |
       //                |  |   |   |  |  f - vertical translation
       //                |  |   |   |  e - horizontal translation
@@ -362,7 +362,7 @@ class _CanvasPool extends _SaveStackTracking {
   }
 
   @override
-  void transform(Float64List matrix4) {
+  void transform(Float64List? matrix4) {
     super.transform(matrix4);
     // Canvas2D transform API:
     //
@@ -385,7 +385,7 @@ class _CanvasPool extends _SaveStackTracking {
     // This matrix is sufficient to represent 2D rotates, translates, scales,
     // and skews.
     if (_canvas != null) {
-      context.transform(matrix4[0], matrix4[1], matrix4[4], matrix4[5],
+      context!.transform(matrix4![0], matrix4[1], matrix4[4], matrix4[5],
           matrix4[12], matrix4[13]);
     }
   }
@@ -393,7 +393,7 @@ class _CanvasPool extends _SaveStackTracking {
   void clipRect(ui.Rect rect) {
     super.clipRect(rect);
     if (_canvas != null) {
-      _clipRect(context, rect);
+      _clipRect(context!, rect);
     }
   }
 
@@ -406,30 +406,30 @@ class _CanvasPool extends _SaveStackTracking {
   void clipRRect(ui.RRect rrect) {
     super.clipRRect(rrect);
     if (_canvas != null) {
-      _clipRRect(context, rrect);
+      _clipRRect(context!, rrect);
     }
   }
 
-  void _clipRRect(html.CanvasRenderingContext2D ctx, ui.RRect rrect) {
+  void _clipRRect(html.CanvasRenderingContext2D ctx, ui.RRect? rrect) {
     final ui.Path path = ui.Path()..addRRect(rrect);
-    _runPath(ctx, path);
+    _runPath(ctx, path as SurfacePath);
     ctx.clip();
   }
 
   void clipPath(ui.Path path) {
     super.clipPath(path);
     if (_canvas != null) {
-      html.CanvasRenderingContext2D ctx = context;
-      _runPath(ctx, path);
+      html.CanvasRenderingContext2D ctx = context!;
+      _runPath(ctx, path as SurfacePath);
       ctx.clip();
     }
   }
 
   void drawColor(ui.Color color, ui.BlendMode blendMode) {
-    html.CanvasRenderingContext2D ctx = context;
-    contextHandle.blendMode = blendMode;
-    contextHandle.fillStyle = colorToCssString(color);
-    contextHandle.strokeStyle = '';
+    html.CanvasRenderingContext2D ctx = context!;
+    contextHandle!.blendMode = blendMode;
+    contextHandle!.fillStyle = colorToCssString(color);
+    contextHandle!.strokeStyle = '';
     ctx.beginPath();
     // Fill a virtually infinite rect with the color.
     //
@@ -440,7 +440,7 @@ class _CanvasPool extends _SaveStackTracking {
 
   // Fill a virtually infinite rect with the color.
   void fill() {
-    html.CanvasRenderingContext2D ctx = context;
+    html.CanvasRenderingContext2D ctx = context!;
     ctx.beginPath();
     // We can't use (0, 0, width, height) because the current transform can
     // cause it to not fill the entire clip.
@@ -448,28 +448,28 @@ class _CanvasPool extends _SaveStackTracking {
   }
 
   void strokeLine(ui.Offset p1, ui.Offset p2) {
-    html.CanvasRenderingContext2D ctx = context;
+    html.CanvasRenderingContext2D ctx = context!;
     ctx.beginPath();
-    ctx.moveTo(p1.dx, p1.dy);
-    ctx.lineTo(p2.dx, p2.dy);
+    ctx.moveTo(p1.dx!, p1.dy!);
+    ctx.lineTo(p2.dx!, p2.dy!);
     ctx.stroke();
   }
 
   void drawPoints(ui.PointMode pointMode, Float32List points, double radius) {
-    html.CanvasRenderingContext2D ctx = context;
+    html.CanvasRenderingContext2D? ctx = context;
     final int len = points.length;
     switch (pointMode) {
       case ui.PointMode.points:
         for (int i = 0; i < len; i += 2) {
           final double x = points[i];
           final double y = points[i + 1];
-          ctx.beginPath();
+          ctx!.beginPath();
           ctx.arc(x, y, radius, 0, 2.0 * math.pi);
           ctx.fill();
         }
         break;
       case ui.PointMode.lines:
-        ctx.beginPath();
+        ctx!.beginPath();
         for (int i = 0; i < (len - 2); i += 4) {
           ctx.moveTo(points[i], points[i + 1]);
           ctx.lineTo(points[i + 2], points[i + 3]);
@@ -477,7 +477,7 @@ class _CanvasPool extends _SaveStackTracking {
         }
         break;
       case ui.PointMode.polygon:
-        ctx.beginPath();
+        ctx!.beginPath();
         ctx.moveTo(points[0], points[1]);
         for (int i = 2; i < len; i += 2) {
           ctx.lineTo(points[i], points[i + 1]);
@@ -494,7 +494,7 @@ class _CanvasPool extends _SaveStackTracking {
       for (PathCommand command in subpath.commands) {
         switch (command.type) {
           case PathCommandTypes.bezierCurveTo:
-            final BezierCurveTo curve = command;
+            final BezierCurveTo curve = command as BezierCurveTo;
             ctx.bezierCurveTo(
                 curve.x1, curve.y1, curve.x2, curve.y2, curve.x3, curve.y3);
             break;
@@ -502,10 +502,10 @@ class _CanvasPool extends _SaveStackTracking {
             ctx.closePath();
             break;
           case PathCommandTypes.ellipse:
-            final Ellipse ellipse = command;
+            final Ellipse ellipse = command as Ellipse;
             ctx.ellipse(
-                ellipse.x,
-                ellipse.y,
+                ellipse.x!,
+                ellipse.y!,
                 ellipse.radiusX,
                 ellipse.radiusY,
                 ellipse.rotation,
@@ -514,27 +514,27 @@ class _CanvasPool extends _SaveStackTracking {
                 ellipse.anticlockwise);
             break;
           case PathCommandTypes.lineTo:
-            final LineTo lineTo = command;
-            ctx.lineTo(lineTo.x, lineTo.y);
+            final LineTo lineTo = command as LineTo;
+            ctx.lineTo(lineTo.x!, lineTo.y!);
             break;
           case PathCommandTypes.moveTo:
-            final MoveTo moveTo = command;
-            ctx.moveTo(moveTo.x, moveTo.y);
+            final MoveTo moveTo = command as MoveTo;
+            ctx.moveTo(moveTo.x!, moveTo.y!);
             break;
           case PathCommandTypes.rRect:
-            final RRectCommand rrectCommand = command;
+            final RRectCommand rrectCommand = command as RRectCommand;
             _RRectToCanvasRenderer(ctx)
-                .render(rrectCommand.rrect, startNewPath: false);
+                .render(rrectCommand.rrect!, startNewPath: false);
             break;
           case PathCommandTypes.rect:
-            final RectCommand rectCommand = command;
+            final RectCommand rectCommand = command as RectCommand;
             ctx.rect(rectCommand.x, rectCommand.y, rectCommand.width,
                 rectCommand.height);
             break;
           case PathCommandTypes.quadraticCurveTo:
-            final QuadraticCurveTo quadraticCurveTo = command;
-            ctx.quadraticCurveTo(quadraticCurveTo.x1, quadraticCurveTo.y1,
-                quadraticCurveTo.x2, quadraticCurveTo.y2);
+            final QuadraticCurveTo quadraticCurveTo = command as QuadraticCurveTo;
+            ctx.quadraticCurveTo(quadraticCurveTo.x1!, quadraticCurveTo.y1!,
+                quadraticCurveTo.x2!, quadraticCurveTo.y2!);
             break;
           default:
             throw UnimplementedError('Unknown path command $command');
@@ -543,40 +543,40 @@ class _CanvasPool extends _SaveStackTracking {
     }
   }
 
-  void drawRect(ui.Rect rect, ui.PaintingStyle style) {
-    context.beginPath();
-    context.rect(rect.left, rect.top, rect.width, rect.height);
-    contextHandle.paint(style);
+  void drawRect(ui.Rect rect, ui.PaintingStyle? style) {
+    context!.beginPath();
+    context!.rect(rect.left, rect.top, rect.width, rect.height);
+    contextHandle!.paint(style);
   }
 
-  void drawRRect(ui.RRect roundRect, ui.PaintingStyle style) {
+  void drawRRect(ui.RRect roundRect, ui.PaintingStyle? style) {
     _RRectToCanvasRenderer(context).render(roundRect);
-    contextHandle.paint(style);
+    contextHandle!.paint(style);
   }
 
-  void drawDRRect(ui.RRect outer, ui.RRect inner, ui.PaintingStyle style) {
+  void drawDRRect(ui.RRect outer, ui.RRect inner, ui.PaintingStyle? style) {
     _RRectRenderer renderer = _RRectToCanvasRenderer(context);
     renderer.render(outer);
     renderer.render(inner, startNewPath: false, reverse: true);
-    contextHandle.paint(style);
+    contextHandle!.paint(style);
   }
 
-  void drawOval(ui.Rect rect, ui.PaintingStyle style) {
-    context.beginPath();
-    context.ellipse(rect.center.dx, rect.center.dy, rect.width / 2,
+  void drawOval(ui.Rect rect, ui.PaintingStyle? style) {
+    context!.beginPath();
+    context!.ellipse(rect.center.dx!, rect.center.dy!, rect.width / 2,
         rect.height / 2, 0, 0, 2.0 * math.pi, false);
-    contextHandle.paint(style);
+    contextHandle!.paint(style);
   }
 
-  void drawCircle(ui.Offset c, double radius, ui.PaintingStyle style) {
-    context.beginPath();
-    context.ellipse(c.dx, c.dy, radius, radius, 0, 0, 2.0 * math.pi, false);
-    contextHandle.paint(style);
+  void drawCircle(ui.Offset c, double radius, ui.PaintingStyle? style) {
+    context!.beginPath();
+    context!.ellipse(c.dx!, c.dy!, radius, radius, 0, 0, 2.0 * math.pi, false);
+    contextHandle!.paint(style);
   }
 
-  void drawPath(ui.Path path, ui.PaintingStyle style) {
-    _runPath(context, path);
-    contextHandle.paint(style);
+  void drawPath(ui.Path path, ui.PaintingStyle? style) {
+    _runPath(context!, path as SurfacePath);
+    contextHandle!.paint(style);
   }
 
   void drawShadow(ui.Path path, ui.Color color, double elevation,
@@ -594,15 +594,15 @@ class _CanvasPool extends _SaveStackTracking {
           // paint the shadow without the path itself, but if we use a non-zero
           // alpha for the paint the path is painted in addition to the shadow,
           // which is undesirable.
-          context.save();
-          context.translate(shadow.offsetX, shadow.offsetY);
-          context.filter = _maskFilterToCss(
+          context!.save();
+          context!.translate(shadow.offsetX, shadow.offsetY);
+          context!.filter = _maskFilterToCss(
               ui.MaskFilter.blur(ui.BlurStyle.normal, shadow.blur));
-          context.strokeStyle = '';
-          context.fillStyle = colorToCssString(shadow.color);
-          _runPath(context, path);
-          context.fill();
-          context.restore();
+          context!.strokeStyle = '';
+          context!.fillStyle = colorToCssString(shadow.color);
+          _runPath(context!, path as SurfacePath);
+          context!.fill();
+          context!.restore();
         } else {
           // TODO(het): We fill the path with this paint, then later we clip
           // by the same path and fill it with a fully opaque color (we know
@@ -612,17 +612,17 @@ class _CanvasPool extends _SaveStackTracking {
           // the opaque occluder. For that reason, we fill with the shadow color,
           // and set the shadow color to fully opaque. This way, the visible
           // pixels are less opaque and less noticeable.
-          context.save();
-          context.filter = 'none';
-          context.strokeStyle = '';
-          context.fillStyle = colorToCssString(shadow.color);
-          context.shadowBlur = shadow.blur;
-          context.shadowColor = colorToCssString(shadow.color.withAlpha(0xff));
-          context.shadowOffsetX = shadow.offsetX;
-          context.shadowOffsetY = shadow.offsetY;
-          _runPath(context, path);
-          context.fill();
-          context.restore();
+          context!.save();
+          context!.filter = 'none';
+          context!.strokeStyle = '';
+          context!.fillStyle = colorToCssString(shadow.color);
+          context!.shadowBlur = shadow.blur;
+          context!.shadowColor = colorToCssString(shadow.color.withAlpha(0xff))!;
+          context!.shadowOffsetX = shadow.offsetX;
+          context!.shadowOffsetY = shadow.offsetY;
+          _runPath(context!, path as SurfacePath);
+          context!.fill();
+          context!.restore();
         }
       }
     }
@@ -636,18 +636,18 @@ class _CanvasPool extends _SaveStackTracking {
     // into thinking that this canvas has a zero size so it doesn't count it
     // towards the threshold.
     if (browserEngine == BrowserEngine.webkit && _canvas != null) {
-      _canvas.width = _canvas.height = 0;
+      _canvas!.width = _canvas!.height = 0;
     }
     _clearPool();
   }
 
   void _clearPool() {
     if (_pool != null) {
-      for (html.CanvasElement c in _pool) {
+      for (html.CanvasElement? c in _pool!) {
         if (browserEngine == BrowserEngine.webkit) {
-          c.width = c.height = 0;
+          c!.width = c.height = 0;
         }
-        c.remove();
+        c!.remove();
       }
     }
     _pool = null;
@@ -660,95 +660,95 @@ class _CanvasPool extends _SaveStackTracking {
 // to initialize current values.
 //
 class ContextStateHandle {
-  html.CanvasRenderingContext2D context;
+  html.CanvasRenderingContext2D? context;
   ContextStateHandle(this.context);
-  ui.BlendMode _currentBlendMode = ui.BlendMode.srcOver;
-  ui.StrokeCap _currentStrokeCap = ui.StrokeCap.butt;
-  ui.StrokeJoin _currentStrokeJoin = ui.StrokeJoin.miter;
+  ui.BlendMode? _currentBlendMode = ui.BlendMode.srcOver;
+  ui.StrokeCap? _currentStrokeCap = ui.StrokeCap.butt;
+  ui.StrokeJoin? _currentStrokeJoin = ui.StrokeJoin.miter;
   // Fill style and stroke style are Object since they can have a String or
   // shader object such as a gradient.
-  Object _currentFillStyle;
-  Object _currentStrokeStyle;
+  Object? _currentFillStyle;
+  Object? _currentStrokeStyle;
   double _currentLineWidth = 1.0;
   String _currentFilter = 'none';
 
-  set blendMode(ui.BlendMode blendMode) {
+  set blendMode(ui.BlendMode? blendMode) {
     if (blendMode != _currentBlendMode) {
       _currentBlendMode = blendMode;
-      context.globalCompositeOperation =
+      context!.globalCompositeOperation =
           _stringForBlendMode(blendMode) ?? 'source-over';
     }
   }
 
-  set strokeCap(ui.StrokeCap strokeCap) {
+  set strokeCap(ui.StrokeCap? strokeCap) {
     strokeCap ??= ui.StrokeCap.butt;
     if (strokeCap != _currentStrokeCap) {
       _currentStrokeCap = strokeCap;
-      context.lineCap = _stringForStrokeCap(strokeCap);
+      context!.lineCap = _stringForStrokeCap(strokeCap)!;
     }
   }
 
   set lineWidth(double lineWidth) {
     if (lineWidth != _currentLineWidth) {
       _currentLineWidth = lineWidth;
-      context.lineWidth = lineWidth;
+      context!.lineWidth = lineWidth;
     }
   }
 
-  set strokeJoin(ui.StrokeJoin strokeJoin) {
+  set strokeJoin(ui.StrokeJoin? strokeJoin) {
     strokeJoin ??= ui.StrokeJoin.miter;
     if (strokeJoin != _currentStrokeJoin) {
       _currentStrokeJoin = strokeJoin;
-      context.lineJoin = _stringForStrokeJoin(strokeJoin);
+      context!.lineJoin = _stringForStrokeJoin(strokeJoin);
     }
   }
 
-  set fillStyle(Object colorOrGradient) {
+  set fillStyle(Object? colorOrGradient) {
     if (!identical(colorOrGradient, _currentFillStyle)) {
       _currentFillStyle = colorOrGradient;
-      context.fillStyle = colorOrGradient;
+      context!.fillStyle = colorOrGradient;
     }
   }
 
-  set strokeStyle(Object colorOrGradient) {
+  set strokeStyle(Object? colorOrGradient) {
     if (!identical(colorOrGradient, _currentStrokeStyle)) {
       _currentStrokeStyle = colorOrGradient;
-      context.strokeStyle = colorOrGradient;
+      context!.strokeStyle = colorOrGradient;
     }
   }
 
   set filter(String filter) {
     if (_currentFilter != filter) {
       _currentFilter = filter;
-      context.filter = filter;
+      context!.filter = filter;
     }
   }
 
-  void paint(ui.PaintingStyle style) {
+  void paint(ui.PaintingStyle? style) {
     if (style == ui.PaintingStyle.stroke) {
-      context.stroke();
+      context!.stroke();
     } else {
-      context.fill();
+      context!.fill();
     }
   }
 
   void reset() {
-    context.fillStyle = '';
+    context!.fillStyle = '';
     // Read back fillStyle/strokeStyle values from context so that input such
     // as rgba(0, 0, 0, 0) is correctly compared and doesn't cause diff on
     // setter.
-    _currentFillStyle = context.fillStyle;
-    context.strokeStyle = '';
-    _currentStrokeStyle = context.strokeStyle;
-    context.filter = 'none';
+    _currentFillStyle = context!.fillStyle;
+    context!.strokeStyle = '';
+    _currentStrokeStyle = context!.strokeStyle;
+    context!.filter = 'none';
     _currentFilter = 'none';
-    context.globalCompositeOperation = 'source-over';
+    context!.globalCompositeOperation = 'source-over';
     _currentBlendMode = ui.BlendMode.srcOver;
-    context.lineWidth = 1.0;
+    context!.lineWidth = 1.0;
     _currentLineWidth = 1.0;
-    context.lineCap = 'butt';
+    context!.lineCap = 'butt';
     _currentStrokeCap = ui.StrokeCap.butt;
-    context.lineJoin = 'miter';
+    context!.lineJoin = 'miter';
     _currentStrokeJoin = ui.StrokeJoin.miter;
   }
 }
@@ -763,7 +763,7 @@ class _SaveStackTracking {
 
   /// The stack that maintains clipping operations used when text is painted
   /// onto bitmap canvas but is composited as separate element.
-  List<_SaveClipEntry> _clipStack;
+  List<_SaveClipEntry>? _clipStack;
 
   /// Returns whether there are active clipping regions on the canvas.
   bool get isClipped => _clipStack != null;
@@ -787,7 +787,7 @@ class _SaveStackTracking {
     _saveStack.add(_SaveStackEntry(
       transform: _currentTransform.clone(),
       clipStack:
-          _clipStack == null ? null : List<_SaveClipEntry>.from(_clipStack),
+          _clipStack == null ? null : List<_SaveClipEntry>.from(_clipStack!),
     ));
   }
 
@@ -804,7 +804,7 @@ class _SaveStackTracking {
 
   /// Multiplies the [currentTransform] matrix by a translation.
   @mustCallSuper
-  void translate(double dx, double dy) {
+  void translate(double? dx, double? dy) {
     _currentTransform.translate(dx, dy);
   }
 
@@ -824,7 +824,7 @@ class _SaveStackTracking {
   @mustCallSuper
   void skew(double sx, double sy) {
     final Matrix4 skewMatrix = Matrix4.identity();
-    final Float64List storage = skewMatrix.storage;
+    final Float64List storage = skewMatrix.storage!;
     storage[1] = sy;
     storage[4] = sx;
     _currentTransform.multiply(skewMatrix);
@@ -832,7 +832,7 @@ class _SaveStackTracking {
 
   /// Multiplies the [currentTransform] matrix by another matrix.
   @mustCallSuper
-  void transform(Float64List matrix4) {
+  void transform(Float64List? matrix4) {
     _currentTransform.multiply(Matrix4.fromFloat64List(matrix4));
   }
 
@@ -840,20 +840,20 @@ class _SaveStackTracking {
   @mustCallSuper
   void clipRect(ui.Rect rect) {
     _clipStack ??= <_SaveClipEntry>[];
-    _clipStack.add(_SaveClipEntry.rect(rect, _currentTransform.clone()));
+    _clipStack!.add(_SaveClipEntry.rect(rect, _currentTransform.clone()));
   }
 
   /// Adds a round rectangle to clipping stack.
   @mustCallSuper
   void clipRRect(ui.RRect rrect) {
     _clipStack ??= <_SaveClipEntry>[];
-    _clipStack.add(_SaveClipEntry.rrect(rrect, _currentTransform.clone()));
+    _clipStack!.add(_SaveClipEntry.rrect(rrect, _currentTransform.clone()));
   }
 
   /// Adds a path to clipping stack.
   @mustCallSuper
   void clipPath(ui.Path path) {
     _clipStack ??= <_SaveClipEntry>[];
-    _clipStack.add(_SaveClipEntry.path(path, _currentTransform.clone()));
+    _clipStack!.add(_SaveClipEntry.path(path, _currentTransform.clone()));
   }
 }

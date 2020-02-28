@@ -16,32 +16,32 @@ class ClipboardMessageHandler {
 
   /// Handles the platform message which stores the given text to the clipboard.
   void setDataMethodCall(
-      MethodCall methodCall, ui.PlatformMessageResponseCallback callback) {
+      MethodCall methodCall, ui.PlatformMessageResponseCallback? callback) {
     const MethodCodec codec = JSONMethodCodec();
     _copyToClipboardStrategy
         .setData(methodCall.arguments['text'])
         .then((bool success) {
       if (success) {
-        callback(codec.encodeSuccessEnvelope(true));
+        callback!(codec.encodeSuccessEnvelope(true));
       } else {
-        callback(codec.encodeErrorEnvelope(
+        callback!(codec.encodeErrorEnvelope(
             code: 'copy_fail', message: 'Clipboard.setData failed'));
       }
     }).catchError((_) {
-      callback(codec.encodeErrorEnvelope(
+      callback!(codec.encodeErrorEnvelope(
           code: 'copy_fail', message: 'Clipboard.setData failed'));
     });
   }
 
   /// Handles the platform message which retrieves text data from the clipboard.
-  void getDataMethodCall(ui.PlatformMessageResponseCallback callback) {
+  void getDataMethodCall(ui.PlatformMessageResponseCallback? callback) {
     const MethodCodec codec = JSONMethodCodec();
     _pasteFromClipboardStrategy.getData().then((String data) {
       final Map<String, dynamic> map = {'text': data};
-      callback(codec.encodeSuccessEnvelope(map));
+      callback!(codec.encodeSuccessEnvelope(map));
     }).catchError((error) {
       print('Could not get text from clipboard: $error');
-      callback(codec.encodeErrorEnvelope(
+      callback!(codec.encodeErrorEnvelope(
           code: 'paste_fail', message: 'Clipboard.getData failed'));
     });
   }
@@ -62,7 +62,7 @@ class ClipboardMessageHandler {
 /// APIs and the browser.
 abstract class CopyToClipboardStrategy {
   factory CopyToClipboardStrategy() {
-    return (html.window.navigator.clipboard?.writeText != null)
+    return (html.window.navigator.clipboard.writeText != null)
         ? ClipboardAPICopyStrategy()
         : ExecCommandCopyStrategy();
   }
@@ -72,7 +72,7 @@ abstract class CopyToClipboardStrategy {
   /// Returns `true` for a successful action.
   ///
   /// Returns `false` for an uncessful action or when there is an excaption.
-  Future<bool> setData(String text);
+  Future<bool> setData(String? text);
 }
 
 /// Provides functionality for reading text from clipboard.
@@ -82,7 +82,7 @@ abstract class CopyToClipboardStrategy {
 abstract class PasteFromClipboardStrategy {
   factory PasteFromClipboardStrategy() {
     return (browserEngine == BrowserEngine.firefox ||
-            html.window.navigator.clipboard?.readText == null)
+            html.window.navigator.clipboard.readText == null)
         ? ExecCommandPasteStrategy()
         : ClipboardAPIPasteStrategy();
   }
@@ -97,9 +97,9 @@ abstract class PasteFromClipboardStrategy {
 /// See: https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API
 class ClipboardAPICopyStrategy implements CopyToClipboardStrategy {
   @override
-  Future<bool> setData(String text) async {
+  Future<bool> setData(String? text) async {
     try {
-      await html.window.navigator.clipboard.writeText(text);
+      await html.window.navigator.clipboard.writeText(text!);
     } catch (e) {
       print('copy is not successful ${e.message}');
       return Future.value(false);
@@ -124,8 +124,8 @@ class ClipboardAPIPasteStrategy implements PasteFromClipboardStrategy {
 /// Provides a fallback strategy for browsers which does not support ClipboardAPI.
 class ExecCommandCopyStrategy implements CopyToClipboardStrategy {
   @override
-  Future<bool> setData(String text) {
-    return Future.value(_setDataSync(text));
+  Future<bool> setData(String? text) {
+    return Future.value(_setDataSync(text!));
   }
 
   bool _setDataSync(String text) {
@@ -167,7 +167,7 @@ class ExecCommandCopyStrategy implements CopyToClipboardStrategy {
   }
 
   void _removeTemporaryTextArea(html.HtmlElement element) {
-    element?.remove();
+    element.remove();
   }
 }
 

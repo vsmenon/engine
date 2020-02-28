@@ -26,7 +26,7 @@ bool _newlinePredicate(int char) =>
 ///
 /// All instances of [ParagraphRuler] should be created through this class.
 class RulerManager {
-  RulerManager({@required this.rulerCacheCapacity}) {
+  RulerManager({/* @*/ required this.rulerCacheCapacity}) {
     _rulerHost.style
       ..position = 'fixed'
       ..visibility = 'hidden'
@@ -60,9 +60,9 @@ class RulerManager {
   /// What makes this cache effective is the fact that a typical application
   /// only uses a limited number of text styles. Using too many text styles on
   /// the same screen is considered bad for user experience.
-  Map<ParagraphGeometricStyle, ParagraphRuler> get rulers => _rulers;
-  Map<ParagraphGeometricStyle, ParagraphRuler> _rulers =
-      <ParagraphGeometricStyle, ParagraphRuler>{};
+  Map<ParagraphGeometricStyle?, ParagraphRuler> get rulers => _rulers;
+  Map<ParagraphGeometricStyle?, ParagraphRuler> _rulers =
+      <ParagraphGeometricStyle?, ParagraphRuler>{};
 
   bool _rulerCacheCleanupScheduled = false;
 
@@ -80,15 +80,15 @@ class RulerManager {
   ///
   /// After this is called, this object is no longer usable.
   void dispose() {
-    _rulerHost?.remove();
+    _rulerHost.remove();
   }
 
   // Evicts all rulers from the cache.
   void _evictAllRulers() {
-    _rulers.forEach((ParagraphGeometricStyle style, ParagraphRuler ruler) {
+    _rulers.forEach((ParagraphGeometricStyle? style, ParagraphRuler ruler) {
       ruler.dispose();
     });
-    _rulers = <ParagraphGeometricStyle, ParagraphRuler>{};
+    _rulers = <ParagraphGeometricStyle?, ParagraphRuler>{};
   }
 
   /// If [window._isPhysicalSizeActuallyEmpty], evicts all rulers from the cache.
@@ -103,7 +103,7 @@ class RulerManager {
     // Evict all rulers, so text gets re-measured when the iframe becomes
     // visible.
     // see: https://github.com/flutter/flutter/issues/36341
-    if (window.physicalSize.isEmpty) {
+    if (window.physicalSize!.isEmpty) {
       _evictAllRulers();
       return;
     }
@@ -112,7 +112,7 @@ class RulerManager {
       sortedByUsage.sort((ParagraphRuler a, ParagraphRuler b) {
         return b.hitCount - a.hitCount;
       });
-      _rulers = <ParagraphGeometricStyle, ParagraphRuler>{};
+      _rulers = <ParagraphGeometricStyle?, ParagraphRuler>{};
       for (int i = 0; i < sortedByUsage.length; i++) {
         final ParagraphRuler ruler = sortedByUsage[i];
         ruler.resetHitCount();
@@ -138,8 +138,8 @@ class RulerManager {
   /// The returned ruler is marked as hit so there's no need to do that
   /// elsewhere.
   @visibleForTesting
-  ParagraphRuler findOrCreateRuler(ParagraphGeometricStyle style) {
-    ParagraphRuler ruler = _rulers[style];
+  ParagraphRuler? findOrCreateRuler(ParagraphGeometricStyle? style) {
+    ParagraphRuler? ruler = _rulers[style];
     if (ruler == null) {
       if (assertionsEnabled) {
         domRenderer.debugRulerCacheMiss();
@@ -168,14 +168,14 @@ abstract class TextMeasurementService {
 
   /// Initializes the text measurement service with a specific
   /// [rulerCacheCapacity] that gets passed to the [RulerManager].
-  static void initialize({@required int rulerCacheCapacity}) {
+  static void initialize({/* @*/ required int rulerCacheCapacity}) {
     rulerManager?.dispose();
     rulerManager = null;
     rulerManager = RulerManager(rulerCacheCapacity: rulerCacheCapacity);
   }
 
   @visibleForTesting
-  static RulerManager rulerManager;
+  static RulerManager? rulerManager;
 
   /// The DOM-based text measurement service.
   @visibleForTesting
@@ -205,9 +205,9 @@ abstract class TextMeasurementService {
     // (with display:none)
     // Skip using canvas measurements until the iframe becomes visible.
     // see: https://github.com/flutter/flutter/issues/36341
-    if (!window.physicalSize.isEmpty &&
+    if (!window.physicalSize!.isEmpty &&
         enableExperimentalCanvasImplementation &&
-        _canUseCanvasMeasurement(paragraph)) {
+        _canUseCanvasMeasurement(paragraph as EngineParagraph)) {
       return canvasInstance;
     }
     return domInstance;
@@ -231,14 +231,14 @@ abstract class TextMeasurementService {
   }
 
   /// Measures the paragraph and returns a [MeasurementResult] object.
-  MeasurementResult measure(
+  MeasurementResult? measure(
     EngineParagraph paragraph,
     ui.ParagraphConstraints constraints,
   ) {
     assert(rulerManager != null);
     final ParagraphGeometricStyle style = paragraph._geometricStyle;
     final ParagraphRuler ruler =
-        TextMeasurementService.rulerManager.findOrCreateRuler(style);
+        TextMeasurementService.rulerManager!.findOrCreateRuler(style)!;
 
     if (assertionsEnabled) {
       if (paragraph._plainText == null) {
@@ -248,7 +248,7 @@ abstract class TextMeasurementService {
       }
     }
 
-    MeasurementResult result = ruler.cacheLookup(paragraph, constraints);
+    MeasurementResult? result = ruler.cacheLookup(paragraph, constraints);
     if (result != null) {
       return result;
     }
@@ -264,24 +264,24 @@ abstract class TextMeasurementService {
 
   /// Returns text position given a paragraph, constraints and offset.
   ui.TextPosition getTextPositionForOffset(EngineParagraph paragraph,
-      ui.ParagraphConstraints constraints, ui.Offset offset);
+      ui.ParagraphConstraints? constraints, ui.Offset offset);
 
   /// Delegates to a [ParagraphRuler] to measure a list of text boxes that
   /// enclose the given range of text.
   List<ui.TextBox> measureBoxesForRange(
     EngineParagraph paragraph,
     ui.ParagraphConstraints constraints, {
-    int start,
-    int end,
-    double alignOffset,
-    ui.TextDirection textDirection,
+    required int start,
+    required int end,
+    double? alignOffset,
+    ui.TextDirection? textDirection,
   }) {
     final ParagraphGeometricStyle style = paragraph._geometricStyle;
     final ParagraphRuler ruler =
-        TextMeasurementService.rulerManager.findOrCreateRuler(style);
+        TextMeasurementService.rulerManager!.findOrCreateRuler(style)!;
 
     return ruler.measureBoxesForRange(
-      paragraph._plainText,
+      paragraph._plainText!,
       constraints,
       start: start,
       end: end,
@@ -326,7 +326,7 @@ class DomTextMeasurementService extends TextMeasurementService {
   static DomTextMeasurementService get instance =>
       _instance ??= DomTextMeasurementService();
 
-  static DomTextMeasurementService _instance;
+  static DomTextMeasurementService? _instance;
 
   @override
   MeasurementResult _doMeasure(
@@ -335,7 +335,7 @@ class DomTextMeasurementService extends TextMeasurementService {
     ParagraphRuler ruler,
   ) {
     ruler.willMeasure(paragraph);
-    final String plainText = paragraph._plainText;
+    final String? plainText = paragraph._plainText;
 
     ruler.measureAll(constraints);
 
@@ -359,12 +359,12 @@ class DomTextMeasurementService extends TextMeasurementService {
     assert(paragraph._plainText != null);
     final ParagraphGeometricStyle style = paragraph._geometricStyle;
     final ParagraphRuler ruler =
-        TextMeasurementService.rulerManager.findOrCreateRuler(style);
+        TextMeasurementService.rulerManager!.findOrCreateRuler(style)!;
 
-    final String text = paragraph._plainText.substring(start, end);
+    final String text = paragraph._plainText!.substring(start, end);
     final ui.Paragraph substringParagraph = paragraph._cloneWithText(text);
 
-    ruler.willMeasure(substringParagraph);
+    ruler.willMeasure(substringParagraph as EngineParagraph);
     ruler.measureAsSingleLine();
     final TextDimensions dimensions = ruler.singleLineDimensions;
     ruler.didMeasure();
@@ -373,17 +373,17 @@ class DomTextMeasurementService extends TextMeasurementService {
 
   @override
   ui.TextPosition getTextPositionForOffset(EngineParagraph paragraph,
-      ui.ParagraphConstraints constraints, ui.Offset offset) {
+      ui.ParagraphConstraints? constraints, ui.Offset offset) {
     assert(
-      paragraph._measurementResult.lines == null,
+      paragraph._measurementResult!.lines == null,
       'should only be called when the faster lines-based approach is not possible',
     );
 
     final ParagraphGeometricStyle style = paragraph._geometricStyle;
     final ParagraphRuler ruler =
-        TextMeasurementService.rulerManager.findOrCreateRuler(style);
+        TextMeasurementService.rulerManager!.findOrCreateRuler(style)!;
     ruler.willMeasure(paragraph);
-    final int position = ruler.hitTest(constraints, offset);
+    final int position = ruler.hitTest(constraints!, offset);
     ruler.didMeasure();
     return ui.TextPosition(offset: position);
   }
@@ -416,8 +416,8 @@ class DomTextMeasurementService extends TextMeasurementService {
         _applySubPixelRoundingHack(minIntrinsicWidth, maxIntrinsicWidth);
     final double ideographicBaseline = alphabeticBaseline * _baselineRatioHack;
 
-    final String text = paragraph._plainText;
-    List<EngineLineMetrics> lines;
+    final String? text = paragraph._plainText;
+    List<EngineLineMetrics>? lines;
     if (text != null) {
       final double lineWidth = maxIntrinsicWidth;
       final double alignOffset = _calculateAlignOffsetForLine(
@@ -476,14 +476,14 @@ class DomTextMeasurementService extends TextMeasurementService {
     final double naturalHeight = ruler.constrainedDimensions.height;
 
     double height;
-    double lineHeight;
-    final int maxLines = paragraph._geometricStyle.maxLines;
+    double? lineHeight;
+    final int? maxLines = paragraph._geometricStyle.maxLines;
     if (maxLines == null) {
       height = naturalHeight;
     } else {
       // Lazily compute [lineHeight] when [maxLines] is not null.
-      lineHeight = ruler.lineHeightDimensions.height;
-      height = math.min(naturalHeight, maxLines * lineHeight);
+      lineHeight = ruler.lineHeightDimensions!.height;
+      height = math.min(naturalHeight, maxLines * lineHeight!);
     }
 
     maxIntrinsicWidth =
@@ -544,7 +544,7 @@ class CanvasTextMeasurementService extends TextMeasurementService {
   static CanvasTextMeasurementService get instance =>
       _instance ??= CanvasTextMeasurementService();
 
-  static CanvasTextMeasurementService _instance;
+  static CanvasTextMeasurementService? _instance;
 
   final html.CanvasRenderingContext2D _canvasContext =
       html.CanvasElement().context2D;
@@ -555,7 +555,7 @@ class CanvasTextMeasurementService extends TextMeasurementService {
     ui.ParagraphConstraints constraints,
     ParagraphRuler ruler,
   ) {
-    final String text = paragraph._plainText;
+    final String text = paragraph._plainText!;
     final ParagraphGeometricStyle style = paragraph._geometricStyle;
     assert(text != null);
 
@@ -590,12 +590,12 @@ class CanvasTextMeasurementService extends TextMeasurementService {
     }
 
     final int lineCount = linesCalculator.lines.length;
-    final double lineHeight = ruler.lineHeightDimensions.height;
+    final double lineHeight = ruler.lineHeightDimensions!.height;
     final double naturalHeight = lineCount * lineHeight;
 
     final double height = style.maxLines == null
         ? naturalHeight
-        : math.min(lineCount, style.maxLines) * lineHeight;
+        : math.min(lineCount, style.maxLines)! * lineHeight;
 
     final MeasurementResult result = MeasurementResult(
       constraints.width,
@@ -622,7 +622,7 @@ class CanvasTextMeasurementService extends TextMeasurementService {
   @override
   double measureSubstringWidth(EngineParagraph paragraph, int start, int end) {
     assert(paragraph._plainText != null);
-    final String text = paragraph._plainText;
+    final String text = paragraph._plainText!;
     final ParagraphGeometricStyle style = paragraph._geometricStyle;
     _canvasContext.font = style.cssFontString;
     return _measureSubstring(
@@ -636,7 +636,7 @@ class CanvasTextMeasurementService extends TextMeasurementService {
 
   @override
   ui.TextPosition getTextPositionForOffset(EngineParagraph paragraph,
-      ui.ParagraphConstraints constraints, ui.Offset offset) {
+      ui.ParagraphConstraints? constraints, ui.Offset offset) {
     // TODO(flutter_web): implement.
     return const ui.TextPosition(offset: 0);
   }
@@ -649,7 +649,7 @@ class CanvasTextMeasurementService extends TextMeasurementService {
 int _lastStart = -1;
 int _lastEnd = -1;
 String _lastText = '';
-ParagraphGeometricStyle _lastStyle;
+ParagraphGeometricStyle? _lastStyle;
 double _lastWidth = -1;
 
 /// Measures the width of the substring of [text] starting from the index
@@ -688,7 +688,7 @@ double _measureSubstring(
   final String sub =
       start == 0 && end == text.length ? text : text.substring(start, end);
   final double width =
-      _canvasContext.measureText(sub).width + letterSpacing * sub.length;
+      _canvasContext.measureText(sub).width + letterSpacing * sub.length as double;
 
   // What we are doing here is we are rounding to the nearest 2nd decimal
   // point. So 39.999423 becomes 40, and 11.243982 becomes 11.24.
@@ -729,7 +729,7 @@ class LinesCalculator {
   final EngineParagraph _paragraph;
   final double _maxWidth;
 
-  String get _text => _paragraph._plainText;
+  String? get _text => _paragraph._plainText;
   ParagraphGeometricStyle get _style => _paragraph._geometricStyle;
 
   /// The lines that have been consumed so far.
@@ -739,9 +739,9 @@ class LinesCalculator {
   int _chunkStart = 0;
   bool _reachedMaxLines = false;
 
-  double _cachedEllipsisWidth;
+  double? _cachedEllipsisWidth;
   double get _ellipsisWidth => _cachedEllipsisWidth ??=
-      _roundWidth(_canvasContext.measureText(_style.ellipsis).width);
+      _roundWidth(_canvasContext.measureText(_style.ellipsis!).width as double);
 
   bool get hasEllipsis => _style.ellipsis != null;
   bool get unlimitedLines => _style.maxLines == null;
@@ -755,7 +755,7 @@ class LinesCalculator {
         brk.type == LineBreakType.endOfText;
     final int chunkEnd = brk.index;
     final int chunkEndWithoutSpace =
-        _excludeTrailing(_text, _chunkStart, chunkEnd, _whitespacePredicate);
+        _excludeTrailing(_text!, _chunkStart, chunkEnd, _whitespacePredicate);
 
     // A single chunk of text could be force-broken into multiple lines if it
     // doesn't fit in a single line. That's why we need a loop.
@@ -796,11 +796,11 @@ class LinesCalculator {
           maxWidth: _maxWidth,
         );
         lines.add(EngineLineMetrics.withText(
-          _text.substring(_lineStart, breakingPoint) + _style.ellipsis,
+          _text!.substring(_lineStart, breakingPoint) + _style.ellipsis!,
           startIndex: _lineStart,
           endIndex: chunkEnd,
           endIndexWithoutNewlines:
-              _excludeTrailing(_text, _chunkStart, chunkEnd, _newlinePredicate),
+              _excludeTrailing(_text!, _chunkStart, chunkEnd, _newlinePredicate),
           hardBreak: false,
           width: widthOfResultingLine,
           left: alignOffset,
@@ -840,17 +840,17 @@ class LinesCalculator {
   }
 
   void _addLineBreak({
-    @required int lineEnd,
-    @required bool isHardBreak,
+    /* @*/ required int lineEnd,
+    /* @*/ required bool isHardBreak,
   }) {
     final int endWithoutNewlines = _excludeTrailing(
-      _text,
+      _text!,
       _lineStart,
       lineEnd,
       _newlinePredicate,
     );
     final int endWithoutSpace = _excludeTrailing(
-      _text,
+      _text!,
       _lineStart,
       endWithoutNewlines,
       _whitespacePredicate,
@@ -863,7 +863,7 @@ class LinesCalculator {
       maxWidth: _maxWidth,
     );
     final EngineLineMetrics metrics = EngineLineMetrics.withText(
-      _text.substring(_lineStart, endWithoutNewlines),
+      _text!.substring(_lineStart, endWithoutNewlines),
       startIndex: _lineStart,
       endIndex: lineEnd,
       endIndexWithoutNewlines: endWithoutNewlines,
@@ -885,7 +885,7 @@ class LinesCalculator {
   /// This method uses [_text], [_style] and [_canvasContext] to perform the
   /// measurement.
   double measureSubstring(int start, int end) {
-    return _measureSubstring(_canvasContext, _style, _text, start, end);
+    return _measureSubstring(_canvasContext, _style, _text!, start, end);
   }
 
   /// In a continuous block of text, finds the point where text can be broken to
@@ -894,13 +894,13 @@ class LinesCalculator {
   /// This always returns at least one character even if there isn't enough
   /// space for it.
   int forceBreakSubstring({
-    @required double maxWidth,
-    @required int start,
-    @required int end,
+    /* @*/ required double maxWidth,
+    /* @*/ required int start,
+    /* @*/ required int end,
   }) {
     assert(0 <= start);
     assert(start < end);
-    assert(end <= _text.length);
+    assert(end <= _text!.length);
 
     // When there's no ellipsis, the breaking point should be at least one
     // character away from [start].
@@ -999,9 +999,9 @@ class MaxIntrinsicCalculator {
 
 /// Calculates the offset necessary for the given line to be correctly aligned.
 double _calculateAlignOffsetForLine({
-  @required EngineParagraph paragraph,
-  @required double lineWidth,
-  @required double maxWidth,
+  /* @*/ required EngineParagraph paragraph,
+  /* @*/ required double lineWidth,
+  /* @*/ required double maxWidth,
 }) {
   final double emptySpace = maxWidth - lineWidth;
   // WARNING: the [paragraph] may not be laid out yet at this point. This

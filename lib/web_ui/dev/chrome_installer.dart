@@ -20,15 +20,15 @@ class ChromeArgParser extends BrowserArgParser {
   /// The [ChromeArgParser] singleton.
   static ChromeArgParser get instance => _singletonInstance;
 
-  String _version;
+  String? _version;
 
   ChromeArgParser._();
 
   @override
   void populateOptions(ArgParser argParser) {
-    final YamlMap browserLock = BrowserLock.instance.configuration;
-    final int pinnedChromeVersion =
-        PlatformBinding.instance.getChromeBuild(browserLock);
+    final YamlMap? browserLock = BrowserLock.instance.configuration;
+    final int? pinnedChromeVersion =
+        PlatformBinding.instance!.getChromeBuild(browserLock);
 
     argParser
       ..addOption(
@@ -49,7 +49,7 @@ class ChromeArgParser extends BrowserArgParser {
   }
 
   @override
-  String get version => _version;
+  String? get version => _version;
 }
 
 /// Returns the installation of Chrome, installing it if necessary.
@@ -64,9 +64,9 @@ class ChromeArgParser extends BrowserArgParser {
 /// exact build nuber, such as 695653. Build numbers can be found here:
 ///
 /// https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/
-Future<BrowserInstallation> getOrInstallChrome(
-  String requestedVersion, {
-  StringSink infoLog,
+Future<BrowserInstallation?> getOrInstallChrome(
+  String? requestedVersion, {
+  StringSink? infoLog,
 }) async {
   infoLog ??= io.stdout;
 
@@ -77,19 +77,19 @@ Future<BrowserInstallation> getOrInstallChrome(
     );
   }
 
-  ChromeInstaller installer;
+  ChromeInstaller? installer;
   try {
     installer = requestedVersion == 'latest'
         ? await ChromeInstaller.latest()
-        : ChromeInstaller(version: requestedVersion);
+        : ChromeInstaller(version: requestedVersion!);
 
-    if (installer.isInstalled) {
+    if (installer!.isInstalled) {
       infoLog.writeln(
           'Installation was skipped because Chrome version ${installer.version} is already installed.');
     } else {
       infoLog.writeln('Installing Chrome version: ${installer.version}');
       await installer.install();
-      final BrowserInstallation installation = installer.getInstallation();
+      final BrowserInstallation installation = installer.getInstallation()!;
       infoLog.writeln(
           'Installations complete. To launch it run ${installation.executable}');
     }
@@ -99,7 +99,7 @@ Future<BrowserInstallation> getOrInstallChrome(
   }
 }
 
-Future<String> _findSystemChromeExecutable() async {
+Future<String?> _findSystemChromeExecutable() async {
   final io.ProcessResult which =
       await io.Process.run('which', <String>['google-chrome']);
 
@@ -114,7 +114,7 @@ Future<String> _findSystemChromeExecutable() async {
 /// Manages the installation of a particular [version] of Chrome.
 class ChromeInstaller {
   factory ChromeInstaller({
-    @required String version,
+    /* @*/ required String version,
   }) {
     if (version == 'system') {
       throw BrowserInstallerException(
@@ -125,7 +125,7 @@ class ChromeInstaller {
           'Expected a concrete Chromer version, but got $version. Maybe use ChromeInstaller.latest()?');
     }
     final io.Directory chromeInstallationDir = io.Directory(
-      path.join(environment.webUiDartToolDir.path, 'chrome'),
+      path.join(environment!.webUiDartToolDir.path, 'chrome'),
     );
     final io.Directory versionDir = io.Directory(
       path.join(chromeInstallationDir.path, version),
@@ -143,9 +143,9 @@ class ChromeInstaller {
   }
 
   ChromeInstaller._({
-    @required this.version,
-    @required this.chromeInstallationDir,
-    @required this.versionDir,
+    /* @*/ required this.version,
+    /* @*/ required this.chromeInstallationDir,
+    /* @*/ required this.versionDir,
   });
 
   /// Chrome version managed by this installer.
@@ -164,14 +164,14 @@ class ChromeInstaller {
     return versionDir.existsSync();
   }
 
-  BrowserInstallation getInstallation() {
+  BrowserInstallation? getInstallation() {
     if (!isInstalled) {
       return null;
     }
 
     return BrowserInstallation(
       version: version,
-      executable: PlatformBinding.instance.getChromeExecutablePath(versionDir),
+      executable: PlatformBinding.instance!.getChromeExecutablePath(versionDir),
     );
   }
 
@@ -181,7 +181,7 @@ class ChromeInstaller {
     }
 
     versionDir.createSync(recursive: true);
-    final String url = PlatformBinding.instance.getChromeDownloadUrl(version);
+    final String url = PlatformBinding.instance!.getChromeDownloadUrl(version);
     final StreamedResponse download = await client.send(Request(
       'GET',
       Uri.parse(url),

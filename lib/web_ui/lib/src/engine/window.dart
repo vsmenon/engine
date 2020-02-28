@@ -15,7 +15,7 @@ class EngineWindow extends ui.Window {
   }
 
   @override
-  double get devicePixelRatio {
+  double? get devicePixelRatio {
     if (_debugDevicePixelRatio != null) {
       return _debugDevicePixelRatio;
     }
@@ -29,7 +29,7 @@ class EngineWindow extends ui.Window {
 
   /// Returns device pixel ratio returns by browser.
   static double get browserDevicePixelRatio {
-    double ratio = html.window.devicePixelRatio;
+    double ratio = html.window.devicePixelRatio as double;
     // Guard against WebOS returning 0.
     return (ratio == null || ratio == 0.0) ? 1.0 : ratio;
   }
@@ -44,10 +44,10 @@ class EngineWindow extends ui.Window {
     }());
   }
 
-  double _debugDevicePixelRatio;
+  double? _debugDevicePixelRatio;
 
   @override
-  ui.Size get physicalSize {
+  ui.Size? get physicalSize {
     if (_physicalSize == null) {
       _computePhysicalSize();
     }
@@ -73,14 +73,14 @@ class EngineWindow extends ui.Window {
     if (!override) {
       double windowInnerWidth;
       double windowInnerHeight;
-      if (html.window.visualViewport != null) {
-        windowInnerWidth = html.window.visualViewport.width * devicePixelRatio;
+      /* if (html.window.visualViewport != null) */ {
+        windowInnerWidth = html.window.visualViewport.width * devicePixelRatio! as double;
         windowInnerHeight =
-            html.window.visualViewport.height * devicePixelRatio;
-      } else {
+            html.window.visualViewport.height * devicePixelRatio! as double;
+      } /* else {
         windowInnerWidth = html.window.innerWidth * devicePixelRatio;
         windowInnerHeight = html.window.innerHeight * devicePixelRatio;
-      }
+      } */
       _physicalSize = ui.Size(
         windowInnerWidth,
         windowInnerHeight,
@@ -89,10 +89,10 @@ class EngineWindow extends ui.Window {
   }
 
   /// Lazily populated and cleared at the end of the frame.
-  ui.Size _physicalSize;
+  ui.Size? _physicalSize;
 
   /// Overrides the value of [physicalSize] in tests.
-  ui.Size webOnlyDebugPhysicalSizeOverride;
+  ui.Size? webOnlyDebugPhysicalSizeOverride;
 
   @override
   double get physicalDepth => double.maxFinite;
@@ -108,7 +108,7 @@ class EngineWindow extends ui.Window {
   ///
   /// The reason for the lazy initialization is to give enough time for the app to set [locationStrategy]
   /// in `lib/src/ui/initialization.dart`.
-  String _defaultRouteName;
+  String? _defaultRouteName;
 
   @override
   String get defaultRouteName => _defaultRouteName ??= _browserHistory.currentPath;
@@ -117,15 +117,15 @@ class EngineWindow extends ui.Window {
   /// Setting this member will automatically update [_browserHistory].
   ///
   /// By setting this to null, the browser history will be disabled.
-  set locationStrategy(LocationStrategy strategy) {
+  set locationStrategy(LocationStrategy? strategy) {
     _browserHistory.locationStrategy = strategy;
   }
 
   @override
   void sendPlatformMessage(
     String name,
-    ByteData data,
-    ui.PlatformMessageResponseCallback callback,
+    ByteData? data,
+    ui.PlatformMessageResponseCallback? callback,
   ) {
     // In widget tests we want to bypass processing of platform messages.
     if (assertionsEnabled && ui.debugEmulateFlutterTesterEnvironment) {
@@ -137,8 +137,8 @@ class EngineWindow extends ui.Window {
     switch (name) {
       case 'flutter/assets':
         assert(ui.webOnlyAssetManager != null);
-        final String url = utf8.decode(data.buffer.asUint8List());
-        ui.webOnlyAssetManager.load(url).then((ByteData assetData) {
+        final String url = utf8.decode(data!.buffer.asUint8List());
+        ui.webOnlyAssetManager!.load(url).then((ByteData assetData) {
           _replyToPlatformMessage(callback, assetData);
         }, onError: (dynamic error) {
           html.window.console
@@ -158,7 +158,7 @@ class EngineWindow extends ui.Window {
             });
             return;
           case 'HapticFeedback.vibrate':
-            final String type = decoded.arguments;
+            final String? type = decoded.arguments;
             domRenderer.vibrate(_getHapticFeedbackDuration(type));
             return;
           case 'SystemChrome.setApplicationSwitcherDescription':
@@ -179,12 +179,12 @@ class EngineWindow extends ui.Window {
         break;
 
       case 'flutter/textinput':
-        textEditing.channel.handleTextInput(data);
+        textEditing.channel!.handleTextInput(data);
         return;
 
       case 'flutter/platform_views':
         if (experimentalUseSkia) {
-          rasterizer.viewEmbedder.handlePlatformViewCall(data, callback);
+          rasterizer!.viewEmbedder.handlePlatformViewCall(data, callback);
         } else {
           handlePlatformViewCall(data, callback);
         }
@@ -213,7 +213,7 @@ class EngineWindow extends ui.Window {
     }
 
     if (pluginMessageCallHandler != null) {
-      pluginMessageCallHandler(name, data, callback);
+      pluginMessageCallHandler!(name, data, callback);
       return;
     }
 
@@ -227,7 +227,7 @@ class EngineWindow extends ui.Window {
     // callback(null);
   }
 
-  int _getHapticFeedbackDuration(String type) {
+  int _getHapticFeedbackDuration(String? type) {
     switch (type) {
       case 'HapticFeedbackType.lightImpact':
         return DomRenderer.vibrateLightImpact;
@@ -246,11 +246,11 @@ class EngineWindow extends ui.Window {
   /// messages and responses have to be exchanged asynchronously. We simulate
   /// that by adding a zero-length delay to the reply.
   void _replyToPlatformMessage(
-    ui.PlatformMessageResponseCallback callback,
-    ByteData data,
+    ui.PlatformMessageResponseCallback? callback,
+    ByteData? data,
   ) {
     Future<void>.delayed(Duration.zero).then((_) {
-      callback(data);
+      callback!(data);
     });
   }
 
@@ -265,7 +265,7 @@ class EngineWindow extends ui.Window {
     _platformBrightness = newPlatformBrightness;
 
     if (previousPlatformBrightness != _platformBrightness &&
-        onPlatformBrightnessChanged != null) onPlatformBrightnessChanged();
+        onPlatformBrightnessChanged != null) onPlatformBrightnessChanged!();
   }
 
   /// Reference to css media query that indicates the user theme preference on the web.
@@ -275,7 +275,7 @@ class EngineWindow extends ui.Window {
   /// A callback that is invoked whenever [_brightnessMediaQuery] changes value.
   ///
   /// Updates the [_platformBrightness] with the new user preference.
-  html.EventListener _brightnessMediaQueryListener;
+  html.EventListener? _brightnessMediaQueryListener;
 
   /// Set the callback function for listening changes in [_brightnessMediaQuery] value.
   void _addBrightnessMediaQueryListener() {
@@ -284,7 +284,7 @@ class EngineWindow extends ui.Window {
         : ui.Brightness.light);
 
     _brightnessMediaQueryListener = (html.Event event) {
-      final html.MediaQueryListEvent mqEvent = event;
+      final html.MediaQueryListEvent mqEvent = event as MediaQueryListEvent;
       _updatePlatformBrightness(
           mqEvent.matches ? ui.Brightness.dark : ui.Brightness.light);
     };
@@ -303,16 +303,16 @@ class EngineWindow extends ui.Window {
   @override
   void render(ui.Scene scene) {
     if (experimentalUseSkia) {
-      final LayerScene layerScene = scene;
-      rasterizer.draw(layerScene.layerTree);
+      final LayerScene layerScene = scene as LayerScene;
+      rasterizer!.draw(layerScene.layerTree);
     } else {
-      final SurfaceScene surfaceScene = scene;
+      final SurfaceScene surfaceScene = scene as SurfaceScene;
       domRenderer.renderScene(surfaceScene.webOnlyRootElement);
     }
   }
 
   @visibleForTesting
-  Rasterizer rasterizer = experimentalUseSkia ? Rasterizer(Surface()) : null;
+  Rasterizer? rasterizer = experimentalUseSkia ? Rasterizer(Surface()) : null;
 }
 
 /// The window singleton.

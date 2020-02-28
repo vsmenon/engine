@@ -16,14 +16,14 @@ import 'package:web_engine_tester/golden_tester.dart';
 void main() async {
   final Rect region = Rect.fromLTWH(0, 0, 400, 600);
 
-  BitmapCanvas canvas;
+  BitmapCanvas? canvas;
 
   setUp(() {
     canvas = BitmapCanvas(region);
   });
 
   tearDown(() {
-    canvas.rootElement.remove();
+    canvas!.rootElement.remove();
   });
 
   test('draws points in all 3 modes', () async {
@@ -34,24 +34,24 @@ void main() async {
       Offset(50, 10),
       Offset(70, 70),
       Offset(170, 70)
-    ]);
-    canvas.drawPoints(PointMode.points, points, strokeWidth, color);
+    ])!;
+    canvas!.drawPoints(PointMode.points, points, strokeWidth, color);
     final Float32List points2 = offsetListToFloat32List(<Offset>[
       Offset(10, 110),
       Offset(50, 110),
       Offset(70, 170),
       Offset(170, 170)
-    ]);
-    canvas.drawPoints(PointMode.lines, points2, strokeWidth, color);
+    ])!;
+    canvas!.drawPoints(PointMode.lines, points2, strokeWidth, color);
     final Float32List points3 = offsetListToFloat32List(<Offset>[
       Offset(10, 210),
       Offset(50, 210),
       Offset(70, 270),
       Offset(170, 270)
-    ]);
-    canvas.drawPoints(PointMode.polygon, points3, strokeWidth, color);
+    ])!;
+    canvas!.drawPoints(PointMode.polygon, points3, strokeWidth, color);
 
-    html.document.body.append(canvas.rootElement);
+    html.document.body.append(canvas!.rootElement);
     await matchGoldenFile('canvas_draw_points.png', region: region);
   }, timeout: const Timeout(Duration(seconds: 10)));
 }

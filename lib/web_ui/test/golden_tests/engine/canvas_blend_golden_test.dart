@@ -27,7 +27,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('$fileName.png', region: region, maxDiffRatePercent: 0.0);
     } finally {
@@ -40,8 +40,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   test('Blend circles with difference and color', () async {
@@ -50,13 +50,13 @@ void main() async {
     rc.save();
     rc.drawRect(
         Rect.fromLTRB(0, 0, 400, 400),
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..color = const Color.fromARGB(255, 255, 255, 255));
     rc.drawCircle(
         Offset(100, 100),
         80.0,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..color = const Color.fromARGB(128, 255, 0, 0)
           ..blendMode = BlendMode.difference);
@@ -64,7 +64,7 @@ void main() async {
     rc.drawCircle(
         Offset(170, 100),
         80.0,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..blendMode = BlendMode.color
           ..color = const Color.fromARGB(128, 0, 255, 0));
@@ -72,7 +72,7 @@ void main() async {
     rc.drawCircle(
         Offset(135, 170),
         80.0,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..color = const Color.fromARGB(128, 255, 0, 0));
     rc.restore();
@@ -85,20 +85,20 @@ void main() async {
     rc.save();
     rc.drawRect(
         Rect.fromLTRB(0, 0, 400, 400),
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..color = const Color.fromARGB(255, 255, 255, 255));
     rc.drawCircle(
         Offset(100, 100),
         80.0,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..color = const Color.fromARGB(128, 255, 0, 0)
           ..blendMode = BlendMode.difference);
     rc.drawCircle(
         Offset(170, 100),
         80.0,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..blendMode = BlendMode.color
           ..color = const Color.fromARGB(128, 0, 255, 0));
@@ -106,11 +106,11 @@ void main() async {
     rc.drawCircle(
         Offset(135, 170),
         80.0,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.fill
           ..color = const Color.fromARGB(128, 255, 0, 0));
     rc.drawImage(createTestImage(), Offset(135.0, 130.0),
-        Paint()..blendMode = BlendMode.multiply);
+        Paint() as SurfacePaint..blendMode = BlendMode.multiply);
     rc.restore();
     await _checkScreenshot(rc, 'canvas_blend_image_multiply');
   });

@@ -44,22 +44,22 @@ void main() async {
 
     // All three lines are rendered.
     p = paragraph(threeLines);
-    canvas.drawParagraph(p, offset);
+    canvas.drawParagraph(p as EngineParagraph, offset);
     offset = offset.translate(0, p.height + 10);
 
     // Only the first two lines are rendered.
-    p = paragraph(threeLines, paragraphStyle: ParagraphStyle(maxLines: 2));
+    p = paragraph(threeLines, paragraphStyle: ParagraphStyle(maxLines: 2)) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
     // The whole text is rendered.
-    p = paragraph(veryLong, maxWidth: 200);
+    p = paragraph(veryLong, maxWidth: 200) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
     // Only the first two lines are rendered.
     p = paragraph(veryLong,
-        paragraphStyle: ParagraphStyle(maxLines: 2), maxWidth: 200);
+        paragraphStyle: ParagraphStyle(maxLines: 2), maxWidth: 200) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
@@ -76,7 +76,7 @@ void main() async {
       threeLines,
       paragraphStyle: ParagraphStyle(ellipsis: '...'),
     );
-    canvas.drawParagraph(p, offset);
+    canvas.drawParagraph(p as EngineParagraph, offset);
     offset = offset.translate(0, p.height + 10);
 
     // The first two lines are rendered with an ellipsis on the 2nd line.
@@ -84,7 +84,7 @@ void main() async {
       veryLongWithShortPrefix,
       paragraphStyle: ParagraphStyle(ellipsis: '...'),
       maxWidth: 200,
-    );
+    ) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
@@ -92,7 +92,7 @@ void main() async {
     if (!TextMeasurementService.enableExperimentalCanvasImplementation) {
       // This is now correct with the canvas-based measurement, so we shouldn't
       // print the "(wrong)" warning.
-      p = warning('(wrong)');
+      p = warning('(wrong)') as EngineParagraph;
       canvas.drawParagraph(p, offset);
       offset = offset.translate(0, p.height);
     }
@@ -100,7 +100,7 @@ void main() async {
       veryLongWithShortSuffix,
       paragraphStyle: ParagraphStyle(ellipsis: '...'),
       maxWidth: 200,
-    );
+    ) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
@@ -109,7 +109,7 @@ void main() async {
     if (!TextMeasurementService.enableExperimentalCanvasImplementation) {
       // This is now correct with the canvas-based measurement, so we shouldn't
       // print the "(wrong)" warning.
-      p = warning('(wrong)');
+      p = warning('(wrong)') as EngineParagraph;
       canvas.drawParagraph(p, offset);
       offset = offset.translate(0, p.height);
     }
@@ -117,7 +117,7 @@ void main() async {
       veryLong,
       paragraphStyle: ParagraphStyle(maxLines: 2, ellipsis: '...'),
       maxWidth: 200,
-    );
+    ) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
@@ -130,7 +130,7 @@ void main() async {
 
     // The whole line is rendered unbroken when there are no constraints.
     p = paragraph(longUnbreakable);
-    canvas.drawParagraph(p, offset);
+    canvas.drawParagraph(p as EngineParagraph, offset);
     offset = offset.translate(0, p.height + 10);
 
     // The whole line is rendered with an ellipsis.
@@ -138,17 +138,17 @@ void main() async {
       longUnbreakable,
       paragraphStyle: ParagraphStyle(ellipsis: '...'),
       maxWidth: 200,
-    );
+    ) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
     // The text is broken into multiple lines.
-    p = paragraph(longUnbreakable, maxWidth: 200);
+    p = paragraph(longUnbreakable, maxWidth: 200) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 
     // Very narrow constraint (less than one character's width).
-    p = paragraph('AA', maxWidth: 7);
+    p = paragraph('AA', maxWidth: 7) as EngineParagraph;
     canvas.drawParagraph(p, offset);
     offset = offset.translate(0, p.height + 10);
 

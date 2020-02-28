@@ -27,6 +27,8 @@ analyzer:
   # `flutter analyze` (without `--watch`) just ignores directories
   # that contain a .dartignore file, and this file does not have any
   # effect on what files are actually analyzed.
+  enable-experiment:
+    - non-nullable
 
 linter:
   rules:

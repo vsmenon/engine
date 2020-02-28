@@ -23,7 +23,7 @@ class PlatformMessage {
   String get methodName => methodCall.method;
 
   /// Shorthand for getting the arguments of the method call.
-  String get methodArguments => methodCall.arguments;
+  String? get methodArguments => methodCall.arguments;
 }
 
 /// Intercepts platform messages sent from the engine to the framework.
@@ -31,8 +31,8 @@ class PlatformMessage {
 /// It holds all intercepted platform messages in a [messages] list that can
 /// be inspected in tests.
 class PlatformMessagesSpy {
-  PlatformMessageCallback _callback;
-  PlatformMessageCallback _backup;
+  PlatformMessageCallback? _callback;
+  PlatformMessageCallback? _backup;
 
   bool get _isActive => _callback != null;
 
@@ -44,7 +44,7 @@ class PlatformMessagesSpy {
   /// This is typically called inside a test's `setUp` callback.
   void setUp() {
     assert(!_isActive);
-    _callback = (String channel, ByteData data,
+    _callback = (String channel, ByteData? data,
         PlatformMessageResponseCallback callback) {
       messages.add(PlatformMessage(
         channel,

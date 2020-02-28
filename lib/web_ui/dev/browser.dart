@@ -30,13 +30,13 @@ abstract class Browser {
   ///
   /// This will return `null` for browsers that aren't running the Dart VM, or
   /// if the Observatory URL can't be found.
-  Future<Uri> get observatoryUrl => null;
+  Future<Uri>? get observatoryUrl => null;
 
   /// The remote debugger URL for this browser.
   ///
   /// This will return `null` for browsers that don't support remote debugging,
   /// or if the remote debugging URL can't be found.
-  Future<Uri> get remoteDebuggerUrl => null;
+  Future<Uri>? get remoteDebuggerUrl => null;
 
   /// The underlying process.
   ///
@@ -117,7 +117,7 @@ abstract class Browser {
       // Make sure the process dies even if the error wasn't fatal.
       _process.then((process) => process.kill());
 
-      if (stackTrace == null) stackTrace = Trace.current();
+      /* if (stackTrace == null) stackTrace = Trace.current(); */
       if (_onExitCompleter.isCompleted) return;
       _onExitCompleter.completeError(
           Exception('Failed to run $name: ${getErrorMessage(error)}.'),

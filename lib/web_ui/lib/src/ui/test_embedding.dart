@@ -9,7 +9,7 @@ part of ui;
 
 /// Used to track when the platform is initialized. This ensures the test fonts
 /// are available.
-Future<void> _testPlatformInitializedFuture;
+Future<void>? _testPlatformInitializedFuture;
 
 /// If the platform is already initialized (by a previous test), then run the test
 /// body immediately. Otherwise, initialize the platform then run the test.
@@ -22,15 +22,15 @@ Future<dynamic> ensureTestPlatformInitializedThenRunTest(
     _testPlatformInitializedFuture = webOnlyInitializePlatform(
         assetManager: engine.WebOnlyMockAssetManager());
   }
-  return _testPlatformInitializedFuture.then<dynamic>((_) => body());
+  return _testPlatformInitializedFuture!.then<dynamic>((_) => body());
 }
 
 /// Used to track when the platform is initialized. This ensures the test fonts
 /// are available.
-Future<void> _platformInitializedFuture;
+Future<void>? _platformInitializedFuture;
 
 /// Initializes domRenderer with specific devicePixelRation and physicalSize.
-Future<void> webOnlyInitializeTestDomRenderer({double devicePixelRatio = 3.0}) {
+Future<void>? webOnlyInitializeTestDomRenderer({double devicePixelRatio = 3.0}) {
   // Force-initialize DomRenderer so it doesn't overwrite test pixel ratio.
   engine.domRenderer;
 

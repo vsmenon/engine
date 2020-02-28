@@ -10,5 +10,5 @@ abstract class RuntimeDelegate {
   void scheduleFrame({bool regenerateLayerTree = true});
   void render(LayerTree layerTree);
   void handlePlatformMessage(PlatformMessage message);
-  FontCollection getFontCollection();
+  FontCollection? getFontCollection();
 }

@@ -101,12 +101,12 @@ const Rect testBounds = Rect.fromLTRB(50, 50, 230, 220);
 void drawBackground(RecordingCanvas canvas) {
   canvas.drawRect(
       testBounds,
-      Paint()
+      Paint() as SurfacePaint
         ..style = PaintingStyle.fill
         ..color = const Color(0xFF9E9E9E));
   canvas.drawRect(
       testBounds.inflate(-40),
-      Paint()
+      Paint() as SurfacePaint
         ..strokeWidth = 1
         ..style = PaintingStyle.stroke
         ..color = const Color(0xFF009688));
@@ -152,7 +152,7 @@ void paintTextWithClipRoundRect(RecordingCanvas canvas) {
   drawBackground(canvas);
   canvas.drawRRect(
       roundRect,
-      Paint()
+      Paint() as SurfacePaint
         ..color = deepOrange
         ..style = PaintingStyle.fill);
   canvas.clipRRect(roundRect);
@@ -174,7 +174,7 @@ void paintTextWithClipPath(RecordingCanvas canvas) {
   path.close();
   canvas.drawPath(
       path,
-      Paint()
+      Paint() as SurfacePaint
         ..color = deepOrange
         ..style = PaintingStyle.fill);
   canvas.clipPath(path);
@@ -190,7 +190,7 @@ void paintTextWithClipStack(RecordingCanvas canvas) {
   canvas.clipRect(inflatedRect);
   canvas.drawRect(
       inflatedRect,
-      Paint()
+      Paint() as SurfacePaint
         ..color = deepOrange
         ..style = PaintingStyle.fill);
   drawQuickBrownFox(canvas);

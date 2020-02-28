@@ -13,11 +13,11 @@ abstract class OffsetBase {
   ///
   /// The first argument sets the horizontal component, and the second the
   /// vertical component.
-  const OffsetBase(double dx, double dy)
+  const OffsetBase(double? dx, double? dy)
       : _dx = dx, _dy = dy;
 
-  final double _dx;
-  final double _dy;
+  final double? _dx;
+  final double? _dy;
 
   /// Returns true if either component is [double.infinity], and false if both
   /// are finite (or negative infinity, or NaN).
@@ -28,7 +28,7 @@ abstract class OffsetBase {
   /// See also:
   ///
   ///  * [isFinite], which is true if both components are finite (and not NaN).
-  bool get isInfinite => _dx >= double.infinity || _dy >= double.infinity;
+  bool get isInfinite => _dx! >= double.infinity || _dy! >= double.infinity;
 
   /// Whether both components are finite (neither infinite nor NaN).
   ///
@@ -36,7 +36,7 @@ abstract class OffsetBase {
   ///
   ///  * [isInfinite], which returns true if either component is equal to
   ///    positive infinity.
-  bool get isFinite => _dx.isFinite && _dy.isFinite;
+  bool get isFinite => _dx!.isFinite && _dy!.isFinite;
 
   /// Less-than operator. Compares an [Offset] or [Size] to another [Offset] or
   /// [Size], and returns true if both the horizontal and vertical values of the
@@ -45,7 +45,7 @@ abstract class OffsetBase {
   ///
   /// This is a partial ordering. It is possible for two values to be neither
   /// less, nor greater than, nor equal to, another.
-  bool operator <(OffsetBase other) => _dx < other._dx && _dy < other._dy;
+  bool operator <(OffsetBase other) => _dx! < other._dx! && _dy! < other._dy!;
 
   /// Less-than-or-equal-to operator. Compares an [Offset] or [Size] to another
   /// [Offset] or [Size], and returns true if both the horizontal and vertical
@@ -55,7 +55,7 @@ abstract class OffsetBase {
   ///
   /// This is a partial ordering. It is possible for two values to be neither
   /// less, nor greater than, nor equal to, another.
-  bool operator <=(OffsetBase other) => _dx <= other._dx && _dy <= other._dy;
+  bool operator <=(OffsetBase other) => _dx! <= other._dx! && _dy! <= other._dy!;
 
   /// Greater-than operator. Compares an [Offset] or [Size] to another [Offset]
   /// or [Size], and returns true if both the horizontal and vertical values of
@@ -65,7 +65,7 @@ abstract class OffsetBase {
   ///
   /// This is a partial ordering. It is possible for two values to be neither
   /// less, nor greater than, nor equal to, another.
-  bool operator >(OffsetBase other) => _dx > other._dx && _dy > other._dy;
+  bool operator >(OffsetBase other) => _dx! > other._dx! && _dy! > other._dy!;
 
   /// Greater-than-or-equal-to operator. Compares an [Offset] or [Size] to
   /// another [Offset] or [Size], and returns true if both the horizontal and
@@ -75,7 +75,7 @@ abstract class OffsetBase {
   ///
   /// This is a partial ordering. It is possible for two values to be neither
   /// less, nor greater than, nor equal to, another.
-  bool operator >=(OffsetBase other) => _dx > other._dx && _dy >= other._dy;
+  bool operator >=(OffsetBase other) => _dx! > other._dx! && _dy! >= other._dy!;
 
   /// Equality operator. Compares an [Offset] or [Size] to another [Offset] or
   /// [Size], and returns true if the horizontal and vertical values of the
@@ -122,7 +122,7 @@ abstract class OffsetBase {
 class Offset extends OffsetBase {
   /// Creates an offset. The first argument sets [dx], the horizontal component,
   /// and the second sets [dy], the vertical component.
-  const Offset(double dx, double dy) : super(dx, dy);
+  const Offset(double? dx, double? dy) : super(dx, dy);
 
   /// Creates an offset from its [direction] and [distance].
   ///
@@ -137,23 +137,23 @@ class Offset extends OffsetBase {
   /// The x component of the offset.
   ///
   /// The y component is given by [dy].
-  double get dx => _dx;
+  double? get dx => _dx;
 
   /// The y component of the offset.
   ///
   /// The x component is given by [dx].
-  double get dy => _dy;
+  double? get dy => _dy;
 
   /// The magnitude of the offset.
   ///
   /// If you need this value to compare it to another [Offset]'s distance,
   /// consider using [distanceSquared] instead, since it is cheaper to compute.
-  double get distance => math.sqrt(dx * dx + dy * dy);
+  double get distance => math.sqrt(dx! * dx! + dy! * dy!);
 
   /// The square of the magnitude of the offset.
   ///
   /// This is cheaper than computing the [distance] itself.
-  double get distanceSquared => dx * dx + dy * dy;
+  double get distanceSquared => dx! * dx! + dy! * dy!;
 
   /// The angle of this offset as radians clockwise from the positive x-axis, in
   /// the range -[pi] to [pi], assuming positive values of the x-axis go to the
@@ -182,7 +182,7 @@ class Offset extends OffsetBase {
   ///
   ///  * [distance], to compute the magnitude of the vector.
   ///  * [Canvas.rotate], which uses the same convention for its angle.
-  double get direction => math.atan2(dy, dx);
+  double get direction => math.atan2(dy!, dx!);
 
   /// An offset with zero magnitude.
   ///
@@ -217,7 +217,7 @@ class Offset extends OffsetBase {
   /// Offset b = -a; // same as: a.scale(-1.0, -1.0)
   /// ```
   Offset scale(double scaleX, double scaleY) =>
-      Offset(dx * scaleX, dy * scaleY);
+      Offset(dx! * scaleX, dy! * scaleY);
 
   /// Returns a new offset with translateX added to the x component and
   /// translateY added to the y component.
@@ -232,7 +232,7 @@ class Offset extends OffsetBase {
   /// Offset d = a - b; // same as: a.translate(-b.dx, -b.dy)
   /// ```
   Offset translate(double translateX, double translateY) =>
-      Offset(dx + translateX, dy + translateY);
+      Offset(dx! + translateX, dy! + translateY);
 
   /// Unary negation operator.
   ///
@@ -240,7 +240,7 @@ class Offset extends OffsetBase {
   ///
   /// If the [Offset] represents an arrow on a plane, this operator returns the
   /// same arrow but pointing in the reverse direction.
-  Offset operator -() => Offset(-dx, -dy);
+  Offset operator -() => Offset(-dx!, -dy!);
 
   /// Binary subtraction operator.
   ///
@@ -249,7 +249,7 @@ class Offset extends OffsetBase {
   /// left-hand-side operand's [dy] minus the right-hand-side operand's [dy].
   ///
   /// See also [translate].
-  Offset operator -(Offset other) => Offset(dx - other.dx, dy - other.dy);
+  Offset operator -(Offset other) => Offset(dx! - other.dx!, dy! - other.dy!);
 
   /// Binary addition operator.
   ///
@@ -258,7 +258,7 @@ class Offset extends OffsetBase {
   /// two operands.
   ///
   /// See also [translate].
-  Offset operator +(Offset other) => Offset(dx + other.dx, dy + other.dy);
+  Offset operator +(Offset other) => Offset(dx! + other.dx!, dy! + other.dy!);
 
   /// Multiplication operator.
   ///
@@ -267,7 +267,7 @@ class Offset extends OffsetBase {
   /// right-hand-side operand (a double).
   ///
   /// See also [scale].
-  Offset operator *(double operand) => Offset(dx * operand, dy * operand);
+  Offset operator *(double operand) => Offset(dx! * operand, dy! * operand);
 
   /// Division operator.
   ///
@@ -276,7 +276,7 @@ class Offset extends OffsetBase {
   /// operand (a double).
   ///
   /// See also [scale].
-  Offset operator /(double operand) => Offset(dx / operand, dy / operand);
+  Offset operator /(double operand) => Offset(dx! / operand, dy! / operand);
 
   /// Integer (truncating) division operator.
   ///
@@ -284,14 +284,14 @@ class Offset extends OffsetBase {
   /// left-hand-side operand (an Offset) divided by the scalar right-hand-side
   /// operand (a double), rounded towards zero.
   Offset operator ~/(double operand) =>
-      Offset((dx ~/ operand).toDouble(), (dy ~/ operand).toDouble());
+      Offset((dx! ~/ operand).toDouble(), (dy! ~/ operand).toDouble());
 
   /// Modulo (remainder) operator.
   ///
   /// Returns an offset whose coordinates are the remainder of dividing the
   /// coordinates of the left-hand-side operand (an Offset) by the scalar
   /// right-hand-side operand (a double).
-  Offset operator %(double operand) => Offset(dx % operand, dy % operand);
+  Offset operator %(double operand) => Offset(dx! % operand, dy! % operand);
 
   /// Rectangle constructor operator.
   ///
@@ -304,7 +304,7 @@ class Offset extends OffsetBase {
   /// // same as: new Rect.fromLTWH(0.0, 0.0, 100.0, 100.0)
   /// ```
   Rect operator &(Size other) =>
-      Rect.fromLTWH(dx, dy, other.width, other.height);
+      Rect.fromLTWH(dx!, dy!, other.width!, other.height!);
 
   /// Linearly interpolate between two offsets.
   ///
@@ -321,17 +321,17 @@ class Offset extends OffsetBase {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Offset lerp(Offset a, Offset b, double t) {
+  static Offset? lerp(Offset a, Offset b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return b * t;
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       return a * (1.0 - t);
-    }
+    } */
     return Offset(lerpDouble(a.dx, b.dx, t), lerpDouble(a.dy, b.dy, t));
   }
 
@@ -358,7 +358,7 @@ class Offset extends OffsetBase {
 /// You can think of this as an [Offset] from the origin.
 class Size extends OffsetBase {
   /// Creates a [Size] with the given [width] and [height].
-  const Size(double width, double height) : super(width, height);
+  const Size(double? width, double? height) : super(width, height);
 
   /// Creates an instance of [Size] that has the same values as another.
   // Used by the rendering library's _DebugSize hack.
@@ -389,10 +389,10 @@ class Size extends OffsetBase {
   const Size.fromRadius(double radius) : super(radius * 2.0, radius * 2.0);
 
   /// The horizontal extent of this size.
-  double get width => _dx;
+  double? get width => _dx;
 
   /// The vertical extent of this size.
-  double get height => _dy;
+  double? get height => _dy;
 
   /// The aspect ratio of this size.
   ///
@@ -410,12 +410,12 @@ class Size extends OffsetBase {
   ///    child widget's aspect ratio while changing its size.
   double get aspectRatio {
     if (height != 0.0) {
-      return width / height;
+      return width! / height!;
     }
-    if (width > 0.0) {
+    if (width! > 0.0) {
       return double.infinity;
     }
-    if (width < 0.0) {
+    if (width! < 0.0) {
       return double.negativeInfinity;
     }
     return 0.0;
@@ -435,7 +435,7 @@ class Size extends OffsetBase {
   /// Whether this size encloses a non-zero area.
   ///
   /// Negative areas are considered empty.
-  bool get isEmpty => width <= 0.0 || height <= 0.0;
+  bool get isEmpty => width! <= 0.0 || height! <= 0.0;
 
   /// Binary subtraction operator for [Size].
   ///
@@ -455,10 +455,10 @@ class Size extends OffsetBase {
   /// right-hand-side operand.
   OffsetBase operator -(OffsetBase other) {
     if (other is Size) {
-      return Offset(width - other.width, height - other.height);
+      return Offset(width! - other.width!, height! - other.height!);
     }
     if (other is Offset) {
-      return Size(width - other.dx, height - other.dy);
+      return Size(width! - other.dx!, height! - other.dy!);
     }
     throw ArgumentError(other);
   }
@@ -470,21 +470,21 @@ class Size extends OffsetBase {
   /// right-hand-side operand, an [Offset], and whose [height] is the sum of the
   /// [height] of the left-hand-side operand and the [Offset.dy] dimension of
   /// the right-hand-side operand.
-  Size operator +(Offset other) => Size(width + other.dx, height + other.dy);
+  Size operator +(Offset other) => Size(width! + other.dx!, height! + other.dy!);
 
   /// Multiplication operator.
   ///
   /// Returns a [Size] whose dimensions are the dimensions of the left-hand-side
   /// operand (a [Size]) multiplied by the scalar right-hand-side operand (a
   /// [double]).
-  Size operator *(double operand) => Size(width * operand, height * operand);
+  Size operator *(double operand) => Size(width! * operand, height! * operand);
 
   /// Division operator.
   ///
   /// Returns a [Size] whose dimensions are the dimensions of the left-hand-side
   /// operand (a [Size]) divided by the scalar right-hand-side operand (a
   /// [double]).
-  Size operator /(double operand) => Size(width / operand, height / operand);
+  Size operator /(double operand) => Size(width! / operand, height! / operand);
 
   /// Integer (truncating) division operator.
   ///
@@ -492,20 +492,20 @@ class Size extends OffsetBase {
   /// operand (a [Size]) divided by the scalar right-hand-side operand (a
   /// [double]), rounded towards zero.
   Size operator ~/(double operand) =>
-      Size((width ~/ operand).toDouble(), (height ~/ operand).toDouble());
+      Size((width! ~/ operand).toDouble(), (height! ~/ operand).toDouble());
 
   /// Modulo (remainder) operator.
   ///
   /// Returns a [Size] whose dimensions are the remainder of dividing the
   /// left-hand-side operand (a [Size]) by the scalar right-hand-side operand (a
   /// [double]).
-  Size operator %(double operand) => Size(width % operand, height % operand);
+  Size operator %(double operand) => Size(width! % operand, height! % operand);
 
   /// The lesser of the magnitudes of the [width] and the [height].
-  double get shortestSide => math.min(width.abs(), height.abs());
+  double get shortestSide => math.min(width!.abs(), height!.abs());
 
   /// The greater of the magnitudes of the [width] and the [height].
-  double get longestSide => math.max(width.abs(), height.abs());
+  double get longestSide => math.max(width!.abs(), height!.abs());
 
   // Convenience methods that do the equivalent of calling the similarly named
   // methods on a Rect constructed from the given origin and this size.
@@ -521,21 +521,21 @@ class Size extends OffsetBase {
   /// given offset (which is interpreted as the top-left corner) and this size.
   ///
   /// See also [Rect.topCenter].
-  Offset topCenter(Offset origin) => Offset(origin.dx + width / 2.0, origin.dy);
+  Offset topCenter(Offset origin) => Offset(origin.dx! + width! / 2.0, origin.dy);
 
   /// The offset to the intersection of the top and right edges of the rectangle
   /// described by the given offset (which is interpreted as the top-left corner)
   /// and this size.
   ///
   /// See also [Rect.topRight].
-  Offset topRight(Offset origin) => Offset(origin.dx + width, origin.dy);
+  Offset topRight(Offset origin) => Offset(origin.dx! + width!, origin.dy);
 
   /// The offset to the center of the left edge of the rectangle described by the
   /// given offset (which is interpreted as the top-left corner) and this size.
   ///
   /// See also [Rect.centerLeft].
   Offset centerLeft(Offset origin) =>
-      Offset(origin.dx, origin.dy + height / 2.0);
+      Offset(origin.dx, origin.dy! + height! / 2.0);
 
   /// The offset to the point halfway between the left and right and the top and
   /// bottom edges of the rectangle described by the given offset (which is
@@ -543,21 +543,21 @@ class Size extends OffsetBase {
   ///
   /// See also [Rect.center].
   Offset center(Offset origin) =>
-      Offset(origin.dx + width / 2.0, origin.dy + height / 2.0);
+      Offset(origin.dx! + width! / 2.0, origin.dy! + height! / 2.0);
 
   /// The offset to the center of the right edge of the rectangle described by the
   /// given offset (which is interpreted as the top-left corner) and this size.
   ///
   /// See also [Rect.centerLeft].
   Offset centerRight(Offset origin) =>
-      Offset(origin.dx + width, origin.dy + height / 2.0);
+      Offset(origin.dx! + width!, origin.dy! + height! / 2.0);
 
   /// The offset to the intersection of the bottom and left edges of the
   /// rectangle described by the given offset (which is interpreted as the
   /// top-left corner) and this size.
   ///
   /// See also [Rect.bottomLeft].
-  Offset bottomLeft(Offset origin) => Offset(origin.dx, origin.dy + height);
+  Offset bottomLeft(Offset origin) => Offset(origin.dx, origin.dy! + height!);
 
   /// The offset to the center of the bottom edge of the rectangle described by
   /// the given offset (which is interpreted as the top-left corner) and this
@@ -565,7 +565,7 @@ class Size extends OffsetBase {
   ///
   /// See also [Rect.bottomLeft].
   Offset bottomCenter(Offset origin) =>
-      Offset(origin.dx + width / 2.0, origin.dy + height);
+      Offset(origin.dx! + width! / 2.0, origin.dy! + height!);
 
   /// The offset to the intersection of the bottom and right edges of the
   /// rectangle described by the given offset (which is interpreted as the
@@ -573,7 +573,7 @@ class Size extends OffsetBase {
   ///
   /// See also [Rect.bottomRight].
   Offset bottomRight(Offset origin) =>
-      Offset(origin.dx + width, origin.dy + height);
+      Offset(origin.dx! + width!, origin.dy! + height!);
 
   /// Whether the point specified by the given offset (which is assumed to be
   /// relative to the top left of the size) lies between the left and right and
@@ -582,10 +582,10 @@ class Size extends OffsetBase {
   /// Rectangles include their top and left edges but exclude their bottom and
   /// right edges.
   bool contains(Offset offset) {
-    return offset.dx >= 0.0 &&
-        offset.dx < width &&
-        offset.dy >= 0.0 &&
-        offset.dy < height;
+    return offset.dx! >= 0.0 &&
+        offset.dx! < width! &&
+        offset.dy! >= 0.0 &&
+        offset.dy! < height!;
   }
 
   /// A [Size] with the [width] and [height] swapped.
@@ -606,17 +606,17 @@ class Size extends OffsetBase {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Size lerp(Size a, Size b, double t) {
+  static Size? lerp(Size a, Size b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return b * t;
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       return a * (1.0 - t);
-    }
+    } */
     return Size(
         lerpDouble(a.width, b.width, t), lerpDouble(a.height, b.height, t));
   }
@@ -668,7 +668,7 @@ class Rect {
   /// Construct a rectangle that bounds the given circle.
   ///
   /// The `center` argument is assumed to be an offset from the origin.
-  Rect.fromCircle({Offset center, double radius})
+  Rect.fromCircle({required Offset center, required double radius})
       : this.fromCenter(
           center: center,
           width: radius * 2,
@@ -678,22 +678,22 @@ class Rect {
   /// Constructs a rectangle from its center point, width, and height.
   ///
   /// The `center` argument is assumed to be an offset from the origin.
-  Rect.fromCenter({Offset center, double width, double height})
+  Rect.fromCenter({required Offset center, required double width, required double height})
       : this.fromLTRB(
-          center.dx - width / 2,
-          center.dy - height / 2,
-          center.dx + width / 2,
-          center.dy + height / 2,
+          center.dx! - width / 2,
+          center.dy! - height / 2,
+          center.dx! + width / 2,
+          center.dy! + height / 2,
         );
 
   /// Construct the smallest rectangle that encloses the given offsets, treating
   /// them as vectors from the origin.
   Rect.fromPoints(Offset a, Offset b)
       : this.fromLTRB(
-          math.min(a.dx, b.dx),
-          math.min(a.dy, b.dy),
-          math.max(a.dx, b.dx),
-          math.max(a.dy, b.dy),
+          math.min(a.dx!, b.dx!),
+          math.min(a.dy!, b.dy!),
+          math.max(a.dx!, b.dx!),
+          math.max(a.dy!, b.dy!),
         );
 
   /// The offset of the left edge of this rectangle from the x axis.
@@ -755,8 +755,8 @@ class Rect {
   /// To translate a rectangle by separate x and y components rather than by an
   /// [Offset], consider [translate].
   Rect shift(Offset offset) {
-    return Rect.fromLTRB(left + offset.dx, top + offset.dy, right + offset.dx,
-        bottom + offset.dy);
+    return Rect.fromLTRB(left + offset.dx!, top + offset.dy!, right + offset.dx!,
+        bottom + offset.dy!);
   }
 
   /// Returns a new rectangle with translateX added to the x components and
@@ -870,10 +870,10 @@ class Rect {
   /// Rectangles include their top and left edges but exclude their bottom and
   /// right edges.
   bool contains(Offset offset) {
-    return offset.dx >= left &&
-        offset.dx < right &&
-        offset.dy >= top &&
-        offset.dy < bottom;
+    return offset.dx! >= left &&
+        offset.dx! < right &&
+        offset.dy! >= top &&
+        offset.dy! < bottom;
   }
 
   /// Linearly interpolate between two rectangles.
@@ -891,22 +891,22 @@ class Rect {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Rect lerp(Rect a, Rect b, double t) {
+  static Rect? lerp(Rect a, Rect b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null)
-      return Rect.fromLTRB(b.left * t, b.top * t, b.right * t, b.bottom * t);
-    if (b == null) {
+    /* if (a == null)
+      return Rect.fromLTRB(b.left * t, b.top * t, b.right * t, b.bottom * t); */
+    /* if (b == null) {
       final double k = 1.0 - t;
       return Rect.fromLTRB(a.left * k, a.top * k, a.right * k, a.bottom * k);
-    }
+    } */
     return Rect.fromLTRB(
-      lerpDouble(a.left, b.left, t),
-      lerpDouble(a.top, b.top, t),
-      lerpDouble(a.right, b.right, t),
-      lerpDouble(a.bottom, b.bottom, t),
+      lerpDouble(a.left, b.left, t)!,
+      lerpDouble(a.top, b.top, t)!,
+      lerpDouble(a.right, b.right, t)!,
+      lerpDouble(a.bottom, b.bottom, t)!,
     );
   }
 
@@ -942,10 +942,10 @@ class Radius {
   const Radius.elliptical(this.x, this.y);
 
   /// The radius value on the horizontal axis.
-  final double x;
+  final double? x;
 
   /// The radius value on the vertical axis.
-  final double y;
+  final double? y;
 
   /// A radius with [x] and [y] values set to zero.
   ///
@@ -960,7 +960,7 @@ class Radius {
   /// occur as part of expressions. For example, negating a radius of one pixel
   /// and then adding the result to another radius is equivalent to subtracting
   /// a radius of one pixel from the other.
-  Radius operator -() => Radius.elliptical(-x, -y);
+  Radius operator -() => Radius.elliptical(-x!, -y!);
 
   /// Binary subtraction operator.
   ///
@@ -968,7 +968,7 @@ class Radius {
   /// minus the right-hand-side operand's [x] and whose [y] value is the
   /// left-hand-side operand's [y] minus the right-hand-side operand's [y].
   Radius operator -(Radius other) =>
-      Radius.elliptical(x - other.x, y - other.y);
+      Radius.elliptical(x! - other.x!, y! - other.y!);
 
   /// Binary addition operator.
   ///
@@ -976,7 +976,7 @@ class Radius {
   /// two operands, and whose [y] value is the sum of the [y] values of the
   /// two operands.
   Radius operator +(Radius other) =>
-      Radius.elliptical(x + other.x, y + other.y);
+      Radius.elliptical(x! + other.x!, y! + other.y!);
 
   /// Multiplication operator.
   ///
@@ -984,7 +984,7 @@ class Radius {
   /// left-hand-side operand (a radius) multiplied by the scalar
   /// right-hand-side operand (a double).
   Radius operator *(double operand) =>
-      Radius.elliptical(x * operand, y * operand);
+      Radius.elliptical(x! * operand, y! * operand);
 
   /// Division operator.
   ///
@@ -992,7 +992,7 @@ class Radius {
   /// left-hand-side operand (a radius) divided by the scalar right-hand-side
   /// operand (a double).
   Radius operator /(double operand) =>
-      Radius.elliptical(x / operand, y / operand);
+      Radius.elliptical(x! / operand, y! / operand);
 
   /// Integer (truncating) division operator.
   ///
@@ -1000,7 +1000,7 @@ class Radius {
   /// left-hand-side operand (a radius) divided by the scalar right-hand-side
   /// operand (a double), rounded towards zero.
   Radius operator ~/(double operand) =>
-      Radius.elliptical((x ~/ operand).toDouble(), (y ~/ operand).toDouble());
+      Radius.elliptical((x! ~/ operand).toDouble(), (y! ~/ operand).toDouble());
 
   /// Modulo (remainder) operator.
   ///
@@ -1008,7 +1008,7 @@ class Radius {
   /// coordinates of the left-hand-side operand (a radius) by the scalar
   /// right-hand-side operand (a double).
   Radius operator %(double operand) =>
-      Radius.elliptical(x % operand, y % operand);
+      Radius.elliptical(x! % operand, y! % operand);
 
   /// Linearly interpolate between two radii.
   ///
@@ -1025,18 +1025,18 @@ class Radius {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Radius lerp(Radius a, Radius b, double t) {
+  static Radius? lerp(Radius a, Radius b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return Radius.elliptical(b.x * t, b.y * t);
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       final double k = 1.0 - t;
       return Radius.elliptical(a.x * k, a.y * k);
-    }
+    } */
     return Radius.elliptical(
       lerpDouble(a.x, b.x, t),
       lerpDouble(a.y, b.y, t),
@@ -1061,9 +1061,9 @@ class Radius {
   @override
   String toString() {
     return x == y
-        ? 'Radius.circular(${x.toStringAsFixed(1)})'
-        : 'Radius.elliptical(${x.toStringAsFixed(1)}, '
-            '${y.toStringAsFixed(1)})';
+        ? 'Radius.circular(${x!.toStringAsFixed(1)})'
+        : 'Radius.elliptical(${x!.toStringAsFixed(1)}, '
+            '${y!.toStringAsFixed(1)})';
   }
 }
 
@@ -1098,14 +1098,14 @@ class RRect {
           left: left,
           right: right,
           bottom: bottom,
-          tlRadiusX: radius.x,
-          tlRadiusY: radius.y,
-          trRadiusX: radius.x,
-          trRadiusY: radius.y,
-          blRadiusX: radius.x,
-          blRadiusY: radius.y,
-          brRadiusX: radius.x,
-          brRadiusY: radius.y,
+          tlRadiusX: radius.x!,
+          tlRadiusY: radius.y!,
+          trRadiusX: radius.x!,
+          trRadiusY: radius.y!,
+          blRadiusX: radius.x!,
+          blRadiusY: radius.y!,
+          brRadiusX: radius.x!,
+          brRadiusY: radius.y!,
           uniformRadii: radius.x == radius.y,
         );
 
@@ -1136,14 +1136,14 @@ class RRect {
           left: rect.left,
           right: rect.right,
           bottom: rect.bottom,
-          tlRadiusX: radius.x,
-          tlRadiusY: radius.y,
-          trRadiusX: radius.x,
-          trRadiusY: radius.y,
-          blRadiusX: radius.x,
-          blRadiusY: radius.y,
-          brRadiusX: radius.x,
-          brRadiusY: radius.y,
+          tlRadiusX: radius.x!,
+          tlRadiusY: radius.y!,
+          trRadiusX: radius.x!,
+          trRadiusY: radius.y!,
+          blRadiusX: radius.x!,
+          blRadiusY: radius.y!,
+          brRadiusX: radius.x!,
+          brRadiusY: radius.y!,
           uniformRadii: radius.x == radius.y,
         );
 
@@ -1165,14 +1165,14 @@ class RRect {
           left: left,
           right: right,
           bottom: bottom,
-          tlRadiusX: topLeft.x,
-          tlRadiusY: topLeft.y,
-          trRadiusX: topRight.x,
-          trRadiusY: topRight.y,
-          blRadiusX: bottomLeft.x,
-          blRadiusY: bottomLeft.y,
-          brRadiusX: bottomRight.x,
-          brRadiusY: bottomRight.y,
+          tlRadiusX: topLeft.x!,
+          tlRadiusY: topLeft.y!,
+          trRadiusX: topRight.x!,
+          trRadiusY: topRight.y!,
+          blRadiusX: bottomLeft.x!,
+          blRadiusY: bottomLeft.y!,
+          brRadiusX: bottomRight.x!,
+          brRadiusY: bottomRight.y!,
           uniformRadii: topLeft.x == topLeft.y &&
             topLeft.x == topRight.x &&
             topLeft.x == topRight.y &&
@@ -1196,14 +1196,14 @@ class RRect {
           left: rect.left,
           right: rect.right,
           bottom: rect.bottom,
-          tlRadiusX: topLeft.x,
-          tlRadiusY: topLeft.y,
-          trRadiusX: topRight.x,
-          trRadiusY: topRight.y,
-          blRadiusX: bottomLeft.x,
-          blRadiusY: bottomLeft.y,
-          brRadiusX: bottomRight.x,
-          brRadiusY: bottomRight.y,
+          tlRadiusX: topLeft.x!,
+          tlRadiusY: topLeft.y!,
+          trRadiusX: topRight.x!,
+          trRadiusY: topRight.y!,
+          blRadiusX: bottomLeft.x!,
+          blRadiusY: bottomLeft.y!,
+          brRadiusX: bottomRight.x!,
+          brRadiusY: bottomRight.y!,
           uniformRadii: topLeft.x == topLeft.y &&
               topLeft.x == topRight.x &&
               topLeft.x == topRight.y &&
@@ -1299,10 +1299,10 @@ class RRect {
   /// Returns a new [RRect] translated by the given offset.
   RRect shift(Offset offset) {
     return RRect._raw(
-      left: left + offset.dx,
-      top: top + offset.dy,
-      right: right + offset.dx,
-      bottom: bottom + offset.dy,
+      left: left + offset.dx!,
+      top: top + offset.dy!,
+      right: right + offset.dx!,
+      bottom: bottom + offset.dy!,
       tlRadiusX: tlRadiusX,
       tlRadiusY: tlRadiusY,
       trRadiusX: trRadiusX,
@@ -1526,10 +1526,10 @@ class RRect {
   /// using this method, prefer to reuse existing [RRect]s rather than
   /// recreating the object each time.
   bool contains(Offset point) {
-    if (point.dx < left ||
-        point.dx >= right ||
-        point.dy < top ||
-        point.dy >= bottom) {
+    if (point.dx! < left ||
+        point.dx! >= right ||
+        point.dy! < top ||
+        point.dy! >= bottom) {
       return false; // outside bounding box
     }
 
@@ -1541,28 +1541,28 @@ class RRect {
     double radiusY;
     // check whether point is in one of the rounded corner areas
     // x, y -> translate to ellipse center
-    if (point.dx < left + scaled.tlRadiusX &&
-        point.dy < top + scaled.tlRadiusY) {
-      x = point.dx - left - scaled.tlRadiusX;
-      y = point.dy - top - scaled.tlRadiusY;
+    if (point.dx! < left + scaled.tlRadiusX &&
+        point.dy! < top + scaled.tlRadiusY) {
+      x = point.dx! - left - scaled.tlRadiusX;
+      y = point.dy! - top - scaled.tlRadiusY;
       radiusX = scaled.tlRadiusX;
       radiusY = scaled.tlRadiusY;
-    } else if (point.dx > right - scaled.trRadiusX &&
-        point.dy < top + scaled.trRadiusY) {
-      x = point.dx - right + scaled.trRadiusX;
-      y = point.dy - top - scaled.trRadiusY;
+    } else if (point.dx! > right - scaled.trRadiusX &&
+        point.dy! < top + scaled.trRadiusY) {
+      x = point.dx! - right + scaled.trRadiusX;
+      y = point.dy! - top - scaled.trRadiusY;
       radiusX = scaled.trRadiusX;
       radiusY = scaled.trRadiusY;
-    } else if (point.dx > right - scaled.brRadiusX &&
-        point.dy > bottom - scaled.brRadiusY) {
-      x = point.dx - right + scaled.brRadiusX;
-      y = point.dy - bottom + scaled.brRadiusY;
+    } else if (point.dx! > right - scaled.brRadiusX &&
+        point.dy! > bottom - scaled.brRadiusY) {
+      x = point.dx! - right + scaled.brRadiusX;
+      y = point.dy! - bottom + scaled.brRadiusY;
       radiusX = scaled.brRadiusX;
       radiusY = scaled.brRadiusY;
-    } else if (point.dx < left + scaled.blRadiusX &&
-        point.dy > bottom - scaled.blRadiusY) {
-      x = point.dx - left - scaled.blRadiusX;
-      y = point.dy - bottom + scaled.blRadiusY;
+    } else if (point.dx! < left + scaled.blRadiusX &&
+        point.dy! > bottom - scaled.blRadiusY) {
+      x = point.dx! - left - scaled.blRadiusX;
+      y = point.dy! - bottom + scaled.blRadiusY;
       radiusX = scaled.blRadiusX;
       radiusY = scaled.blRadiusY;
     } else {
@@ -1593,12 +1593,12 @@ class RRect {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static RRect lerp(RRect a, RRect b, double t) {
+  static RRect? lerp(RRect a, RRect b, double t) {
     assert(t != null);
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return RRect._raw(
         left: b.left * t,
         top: b.top * t,
@@ -1613,8 +1613,8 @@ class RRect {
         blRadiusX: b.blRadiusX * t,
         blRadiusY: b.blRadiusY * t,
       );
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       final double k = 1.0 - t;
       return RRect._raw(
         left: a.left * k,
@@ -1630,20 +1630,20 @@ class RRect {
         blRadiusX: a.blRadiusX * k,
         blRadiusY: a.blRadiusY * k,
       );
-    }
+    } */
     return RRect._raw(
-      left: lerpDouble(a.left, b.left, t),
-      top: lerpDouble(a.top, b.top, t),
-      right: lerpDouble(a.right, b.right, t),
-      bottom: lerpDouble(a.bottom, b.bottom, t),
-      tlRadiusX: lerpDouble(a.tlRadiusX, b.tlRadiusX, t),
-      tlRadiusY: lerpDouble(a.tlRadiusY, b.tlRadiusY, t),
-      trRadiusX: lerpDouble(a.trRadiusX, b.trRadiusX, t),
-      trRadiusY: lerpDouble(a.trRadiusY, b.trRadiusY, t),
-      brRadiusX: lerpDouble(a.brRadiusX, b.brRadiusX, t),
-      brRadiusY: lerpDouble(a.brRadiusY, b.brRadiusY, t),
-      blRadiusX: lerpDouble(a.blRadiusX, b.blRadiusX, t),
-      blRadiusY: lerpDouble(a.blRadiusY, b.blRadiusY, t),
+      left: lerpDouble(a.left, b.left, t)!,
+      top: lerpDouble(a.top, b.top, t)!,
+      right: lerpDouble(a.right, b.right, t)!,
+      bottom: lerpDouble(a.bottom, b.bottom, t)!,
+      tlRadiusX: lerpDouble(a.tlRadiusX, b.tlRadiusX, t)!,
+      tlRadiusY: lerpDouble(a.tlRadiusY, b.tlRadiusY, t)!,
+      trRadiusX: lerpDouble(a.trRadiusX, b.trRadiusX, t)!,
+      trRadiusY: lerpDouble(a.trRadiusY, b.trRadiusY, t)!,
+      brRadiusX: lerpDouble(a.brRadiusX, b.brRadiusX, t)!,
+      brRadiusY: lerpDouble(a.brRadiusY, b.brRadiusY, t)!,
+      blRadiusX: lerpDouble(a.blRadiusX, b.blRadiusX, t)!,
+      blRadiusY: lerpDouble(a.blRadiusY, b.blRadiusY, t)!,
     );
   }
 
@@ -1682,8 +1682,8 @@ class RRect {
         '${bottom.toStringAsFixed(1)}';
     if (tlRadius == trRadius && trRadius == brRadius && brRadius == blRadius) {
       if (tlRadius.x == tlRadius.y)
-        return 'RRect.fromLTRBR($rect, ${tlRadius.x.toStringAsFixed(1)})';
-      return 'RRect.fromLTRBXY($rect, ${tlRadius.x.toStringAsFixed(1)}, ${tlRadius.y.toStringAsFixed(1)})';
+        return 'RRect.fromLTRBR($rect, ${tlRadius.x!.toStringAsFixed(1)})';
+      return 'RRect.fromLTRBXY($rect, ${tlRadius.x!.toStringAsFixed(1)}, ${tlRadius.y!.toStringAsFixed(1)})';
     }
     return 'RRect.fromLTRBAndCorners('
         '$rect, '
@@ -1753,12 +1753,12 @@ class RSTransform {
   /// over multiple [RSTransform] objects, it may be more efficient to directly
   /// use the more direct [new RSTransform] constructor instead.
   factory RSTransform.fromComponents(
-      {double rotation,
-      double scale,
-      double anchorX,
-      double anchorY,
-      double translateX,
-      double translateY}) {
+      {required double rotation,
+      required double scale,
+      required double anchorX,
+      required double anchorY,
+      required double translateX,
+      required double translateY}) {
     final double scos = math.cos(rotation) * scale;
     final double ssin = math.sin(rotation) * scale;
     final double tx = translateX + -scos * anchorX + ssin * anchorY;
@@ -1789,21 +1789,21 @@ class RSTransform {
 class Point {
   const Point(this.x, this.y);
 
-  final double x;
-  final double y;
+  final double? x;
+  final double? y;
 
   static const Point origin = Point(0.0, 0.0);
 
-  Point operator -() => Point(-x, -y);
-  Offset operator -(Point other) => Offset(x - other.x, y - other.y);
-  Point operator +(Offset other) => Point(x + other.dx, y + other.dy);
-  Rect operator &(Size other) => Rect.fromLTWH(x, y, other.width, other.height);
+  Point operator -() => Point(-x!, -y!);
+  Offset operator -(Point other) => Offset(x! - other.x!, y! - other.y!);
+  Point operator +(Offset other) => Point(x! + other.dx!, y! + other.dy!);
+  Rect operator &(Size other) => Rect.fromLTWH(x!, y!, other.width!, other.height!);
 
-  Point operator *(double operand) => Point(x * operand, y * operand);
-  Point operator /(double operand) => Point(x / operand, y / operand);
+  Point operator *(double operand) => Point(x! * operand, y! * operand);
+  Point operator /(double operand) => Point(x! / operand, y! / operand);
   Point operator ~/(double operand) =>
-      Point((x ~/ operand).toDouble(), (y ~/ operand).toDouble());
-  Point operator %(double operand) => Point(x % operand, y % operand);
+      Point((x! ~/ operand).toDouble(), (y! ~/ operand).toDouble());
+  Point operator %(double operand) => Point(x! % operand, y! % operand);
 
   // does the equivalent of "return this - Point.origin"
   Offset toOffset() => Offset(x, y);
@@ -1811,16 +1811,16 @@ class Point {
   /// Linearly interpolate between two points
   ///
   /// If either point is null, this function interpolates from [Point.origin].
-  static Point lerp(Point a, Point b, double t) {
+  static Point? lerp(Point a, Point b, double t) {
     if (a == null && b == null) {
       return null;
     }
-    if (a == null) {
+    /* if (a == null) {
       return b * t;
-    }
-    if (b == null) {
+    } */
+    /* if (b == null) {
       return a * (1.0 - t);
-    }
+    } */
     return Point(lerpDouble(a.x, b.x, t), lerpDouble(a.y, b.y, t));
   }
 

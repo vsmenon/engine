@@ -19,14 +19,14 @@ class FirefoxArgParser extends BrowserArgParser {
   /// The [FirefoxArgParser] singleton.
   static FirefoxArgParser get instance => _singletonInstance;
 
-  String _version;
+  String? _version;
 
   FirefoxArgParser._();
 
   @override
   void populateOptions(ArgParser argParser) {
-    final YamlMap browserLock = BrowserLock.instance.configuration;
-    String firefoxVersion = browserLock['firefox']['version'];
+    final YamlMap browserLock = BrowserLock.instance.configuration!;
+    String? firefoxVersion = browserLock['firefox']['version'];
 
     argParser
       ..addOption(
@@ -46,7 +46,7 @@ class FirefoxArgParser extends BrowserArgParser {
   }
 
   @override
-  String get version => _version;
+  String? get version => _version;
 }
 
 /// Returns the installation of Firefox, installing it if necessary.
@@ -61,9 +61,9 @@ class FirefoxArgParser extends BrowserArgParser {
 /// exact version number such as 69.0.3. Versions of Firefox can be found here:
 ///
 /// https://download-installer.cdn.mozilla.net/pub/firefox/releases/
-Future<BrowserInstallation> getOrInstallFirefox(
-  String requestedVersion, {
-  StringSink infoLog,
+Future<BrowserInstallation?> getOrInstallFirefox(
+  String? requestedVersion, {
+  StringSink? infoLog,
 }) async {
   // These tests are aimed to run only on the Linux containers in Cirrus.
   // Therefore Firefox installation is implemented only for Linux now.
@@ -80,19 +80,19 @@ Future<BrowserInstallation> getOrInstallFirefox(
     );
   }
 
-  FirefoxInstaller installer;
+  FirefoxInstaller? installer;
   try {
     installer = requestedVersion == 'latest'
         ? await FirefoxInstaller.latest()
-        : FirefoxInstaller(version: requestedVersion);
+        : FirefoxInstaller(version: requestedVersion!);
 
-    if (installer.isInstalled) {
+    if (installer!.isInstalled) {
       infoLog.writeln(
           'Installation was skipped because Firefox version ${installer.version} is already installed.');
     } else {
       infoLog.writeln('Installing Firefox version: ${installer.version}');
       await installer.install();
-      final BrowserInstallation installation = installer.getInstallation();
+      final BrowserInstallation installation = installer.getInstallation()!;
       infoLog.writeln(
           'Installations complete. To launch it run ${installation.executable}');
     }
@@ -105,7 +105,7 @@ Future<BrowserInstallation> getOrInstallFirefox(
 /// Manages the installation of a particular [version] of Firefox.
 class FirefoxInstaller {
   factory FirefoxInstaller({
-    @required String version,
+    /* @*/ required String version,
   }) {
     if (version == 'system') {
       throw BrowserInstallerException(
@@ -116,7 +116,7 @@ class FirefoxInstaller {
           'Expected a concrete Firefox version, but got $version. Maybe use FirefoxInstaller.latest()?');
     }
     final io.Directory firefoxInstallationDir = io.Directory(
-      path.join(environment.webUiDartToolDir.path, 'firefox'),
+      path.join(environment!.webUiDartToolDir.path, 'firefox'),
     );
     final io.Directory versionDir = io.Directory(
       path.join(firefoxInstallationDir.path, version),
@@ -134,9 +134,9 @@ class FirefoxInstaller {
   }
 
   FirefoxInstaller._({
-    @required this.version,
-    @required this.firefoxInstallationDir,
-    @required this.versionDir,
+    /* @*/ required this.version,
+    /* @*/ required this.firefoxInstallationDir,
+    /* @*/ required this.versionDir,
   });
 
   /// Firefox version managed by this installer.
@@ -155,14 +155,14 @@ class FirefoxInstaller {
     return versionDir.existsSync();
   }
 
-  BrowserInstallation getInstallation() {
+  BrowserInstallation? getInstallation() {
     if (!isInstalled) {
       return null;
     }
 
     return BrowserInstallation(
       version: version,
-      executable: PlatformBinding.instance.getFirefoxExecutablePath(versionDir),
+      executable: PlatformBinding.instance!.getFirefoxExecutablePath(versionDir),
     );
   }
 
@@ -181,7 +181,7 @@ class FirefoxInstaller {
     }
 
     versionDir.createSync(recursive: true);
-    final String url = PlatformBinding.instance.getFirefoxDownloadUrl(version);
+    final String url = PlatformBinding.instance!.getFirefoxDownloadUrl(version);
     final StreamedResponse download = await client.send(Request(
       'GET',
       Uri.parse(url),
@@ -217,7 +217,7 @@ class FirefoxInstaller {
   }
 }
 
-Future<String> _findSystemFirefoxExecutable() async {
+Future<String?> _findSystemFirefoxExecutable() async {
   final io.ProcessResult which =
       await io.Process.run('which', <String>['firefox']);
 
@@ -233,13 +233,13 @@ Future<String> _findSystemFirefoxExecutable() async {
 Future<String> fetchLatestFirefoxVersion() async {
   final RegExp forFirefoxVersion = RegExp("firefox-[0-9.]\+[0-9]");
   final io.HttpClientRequest request = await io.HttpClient()
-      .getUrl(Uri.parse(PlatformBinding.instance.getFirefoxLatestVersionUrl()));
+      .getUrl(Uri.parse(PlatformBinding.instance!.getFirefoxLatestVersionUrl()));
   request.followRedirects = false;
   // We will parse the HttpHeaders to find the redirect location.
   final io.HttpClientResponse response = await request.close();
 
-  final String location = response.headers.value('location');
-  final String version = forFirefoxVersion.stringMatch(location);
+  final String location = response.headers.value('location')!;
+  final String version = forFirefoxVersion.stringMatch(location)!;
 
   return version.substring(version.lastIndexOf('-') + 1);
 }

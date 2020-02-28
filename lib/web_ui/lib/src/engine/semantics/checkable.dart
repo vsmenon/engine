@@ -37,7 +37,7 @@ enum _CheckableKind {
 /// [ui.SemanticsFlag.isInMutuallyExclusiveGroup], [ui.SemanticsFlag.isToggled],
 /// [ui.SemanticsFlag.hasToggledState]
 class Checkable extends RoleManager {
-  _CheckableKind _kind;
+  _CheckableKind? _kind;
 
   Checkable(SemanticsObject semanticsObject)
       : super(Role.checkable, semanticsObject) {

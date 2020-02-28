@@ -43,7 +43,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('paint_bounds_for_$fileName.png', region: region);
     } finally {
@@ -56,8 +56,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   test('Empty canvas reports correct paint bounds', () async {
@@ -69,7 +69,7 @@ void main() async {
 
   test('Computes paint bounds for draw line', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
-    rc.drawLine(const Offset(50, 100), const Offset(120, 140), testPaint);
+    rc.drawLine(const Offset(50, 100), const Offset(120, 140), testPaint as SurfacePaint);
     // The off by one is due to the minimum stroke width of 1.
     expect(rc.computePaintBounds(), const Rect.fromLTRB(49, 99, 121, 141));
     await _checkScreenshot(rc, 'draw_line');
@@ -80,7 +80,7 @@ void main() async {
     // Uses max bounds when computing paint bounds
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.drawLine(const Offset(50, 100), const Offset(screenWidth + 100.0, 140),
-        testPaint);
+        testPaint as SurfacePaint);
     // The off by one is due to the minimum stroke width of 1.
     expect(rc.computePaintBounds(),
         const Rect.fromLTRB(49.0, 99.0, screenWidth, 141.0));
@@ -89,7 +89,7 @@ void main() async {
 
   test('Computes paint bounds for draw rect', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
-    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(10, 20, 30, 40));
     await _checkScreenshot(rc, 'draw_rect');
   });
@@ -99,7 +99,7 @@ void main() async {
     RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.drawRect(
         const Rect.fromLTRB(10, 20, 30 + screenWidth, 40 + screenHeight),
-        testPaint);
+        testPaint as SurfacePaint);
     expect(rc.computePaintBounds(),
         const Rect.fromLTRB(10, 20, screenWidth, screenHeight));
 
@@ -112,7 +112,7 @@ void main() async {
   test('Computes paint bounds for translate', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.translate(5, 7);
-    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(15, 27, 35, 47));
     await _checkScreenshot(rc, 'translate');
   });
@@ -120,7 +120,7 @@ void main() async {
   test('Computes paint bounds for scale', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.scale(2, 2);
-    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(20, 40, 60, 80));
     await _checkScreenshot(rc, 'scale');
   });
@@ -129,7 +129,7 @@ void main() async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.rotate(math.pi / 4.0);
     rc.drawLine(
-        const Offset(1, 0), Offset(50 * math.sqrt(2) - 1, 0), testPaint);
+        const Offset(1, 0), Offset(50 * math.sqrt(2) - 1, 0), testPaint as SurfacePaint);
     // The extra 0.7 is due to stroke width of 1 rotated by 45 degrees.
     expect(rc.computePaintBounds(),
         within(distance: 0.1, from: const Rect.fromLTRB(0, 0, 50.7, 50.7)));
@@ -139,7 +139,7 @@ void main() async {
   test('Computes paint bounds for horizontal skew', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.skew(1.0, 0.0);
-    rc.drawRect(const Rect.fromLTRB(20, 20, 40, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(20, 20, 40, 40), testPaint as SurfacePaint);
     expect(
         rc.computePaintBounds(),
         within(
@@ -150,7 +150,7 @@ void main() async {
   test('Computes paint bounds for vertical skew', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.skew(0.0, 1.0);
-    rc.drawRect(const Rect.fromLTRB(20, 20, 40, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(20, 20, 40, 40), testPaint as SurfacePaint);
     expect(
         rc.computePaintBounds(),
         within(
@@ -179,7 +179,7 @@ void main() async {
     matrix[14] = 0.0;
     matrix[15] = 1.0;
     rc.transform(matrix);
-    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(),
         const Rect.fromLTRB(168.0, 283.6, 224.0, 368.4));
     await _checkScreenshot(rc, 'complex_transform');
@@ -187,7 +187,7 @@ void main() async {
 
   test('drawPaint should cover full size', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
-    rc.drawPaint(testPaint);
+    rc.drawPaint(testPaint as SurfacePaint);
     rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
     expect(rc.computePaintBounds(), screenRect);
     await _checkScreenshot(rc, 'draw_paint');
@@ -196,7 +196,7 @@ void main() async {
   test('drawColor should cover full size', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     final Paint testPaint = Paint()..color = const Color(0xFF80FF00);
-    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
+    rc.drawRect(const Rect.fromLTRB(10, 20, 30, 40), testPaint as SurfacePaint);
     rc.drawColor(const Color(0xFFFF0000), BlendMode.multiply);
     rc.drawRect(const Rect.fromLTRB(10, 60, 30, 80), testPaint);
     expect(rc.computePaintBounds(), screenRect);
@@ -205,7 +205,7 @@ void main() async {
 
   test('Computes paint bounds for draw oval', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
-    rc.drawOval(const Rect.fromLTRB(10, 20, 30, 40), testPaint);
+    rc.drawOval(const Rect.fromLTRB(10, 20, 30, 40), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(10, 20, 30, 40));
     await _checkScreenshot(rc, 'draw_oval');
   });
@@ -215,7 +215,7 @@ void main() async {
     rc.drawRRect(
         RRect.fromRectAndRadius(
             const Rect.fromLTRB(10, 20, 30, 40), const Radius.circular(5.0)),
-        testPaint);
+        testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(10, 20, 30, 40));
     await _checkScreenshot(rc, 'draw_round_rect');
   });
@@ -225,7 +225,7 @@ void main() async {
       'drawDRRect', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.drawDRRect(RRect.fromRectAndCorners(const Rect.fromLTRB(10, 20, 30, 40)),
-        RRect.fromRectAndCorners(const Rect.fromLTRB(1, 2, 3, 4)), testPaint);
+        RRect.fromRectAndCorners(const Rect.fromLTRB(1, 2, 3, 4)), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(0, 0, 0, 0));
     await _checkScreenshot(rc, 'draw_drrect_empty');
   });
@@ -235,14 +235,14 @@ void main() async {
     rc.drawDRRect(
         RRect.fromRectAndCorners(const Rect.fromLTRB(10, 20, 30, 40)),
         RRect.fromRectAndCorners(const Rect.fromLTRB(12, 22, 28, 38)),
-        testPaint);
+        testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(10, 20, 30, 40));
     await _checkScreenshot(rc, 'draw_drrect');
   });
 
   test('Computes paint bounds for draw circle', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
-    rc.drawCircle(const Offset(20, 20), 10.0, testPaint);
+    rc.drawCircle(const Offset(20, 20), 10.0, testPaint as SurfacePaint);
     expect(
         rc.computePaintBounds(), const Rect.fromLTRB(10.0, 10.0, 30.0, 30.0));
     rc.drawCircle(const Offset(200, 300), 100.0, testPaint);
@@ -253,7 +253,7 @@ void main() async {
 
   test('Computes paint bounds for draw image', () {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
-    rc.drawImage(TestImage(), const Offset(50, 100), Paint());
+    rc.drawImage(TestImage(), const Offset(50, 100), Paint() as SurfacePaint);
     expect(
         rc.computePaintBounds(), const Rect.fromLTRB(50.0, 100.0, 70.0, 110.0));
   });
@@ -261,7 +261,7 @@ void main() async {
   test('Computes paint bounds for draw image rect', () {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.drawImageRect(TestImage(), const Rect.fromLTRB(1, 1, 20, 10),
-        const Rect.fromLTRB(5, 6, 400, 500), Paint());
+        const Rect.fromLTRB(5, 6, 400, 500), Paint() as SurfacePaint);
     expect(
         rc.computePaintBounds(), const Rect.fromLTRB(5.0, 6.0, 400.0, 500.0));
   });
@@ -300,7 +300,7 @@ void main() async {
   test('Should exclude painting outside simple clipRect', () async {
     final RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.clipRect(const Rect.fromLTRB(50, 50, 100, 100));
-    rc.drawLine(const Offset(10, 11), const Offset(20, 21), testPaint);
+    rc.drawLine(const Offset(10, 11), const Offset(20, 21), testPaint as SurfacePaint);
 
     expect(rc.computePaintBounds(), Rect.zero);
     rc.drawLine(const Offset(52, 53), const Offset(55, 56), testPaint);
@@ -313,7 +313,7 @@ void main() async {
   test('Should include intersection of clipRect and painting', () async {
     RecordingCanvas rc = RecordingCanvas(screenRect);
     rc.clipRect(const Rect.fromLTRB(50, 50, 100, 100));
-    rc.drawRect(const Rect.fromLTRB(20, 60, 120, 70), testPaint);
+    rc.drawRect(const Rect.fromLTRB(20, 60, 120, 70), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(50, 60, 100, 70));
     await _checkScreenshot(rc, 'clip_rect_intersects_paint_left_to_right');
 
@@ -329,7 +329,7 @@ void main() async {
     rc.clipRect(const Rect.fromLTRB(50, 50, 100, 100));
     rc.scale(2.0, 2.0);
     rc.clipRect(const Rect.fromLTRB(30, 30, 45, 45));
-    rc.drawRect(const Rect.fromLTRB(10, 30, 60, 35), testPaint);
+    rc.drawRect(const Rect.fromLTRB(10, 30, 60, 35), testPaint as SurfacePaint);
     expect(rc.computePaintBounds(), const Rect.fromLTRB(60, 60, 90, 70));
     await _checkScreenshot(rc, 'clip_rects_intersect');
   });
@@ -358,7 +358,7 @@ void main() async {
       ..translate(0, 100)
       ..scale(1, -1)
       ..clipRect(const Rect.fromLTRB(0, 0, 100, 50))
-      ..drawRect(const Rect.fromLTRB(0, 0, 100, 100), Paint());
+      ..drawRect(const Rect.fromLTRB(0, 0, 100, 100), Paint() as SurfacePaint);
     expect(
         rc.computePaintBounds(), const Rect.fromLTRB(0.0, 50.0, 100.0, 100.0));
     await _checkScreenshot(rc, 'scale_negative');
@@ -371,7 +371,7 @@ void main() async {
       ..translate(50, 50)
       ..rotate(math.pi / 4.0)
       ..clipRect(const Rect.fromLTWH(-20, -20, 40, 40))
-      ..drawRect(const Rect.fromLTWH(-80, -80, 160, 160), Paint());
+      ..drawRect(const Rect.fromLTWH(-80, -80, 160, 160), Paint() as SurfacePaint);
     expect(
       rc.computePaintBounds(),
       Rect.fromCircle(center: const Offset(50, 50), radius: 20 * math.sqrt(2)),
@@ -385,7 +385,7 @@ void main() async {
     rc
       ..translate(50, 50)
       ..rotate(math.pi / 4.0)
-      ..drawLine(const Offset(0, 0), const Offset(20, 20), Paint());
+      ..drawLine(const Offset(0, 0), const Offset(20, 20), Paint() as SurfacePaint);
     expect(
       rc.computePaintBounds(),
       within(distance: 0.1, from: const Rect.fromLTRB(34.4, 48.6, 65.6, 79.7)),
@@ -403,7 +403,7 @@ void main() async {
     path.lineTo(100, 97);
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFFFF0000));
@@ -412,7 +412,7 @@ void main() async {
     path.lineTo(97, 100);
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF00FF00));
@@ -433,7 +433,7 @@ void main() async {
         RRect.fromLTRBR(0.5, 100.5, 80.7, 150.7, const Radius.circular(10)));
     rc.drawPath(
         path,
-        Paint()
+        Paint() as SurfacePaint
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0
           ..color = const Color(0xFF404000));

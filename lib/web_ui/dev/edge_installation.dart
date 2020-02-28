@@ -19,7 +19,7 @@ class EdgeArgParser extends BrowserArgParser {
   /// The [EdgeArgParser] singleton.
   static EdgeArgParser get instance => _singletonInstance;
 
-  String _version;
+  String? _version;
 
   EdgeArgParser._();
 
@@ -41,7 +41,7 @@ class EdgeArgParser extends BrowserArgParser {
   }
 
   @override
-  String get version => _version;
+  String? get version => _version;
 }
 
 /// Returns the installation of Edge.
@@ -55,8 +55,8 @@ class EdgeArgParser extends BrowserArgParser {
 // TODO(nurhan): Investigate running tests for the tech preview downloads
 // from the beta channel.
 Future<BrowserInstallation> getEdgeInstallation(
-  String requestedVersion, {
-  StringSink infoLog,
+  String? requestedVersion, {
+  StringSink? infoLog,
 }) async {
   // For now these tests are aimed to run only on Windows machines local or on LUCI/CI.
   // In the future we can investigate to run them on Android or on MacOS.
@@ -86,7 +86,7 @@ Future<BrowserInstallation> getEdgeInstallation(
       version: 'system',
       executable: io.Directory(path.join(
               edgeLauncher.launcherInstallationDir.path,
-              '${PlatformBinding.instance.getCommandToRunEdge()}'))
+              '${PlatformBinding.instance!.getCommandToRunEdge()}'))
           .path,
     );
   } else {
@@ -104,8 +104,8 @@ Future<BrowserInstallation> getEdgeInstallation(
 class EdgeLauncher {
   /// Path to the directory that contains `MicrosoftEdgeLauncher.exe`.
   io.Directory get launcherInstallationDir => io.Directory(
-        path.join(environment.webUiDartToolDir.path, 'microsoftedgelauncher',
-            version),
+        path.join(environment!.webUiDartToolDir.path, 'microsoftedgelauncher',
+            version!),
       );
 
   io.File get executable => io.File(
@@ -114,7 +114,7 @@ class EdgeLauncher {
   bool get isInstalled => executable.existsSync();
 
   /// Version number launcher executable  `MicrosoftEdgeLauncher`.
-  final String version;
+  final String? version;
 
   /// Url for downloading  `MicrosoftEdgeLauncher`.
   ///
@@ -124,7 +124,7 @@ class EdgeLauncher {
 
   EdgeLauncher()
       : version =
-            BrowserLock.instance.configuration['edge']['launcher_version'];
+            BrowserLock.instance.configuration!['edge']['launcher_version'];
 
   /// Install the launcher if it does not exist in this system.
   void install() async {

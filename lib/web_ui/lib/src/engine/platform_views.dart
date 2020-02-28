@@ -10,7 +10,7 @@ class PlatformViewRegistry {
   final Map<String, PlatformViewFactory> registeredFactories =
       <String, PlatformViewFactory>{};
 
-  final Map<int, html.Element> _createdViews = <int, html.Element>{};
+  final Map<int?, html.Element> _createdViews = <int?, html.Element>{};
 
   /// Private constructor so this class can be a singleton.
   PlatformViewRegistry._();
@@ -26,13 +26,13 @@ class PlatformViewRegistry {
 
   /// Returns the view that has been created with the given [id], or `null` if
   /// no such view exists.
-  html.Element getCreatedView(int id) {
+  html.Element? getCreatedView(int id) {
     return _createdViews[id];
   }
 }
 
 /// A function which takes a unique [id] and creates an HTML element.
-typedef PlatformViewFactory = html.Element Function(int viewId);
+typedef PlatformViewFactory = html.Element Function(int? viewId);
 
 /// The platform view registry for this app.
 final PlatformViewRegistry platformViewRegistry = PlatformViewRegistry._();
@@ -41,8 +41,8 @@ final PlatformViewRegistry platformViewRegistry = PlatformViewRegistry._();
 ///
 /// Used to create platform views.
 void handlePlatformViewCall(
-  ByteData data,
-  ui.PlatformMessageResponseCallback callback,
+  ByteData? data,
+  ui.PlatformMessageResponseCallback? callback,
 ) {
   const MethodCodec codec = StandardMethodCodec();
   final MethodCall decoded = codec.decodeMethodCall(data);
@@ -52,22 +52,22 @@ void handlePlatformViewCall(
       _createPlatformView(decoded, callback);
       return;
     case 'dispose':
-      _disposePlatformView(decoded, callback);
+      _disposePlatformView(decoded, callback!);
       return;
   }
-  callback(null);
+  callback!(null);
 }
 
 void _createPlatformView(
-    MethodCall methodCall, ui.PlatformMessageResponseCallback callback) {
+    MethodCall methodCall, ui.PlatformMessageResponseCallback? callback) {
   final Map<dynamic, dynamic> args = methodCall.arguments;
-  final int id = args['id'];
-  final String viewType = args['viewType'];
+  final int? id = args['id'];
+  final String? viewType = args['viewType'];
   const MethodCodec codec = StandardMethodCodec();
 
   // TODO(het): Use 'direction', 'width', and 'height'.
   if (!platformViewRegistry.registeredFactories.containsKey(viewType)) {
-    callback(codec.encodeErrorEnvelope(
+    callback!(codec.encodeErrorEnvelope(
       code: 'Unregistered factory',
       message: "No factory registered for viewtype '$viewType'",
     ));
@@ -75,15 +75,15 @@ void _createPlatformView(
   }
   // TODO(het): Use creation parameters.
   final html.Element element =
-      platformViewRegistry.registeredFactories[viewType](id);
+      platformViewRegistry.registeredFactories[viewType]!(id);
 
   platformViewRegistry._createdViews[id] = element;
-  callback(codec.encodeSuccessEnvelope(null));
+  callback!(codec.encodeSuccessEnvelope(null));
 }
 
 void _disposePlatformView(
     MethodCall methodCall, ui.PlatformMessageResponseCallback callback) {
-  final int id = methodCall.arguments;
+  final int? id = methodCall.arguments;
   const MethodCodec codec = StandardMethodCodec();
 
   // Remove the root element of the view from the DOM.

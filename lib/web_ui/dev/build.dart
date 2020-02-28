@@ -35,10 +35,10 @@ class BuildCommand extends Command<bool> {
   @override
   String get description => 'Build the Flutter web engine.';
 
-  bool get isWatchMode => argResults['watch'];
+  bool? get isWatchMode => argResults['watch'];
 
-  int getNinjaJobCount() {
-    final String ninjaJobsArg = argResults['ninja-jobs'];
+  int? getNinjaJobCount() {
+    final String? ninjaJobsArg = argResults['ninja-jobs'];
     if (ninjaJobsArg != null) {
       return int.tryParse(ninjaJobsArg);
     }
@@ -47,7 +47,7 @@ class BuildCommand extends Command<bool> {
 
   @override
   FutureOr<bool> run() async {
-    final int ninjaJobCount = getNinjaJobCount();
+    final int? ninjaJobCount = getNinjaJobCount();
     final FilePath libPath = FilePath.fromWebUi('lib');
     final Pipeline buildPipeline = Pipeline(steps: <PipelineStep>[
       gn,
@@ -55,7 +55,7 @@ class BuildCommand extends Command<bool> {
     ]);
     await buildPipeline.start();
 
-    if (isWatchMode) {
+    if (isWatchMode!) {
       print('Initial build done!');
       print('Watching directory: ${libPath.relativeToCwd}/');
       PipelineWatcher(
@@ -75,7 +75,7 @@ class BuildCommand extends Command<bool> {
 Future<void> gn() {
   print('Running gn...');
   return runProcess(
-    path.join(environment.flutterDirectory.path, 'tools', 'gn'),
+    path.join(environment!.flutterDirectory.path, 'tools', 'gn'),
     <String>[
       '--unopt',
       '--full-dart-sdk',
@@ -84,7 +84,7 @@ Future<void> gn() {
 }
 
 // TODO(mdebbar): Make the ninja step interruptable in the pipeline.
-Future<void> ninja(int ninjaJobs) {
+Future<void> ninja(int? ninjaJobs) {
   if (ninjaJobs == null) {
     print('Running ninja (with default ninja parallelization)...');
   } else {
@@ -93,7 +93,7 @@ Future<void> ninja(int ninjaJobs) {
 
   return runProcess('ninja', <String>[
     '-C',
-    environment.hostDebugUnoptDir.path,
+    environment!.hostDebugUnoptDir!.path,
     if (ninjaJobs != null) ...['-j', '$ninjaJobs'],
   ]);
 }
@@ -110,11 +110,11 @@ enum PipelineStatus {
 typedef PipelineStep = Future<void> Function();
 
 class Pipeline {
-  Pipeline({@required this.steps});
+  Pipeline({/* @*/ required this.steps});
 
   final Iterable<PipelineStep> steps;
 
-  Future<dynamic> _currentStepFuture;
+  Future<dynamic>? _currentStepFuture;
 
   PipelineStatus status = PipelineStatus.idle;
 
@@ -150,8 +150,8 @@ typedef WatchEventPredicate = bool Function(WatchEvent event);
 
 class PipelineWatcher {
   PipelineWatcher({
-    @required this.dir,
-    @required this.pipeline,
+    /* @*/ required this.dir,
+    /* @*/ required this.pipeline,
     this.ignore,
   }) : watcher = DirectoryWatcher(dir);
 
@@ -166,17 +166,17 @@ class PipelineWatcher {
 
   /// A callback that determines whether to rerun the pipeline or not for a
   /// given [WatchEvent] instance.
-  final WatchEventPredicate ignore;
+  final WatchEventPredicate? ignore;
 
   void start() {
     watcher.events.listen(_onEvent);
   }
 
   int _pipelineRunCount = 0;
-  Timer _scheduledPipeline;
+  Timer? _scheduledPipeline;
 
   void _onEvent(WatchEvent event) {
-    if (ignore != null && ignore(event)) {
+    if (ignore != null && ignore!(event)) {
       return;
     }
 

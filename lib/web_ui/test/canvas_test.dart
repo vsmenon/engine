@@ -12,15 +12,15 @@ import 'mock_engine_canvas.dart';
 
 void main() {
   group('EngineCanvas', () {
-    MockEngineCanvas mockCanvas;
-    ui.Paragraph paragraph;
+    MockEngineCanvas? mockCanvas;
+    ui.Paragraph? paragraph;
 
     void testCanvas(
         String description, void Function(EngineCanvas canvas) testFn,
-        {ui.Rect canvasSize, ui.VoidCallback whenDone}) {
+        {ui.Rect? canvasSize, ui.VoidCallback? whenDone}) {
       canvasSize ??= const ui.Rect.fromLTWH(0, 0, 100, 100);
       test(description, () {
-        testFn(BitmapCanvas(canvasSize));
+        testFn(BitmapCanvas(canvasSize!));
         testFn(DomCanvas());
         testFn(HoudiniCanvas(canvasSize));
         testFn(mockCanvas = MockEngineCanvas());
@@ -37,17 +37,17 @@ void main() {
           ui.ParagraphBuilder(ui.ParagraphStyle());
       builder.addText('sample');
       paragraph = builder.build();
-      paragraph.layout(const ui.ParagraphConstraints(width: 100));
-      recordingCanvas.drawParagraph(paragraph, const ui.Offset(10, 10));
+      paragraph!.layout(const ui.ParagraphConstraints(width: 100));
+      recordingCanvas.drawParagraph(paragraph!, const ui.Offset(10, 10));
       canvas.clear();
       recordingCanvas.apply(canvas);
     }, whenDone: () {
-      expect(mockCanvas.methodCallLog, hasLength(3));
+      expect(mockCanvas!.methodCallLog, hasLength(3));
 
-      MockCanvasCall call = mockCanvas.methodCallLog[0];
+      MockCanvasCall call = mockCanvas!.methodCallLog[0];
       expect(call.methodName, 'clear');
 
-      call = mockCanvas.methodCallLog[1];
+      call = mockCanvas!.methodCallLog[1];
       expect(call.methodName, 'drawParagraph');
       expect(call.arguments['paragraph'], paragraph);
       expect(call.arguments['offset'], const ui.Offset(10, 10));
@@ -65,9 +65,9 @@ void main() {
       canvas.clear();
       recordingCanvas.apply(canvas);
     }, whenDone: () {
-      expect(mockCanvas.methodCallLog, hasLength(2));
-      expect(mockCanvas.methodCallLog[0].methodName, 'clear');
-      expect(mockCanvas.methodCallLog[1].methodName, 'endOfPaint');
+      expect(mockCanvas!.methodCallLog, hasLength(2));
+      expect(mockCanvas!.methodCallLog[0].methodName, 'clear');
+      expect(mockCanvas!.methodCallLog[1].methodName, 'endOfPaint');
     });
   });
 }

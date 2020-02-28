@@ -102,7 +102,7 @@ void main() {
 
   test('innerHeight/innerWidth are equal to visualViewport height and width',
       () {
-    if (html.window.visualViewport != null) {
+    /* if (html.window.visualViewport != null) */ {
       expect(html.window.visualViewport.width, html.window.innerWidth);
       expect(html.window.visualViewport.height, html.window.innerHeight);
     }
@@ -112,7 +112,7 @@ void main() {
     final html.MetaElement existingMeta = html.MetaElement()
       ..name = 'viewport'
       ..content = 'foo=bar';
-    html.document.head.append(existingMeta);
+    html.document.head!.append(existingMeta);
     expect(existingMeta.isConnected, true);
 
     final DomRenderer renderer = DomRenderer();

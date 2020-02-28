@@ -15,27 +15,27 @@ import 'matchers.dart';
 void main() {
   group('SceneBuilder', () {
     test('pushOffset implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
-        return sceneBuilder.pushOffset(10, 20, oldLayer: oldLayer);
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
+        return sceneBuilder.pushOffset(10, 20, oldLayer: oldLayer as OffsetEngineLayer?);
       }, () {
         return '''<s><flt-offset></flt-offset></s>''';
       });
     });
 
     test('pushTransform implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
         return sceneBuilder.pushTransform(
             Matrix4.translationValues(10, 20, 0).storage,
-            oldLayer: oldLayer);
+            oldLayer: oldLayer as TransformEngineLayer?);
       }, () {
         return '''<s><flt-transform></flt-transform></s>''';
       });
     });
 
     test('pushClipRect implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
         return sceneBuilder.pushClipRect(const Rect.fromLTRB(10, 20, 30, 40),
-            oldLayer: oldLayer);
+            oldLayer: oldLayer as ClipRectEngineLayer?);
       }, () {
         return '''
 <s>
@@ -46,10 +46,10 @@ void main() {
     });
 
     test('pushClipRRect implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
         return sceneBuilder.pushClipRRect(
             RRect.fromLTRBR(10, 20, 30, 40, const Radius.circular(3)),
-            oldLayer: oldLayer);
+            oldLayer: oldLayer as ClipRRectEngineLayer?);
       }, () {
         return '''
 <s>
@@ -60,9 +60,9 @@ void main() {
     });
 
     test('pushClipPath implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
         final Path path = Path()..addRect(const Rect.fromLTRB(10, 20, 30, 40));
-        return sceneBuilder.pushClipPath(path, oldLayer: oldLayer);
+        return sceneBuilder.pushClipPath(path, oldLayer: oldLayer as ClipPathEngineLayer?);
       }, () {
         return '''
 <s>
@@ -75,22 +75,22 @@ void main() {
     });
 
     test('pushOpacity implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
-        return sceneBuilder.pushOpacity(10, oldLayer: oldLayer);
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
+        return sceneBuilder.pushOpacity(10, oldLayer: oldLayer as OpacityEngineLayer?);
       }, () {
         return '''<s><o></o></s>''';
       });
     });
 
     test('pushPhysicalShape implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
         final Path path = Path()..addRect(const Rect.fromLTRB(10, 20, 30, 40));
         return sceneBuilder.pushPhysicalShape(
           path: path,
           elevation: 2,
           color: const Color.fromRGBO(0, 0, 0, 1),
           shadowColor: const Color.fromRGBO(0, 0, 0, 1),
-          oldLayer: oldLayer,
+          oldLayer: oldLayer as PhysicalShapeEngineLayer?,
         );
       }, () {
         return '''<s><pshape><clip-i></clip-i></pshape></s>''';
@@ -98,10 +98,10 @@ void main() {
     });
 
     test('pushBackdropFilter implements surface lifecycle', () {
-      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer oldLayer) {
+      testLayerLifeCycle((SceneBuilder sceneBuilder, EngineLayer? oldLayer) {
         return sceneBuilder.pushBackdropFilter(
           ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
-          oldLayer: oldLayer,
+          oldLayer: oldLayer as BackdropFilterEngineLayer?,
         );
       }, () {
         return '<s><flt-backdrop>'
@@ -179,8 +179,8 @@ void main() {
   });
 }
 
-typedef TestLayerBuilder = EngineLayer Function(
-    SceneBuilder sceneBuilder, EngineLayer oldLayer);
+typedef TestLayerBuilder = EngineLayer? Function(
+    SceneBuilder sceneBuilder, EngineLayer? oldLayer);
 typedef ExpectedHtmlGetter = String Function();
 
 void testLayerLifeCycle(
@@ -191,53 +191,53 @@ void testLayerLifeCycle(
 
   // Build: builds a brand new layer.
   SceneBuilder sceneBuilder = SceneBuilder();
-  final EngineLayer layer1 = layerBuilder(sceneBuilder, null);
-  final Type surfaceType = layer1.runtimeType;
+  final EngineLayer? layer1 = layerBuilder(sceneBuilder, null);
+  final Type surfaceType = layer1!.runtimeType;
   sceneBuilder.pop();
 
-  SceneTester tester = SceneTester(sceneBuilder.build());
+  SceneTester tester = SceneTester(sceneBuilder.build() as SurfaceScene);
   tester.expectSceneHtml(expectedHtmlGetter());
 
-  PersistedSurface findSurface() {
+  PersistedSurface? findSurface() {
     return enumerateSurfaces()
-        .where((PersistedSurface s) => s.runtimeType == surfaceType)
+        .where((PersistedSurface? s) => s!.runtimeType == surfaceType)
         .single;
   }
 
-  final PersistedSurface surface1 = findSurface();
-  final html.Element surfaceElement1 = surface1.rootElement;
+  final PersistedSurface surface1 = findSurface()!;
+  final html.Element? surfaceElement1 = surface1.rootElement;
 
   // Retain: reuses a layer as is along with its DOM elements.
   sceneBuilder = SceneBuilder();
   sceneBuilder.addRetained(layer1);
 
-  tester = SceneTester(sceneBuilder.build());
+  tester = SceneTester(sceneBuilder.build() as SurfaceScene);
   tester.expectSceneHtml(expectedHtmlGetter());
 
-  final PersistedSurface surface2 = findSurface();
-  final html.Element surfaceElement2 = surface2.rootElement;
+  final PersistedSurface surface2 = findSurface()!;
+  final html.Element? surfaceElement2 = surface2.rootElement;
 
   expect(surface2, same(surface1));
   expect(surfaceElement2, same(surfaceElement1));
 
   // Reuse: reuses a layer's DOM elements by matching it.
   sceneBuilder = SceneBuilder();
-  final EngineLayer layer3 = layerBuilder(sceneBuilder, layer1);
+  final EngineLayer? layer3 = layerBuilder(sceneBuilder, layer1);
   sceneBuilder.pop();
   expect(layer3, isNot(same(layer1)));
-  tester = SceneTester(sceneBuilder.build());
+  tester = SceneTester(sceneBuilder.build() as SurfaceScene);
   tester.expectSceneHtml(expectedHtmlGetter());
 
-  final PersistedSurface surface3 = findSurface();
+  final PersistedSurface surface3 = findSurface()!;
   expect(surface3, same(layer3));
-  final html.Element surfaceElement3 = surface3.rootElement;
+  final html.Element? surfaceElement3 = surface3.rootElement;
   expect(surface3, isNot(same(surface2)));
   expect(surfaceElement3, isNotNull);
   expect(surfaceElement3, same(surfaceElement2));
 
   // Recycle: discards all the layers.
   sceneBuilder = SceneBuilder();
-  tester = SceneTester(sceneBuilder.build());
+  tester = SceneTester(sceneBuilder.build() as SurfaceScene);
   tester.expectSceneHtml('<s></s>');
 
   expect(surface3.rootElement, isNull); // offset3 should be recycled.
@@ -247,7 +247,7 @@ void testLayerLifeCycle(
   //               engine would "rehydrate" the layer with new DOM elements.
   sceneBuilder = SceneBuilder();
   sceneBuilder.addRetained(layer3);
-  tester = SceneTester(sceneBuilder.build());
+  tester = SceneTester(sceneBuilder.build() as SurfaceScene);
   tester.expectSceneHtml(expectedHtmlGetter());
   expect(surface3.rootElement, isNotNull); // offset3 should be rehydrated.
 
@@ -257,14 +257,14 @@ void testLayerLifeCycle(
 
 class MockPersistedPicture extends PersistedPicture {
   factory MockPersistedPicture() {
-    final EnginePictureRecorder recorder = PictureRecorder();
+    final EnginePictureRecorder recorder = PictureRecorder() as EnginePictureRecorder;
     // Use the largest cull rect so that layer clips are effective. The tests
     // rely on this.
-    recorder.beginRecording(Rect.largest)..drawPaint(Paint());
-    return MockPersistedPicture._(recorder.endRecording());
+    recorder.beginRecording(Rect.largest)..drawPaint(Paint() as SurfacePaint);
+    return MockPersistedPicture._(recorder.endRecording()!);
   }
 
-  MockPersistedPicture._(Picture picture) : super(0, 0, picture, 0);
+  MockPersistedPicture._(Picture picture) : super(0, 0, picture as EnginePicture, 0);
 
   int retainCount = 0;
   int buildCount = 0;
@@ -277,7 +277,7 @@ class MockPersistedPicture extends PersistedPicture {
   }
 
   @override
-  Matrix4 get localTransformInverse => null;
+  Matrix4? get localTransformInverse => null;
 
   @override
   void build() {
@@ -292,7 +292,7 @@ class MockPersistedPicture extends PersistedPicture {
   }
 
   @override
-  void applyPaint(EngineCanvas oldCanvas) {
+  void applyPaint(EngineCanvas? oldCanvas) {
     applyPaintCount++;
   }
 

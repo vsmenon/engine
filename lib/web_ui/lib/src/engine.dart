@@ -180,7 +180,7 @@ void webOnlyInitializeEngine() {
 
         if (ui.window.onBeginFrame != null) {
           ui.window
-              .onBeginFrame(Duration(microseconds: highResTimeMicroseconds));
+              .onBeginFrame!(Duration(microseconds: highResTimeMicroseconds));
         }
 
         if (ui.window.onDrawFrame != null) {
@@ -188,7 +188,7 @@ void webOnlyInitializeEngine() {
           //                onBeginFrame and onDrawFrame. We don't, which hasn't
           //                been an issue yet, but eventually we'll have to
           //                implement it properly.
-          ui.window.onDrawFrame();
+          ui.window.onDrawFrame!();
         }
       });
     }

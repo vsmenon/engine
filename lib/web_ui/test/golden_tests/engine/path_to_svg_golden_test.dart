@@ -14,7 +14,7 @@ import 'package:web_engine_tester/golden_tester.dart';
 void main() async {
   final Rect region = Rect.fromLTWH(8, 8, 600, 800); // Compensate for old scuba tester padding
 
-  Future<void> testPath(Path path, String scubaFileName, {Paint paint}) async {
+  Future<void> testPath(Path path, String scubaFileName, {Paint? paint}) async {
     const Rect canvasBounds = Rect.fromLTWH(0, 0, 600, 800);
     final BitmapCanvas bitmapCanvas = BitmapCanvas(canvasBounds);
     final RecordingCanvas canvas = RecordingCanvas(canvasBounds);
@@ -23,9 +23,9 @@ void main() async {
       ..color = const Color(0x807F7F7F)
       ..style = PaintingStyle.fill;
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, paint as SurfacePaint);
 
-    paint = Paint()
+    paint = Paint() as SurfacePaint
       ..strokeWidth = 2
       ..color = const Color(0xFFFF0000)
       ..style = PaintingStyle.stroke;
@@ -140,7 +140,7 @@ html.Element pathToSvgElement(Path path, Paint paint) {
     sb.write('fill="${colorToCssString(paint.color)}" ');
   }
   sb.write('d="');
-  pathToSvg(path, sb); // This is what we're testing!
+  pathToSvg(path as SurfacePath, sb); // This is what we're testing!
   sb.write('"></path>');
   sb.write('</svg>');
   final html.Element svgElement =
@@ -164,9 +164,9 @@ class ArcSample {
 
   Path createPath() {
     final Offset startP =
-        Offset(75 - distance + offset.dx, 75 - distance + offset.dy);
+        Offset(75 - distance + offset.dx!, 75 - distance + offset.dy!);
     final Offset endP =
-        Offset(75.0 + distance + offset.dx, 75.0 + distance + offset.dy);
+        Offset(75.0 + distance + offset.dx!, 75.0 + distance + offset.dy!);
     final Path path = Path();
     path.moveTo(startP.dx, startP.dy);
     path.arcToPoint(endP,
@@ -180,9 +180,9 @@ class ArcSample {
   // Returns bounds of start/end point of arc.
   Rect getBounds() {
     final Offset startP =
-        Offset(75 - distance + offset.dx, 75 - distance + offset.dy);
+        Offset(75 - distance + offset.dx!, 75 - distance + offset.dy!);
     final Offset endP =
-        Offset(75.0 + distance + offset.dx, 75.0 + distance + offset.dy);
-    return Rect.fromLTRB(startP.dx, startP.dy, endP.dx, endP.dy);
+        Offset(75.0 + distance + offset.dx!, 75.0 + distance + offset.dy!);
+    return Rect.fromLTRB(startP.dx!, startP.dy!, endP.dx!, endP.dy!);
   }
 }

@@ -6,8 +6,8 @@
 import 'package:test/test.dart';
 import 'package:ui/src/engine.dart';
 
-TestLocationStrategy _strategy;
-TestLocationStrategy get strategy => _strategy;
+TestLocationStrategy? _strategy;
+TestLocationStrategy? get strategy => _strategy;
 set strategy(TestLocationStrategy newStrategy) {
   window.locationStrategy = _strategy = newStrategy;
 }
@@ -17,7 +17,7 @@ void main() {
     strategy = TestLocationStrategy.fromEntry(TestHistoryEntry('initial state', null, '/initial'));
     expect(window.defaultRouteName, '/initial');
 
-    strategy.replaceState(null, null, '/newpath');
+    strategy!.replaceState(null, null, '/newpath');
     expect(window.defaultRouteName, '/initial');
   });
 }

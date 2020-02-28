@@ -14,21 +14,21 @@ import 'package:web_engine_tester/golden_tester.dart';
 void main() async {
   final Rect region = Rect.fromLTWH(0, 0, 150, 420);
 
-  BitmapCanvas canvas;
+  BitmapCanvas? canvas;
 
   setUp(() {
     canvas = BitmapCanvas(region);
   });
 
   tearDown(() {
-    canvas.rootElement.remove();
+    canvas!.rootElement.remove();
   });
 
   test('draws rect with flipped coordinates L > R, T > B', () async {
 
-    paintRects(canvas);
+    paintRects(canvas!);
 
-    html.document.body.append(canvas.rootElement);
+    html.document.body.append(canvas!.rootElement);
     await matchGoldenFile('canvas_rect_flipped.png', region: region);
   }, timeout: const Timeout(Duration(seconds: 10)));
 

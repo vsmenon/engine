@@ -8,11 +8,11 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:ui/src/engine.dart' as engine;
 
-engine.TestLocationStrategy _strategy;
+engine.TestLocationStrategy? _strategy;
 
 const engine.MethodCodec codec = engine.JSONMethodCodec();
 
-void emptyCallback(ByteData date) {}
+void emptyCallback(ByteData? date) {}
 
 void main() {
   setUp(() {
@@ -32,7 +32,7 @@ void main() {
       )),
       emptyCallback,
     );
-    expect(_strategy.path, '/foo');
+    expect(_strategy!.path, '/foo');
 
     engine.window.sendPlatformMessage(
       'flutter/navigation',
@@ -42,7 +42,7 @@ void main() {
       )),
       emptyCallback,
     );
-    expect(_strategy.path, '/bar');
+    expect(_strategy!.path, '/bar');
 
     engine.window.sendPlatformMessage(
       'flutter/navigation',
@@ -52,7 +52,7 @@ void main() {
       )),
       emptyCallback,
     );
-    expect(_strategy.path, '/foo');
+    expect(_strategy!.path, '/foo');
 
     engine.window.sendPlatformMessage(
       'flutter/navigation',
@@ -62,7 +62,7 @@ void main() {
       )),
       emptyCallback,
     );
-    expect(_strategy.path, '/bar/baz');
+    expect(_strategy!.path, '/bar/baz');
 
     engine.window.sendPlatformMessage(
       'flutter/navigation',
@@ -75,7 +75,7 @@ void main() {
       )),
       emptyCallback,
     );
-    expect(_strategy.path, '/bar/baz2');
+    expect(_strategy!.path, '/bar/baz2');
 
     engine.window.sendPlatformMessage(
       'flutter/navigation',
@@ -85,6 +85,6 @@ void main() {
       )),
       emptyCallback,
     );
-    expect(_strategy.path, '/foo/foo/2');
+    expect(_strategy!.path, '/foo/foo/2');
   });
 }

@@ -28,7 +28,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       // TODO(yjbanov): 10% diff rate is excessive. Update goldens.
       await matchGoldenFile('$fileName.png', region: region, maxDiffRatePercent: 10);
@@ -42,8 +42,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   // Regression test for https://github.com/flutter/flutter/issues/49429
@@ -61,7 +61,7 @@ void main() async {
     rc.translate(-500, -500);
     rc.save();
     rc.translate(500, 500);
-    rc.drawPath(ovalPath, paint);
+    rc.drawPath(ovalPath, paint as SurfacePaint);
     // The line below was causing SaveClipStack to incorrectly set
     // transform before path painting.
     rc.translate(-1000, -1000);
@@ -92,11 +92,11 @@ void main() async {
     rc.save();
     rc.restore();
     // The rectangle should be clipped against oval.
-    rc.drawRect(Rect.fromLTWH(0, 0, 300, 300), badPaint);
+    rc.drawRect(Rect.fromLTWH(0, 0, 300, 300), badPaint as SurfacePaint);
     rc.restore();
     // The rectangle should paint without clipping since we restored
     // context.
-    rc.drawRect(Rect.fromLTWH(0, 0, 200, 200), goodPaint);
+    rc.drawRect(Rect.fromLTWH(0, 0, 200, 200), goodPaint as SurfacePaint);
     await _checkScreenshot(rc, 'context_save_restore_clip');
   });
 }

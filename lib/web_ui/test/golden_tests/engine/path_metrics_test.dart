@@ -31,7 +31,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('$fileName.png', region: region);
     } finally {
@@ -44,8 +44,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   test('Should calculate tangent on line', () async {
@@ -54,7 +54,7 @@ void main() async {
     path.lineTo(150, 20);
 
     PathMetric metric = path.computeMetrics().first;
-    Tangent t = metric.getTangentForOffset(50.0);
+    Tangent t = metric.getTangentForOffset(50.0)!;
     expect(t.position.dx, within(from: 83.633, distance: 0.01));
     expect(t.position.dy, within(from: 93.0, distance: 0.01));
     expect(t.vector.dx, within(from: 0.672, distance: 0.01));
@@ -72,7 +72,7 @@ void main() async {
     path.moveTo(150, 20);
     path.quadraticBezierTo(p1x, p1y, p2x, p2y);
     PathMetric metric = path.computeMetrics().first;
-    Tangent t = metric.getTangentForOffset(50.0);
+    Tangent t = metric.getTangentForOffset(50.0)!;
     expect(t.position.dx, within(from: 187.25, distance: 0.01));
     expect(t.position.dy, within(from: 53.33, distance: 0.01));
     expect(t.vector.dx, within(from: 0.82, distance: 0.01));
@@ -88,7 +88,7 @@ void main() async {
     path.moveTo(150, 20);
     path.quadraticBezierTo(p0x, p0y, p1x, p1y);
     PathMetric metric = path.computeMetrics().first;
-    Tangent t = metric.getTangentForOffset(50.0);
+    Tangent t = metric.getTangentForOffset(50.0)!;
     expect(t.position.dx, within(from: 199.82, distance: 0.01));
     expect(t.position.dy, within(from: 21.46, distance: 0.01));
     expect(t.vector.dx, within(from: 0.99, distance: 0.01));
@@ -120,23 +120,23 @@ void main() async {
     double p2y = 25;
     path.quadraticBezierTo(p1x, p1y, p2x, p2y);
 
-    rc.drawPath(path, paint);
+    rc.drawPath(path, paint as SurfacePaint);
 
     final Float32List buffer = Float32List(6);
     List<double> points = [p0x, p0y, p1x, p1y, p2x, p2y];
     double t0 = 0.2;
     double t1 = 0.7;
 
-    List<PathMetric> metrics = path.computeMetrics().toList();
+    List<PathMetric?> metrics = path.computeMetrics().toList();
     double totalLength = 0;
-    for (PathMetric m in metrics) {
-      totalLength += m.length;
+    for (PathMetric? m in metrics) {
+      totalLength += m!.length;
     }
     Path dashedPath = Path();
-    for (final PathMetric measurePath in path.computeMetrics()) {
+    for (final PathMetric? measurePath in path.computeMetrics()) {
       double distance = totalLength * t0;
       bool draw = true;
-      while (distance < measurePath.length * t1) {
+      while (distance < measurePath!.length * t1) {
         final double length = kDashLength;
         if (draw) {
           dashedPath.addPath(
@@ -147,7 +147,7 @@ void main() async {
         draw = !draw;
       }
     }
-    rc.drawPath(dashedPath, redPaint);
+    rc.drawPath(dashedPath, redPaint as SurfacePaint);
     await _checkScreenshot(rc, 'path_dash_quadratic');
   });
 
@@ -178,23 +178,23 @@ void main() async {
     double p3y = 25;
     path.cubicTo(p1x, p1y, p2x, p2y, p3x, p3y);
 
-    rc.drawPath(path, paint);
+    rc.drawPath(path, paint as SurfacePaint);
 
     final Float32List buffer = Float32List(6);
     List<double> points = [p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y];
     double t0 = 0.2;
     double t1 = 0.7;
 
-    List<PathMetric> metrics = path.computeMetrics().toList();
+    List<PathMetric?> metrics = path.computeMetrics().toList();
     double totalLength = 0;
-    for (PathMetric m in metrics) {
-      totalLength += m.length;
+    for (PathMetric? m in metrics) {
+      totalLength += m!.length;
     }
     Path dashedPath = Path();
-    for (final PathMetric measurePath in path.computeMetrics()) {
+    for (final PathMetric? measurePath in path.computeMetrics()) {
       double distance = totalLength * t0;
       bool draw = true;
-      while (distance < measurePath.length * t1) {
+      while (distance < measurePath!.length * t1) {
         final double length = kDashLength;
         if (draw) {
           dashedPath.addPath(
@@ -205,7 +205,7 @@ void main() async {
         draw = !draw;
       }
     }
-    rc.drawPath(dashedPath, redPaint);
+    rc.drawPath(dashedPath, redPaint as SurfacePaint);
     await _checkScreenshot(rc, 'path_dash_cubic');
   });
 }

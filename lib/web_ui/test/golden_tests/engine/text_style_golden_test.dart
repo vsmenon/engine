@@ -27,7 +27,7 @@ void main() async {
                 decoration: TextDecoration.none,
                 fontFamily: 'Roboto',
                 fontSize: 30,
-                letterSpacing: spacing)),
+                letterSpacing: spacing)) as EngineParagraph,
         offset,
       );
       offset = offset.translate(0, 40);
@@ -40,7 +40,7 @@ void main() async {
           fontSize: 30,
           wordSpacing: spacing);
       canvas.drawParagraph(
-        paragraph('Hello World', textStyle: textStyle, maxWidth: 600),
+        paragraph('Hello World', textStyle: textStyle, maxWidth: 600) as EngineParagraph,
         offset,
       );
       offset = offset.translate(0, 40);
@@ -74,7 +74,7 @@ void main() async {
         fontSize: 30,
       );
       canvas.drawParagraph(
-        paragraph('Hello World', textStyle: textStyle, maxWidth: 600),
+        paragraph('Hello World', textStyle: textStyle, maxWidth: 600) as EngineParagraph,
         offset,
       );
       offset = offset.translate(0, 40);
@@ -117,7 +117,7 @@ void main() async {
           'Hello World $decoration',
           textStyle: textStyle,
           maxWidth: 600,
-        ),
+        ) as EngineParagraph,
         offset,
       );
       offset = offset.translate(0, 40);
@@ -142,7 +142,7 @@ void main() async {
           fontFamily: 'Roboto',
           fontSize: 30,
         ),
-      ),
+      ) as EngineParagraph,
       Offset.zero,
     );
 
@@ -157,7 +157,7 @@ void main() async {
           fontFamily: 'Roboto',
           fontSize: 30,
         ),
-      ),
+      ) as EngineParagraph,
       const Offset(0, 40),
     );
   }
@@ -181,7 +181,7 @@ void main() async {
             ),
           ],
         ),
-      ),
+      ) as EngineParagraph,
       Offset.zero,
     );
 
@@ -208,7 +208,7 @@ void main() async {
             ),
           ],
         ),
-      ),
+      ) as EngineParagraph,
       const Offset(0, 40),
     );
   }
@@ -232,7 +232,7 @@ void main() async {
       paragraph(
         'Hello\nWorld',
         paragraphStyle: ParagraphStyle(strutStyle: disabled),
-      ),
+      ) as EngineParagraph,
       Offset.zero,
     );
     return scuba.diffCanvasScreenshot(

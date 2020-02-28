@@ -8,7 +8,7 @@
 part of dart.ui;
 
 // ignore: unused_element
-String _decodeUTF8(ByteData message) {
+String? _decodeUTF8(ByteData message) {
   return message != null ? utf8.decoder.convert(message.buffer.asUint8List()) : null;
 }
 
@@ -64,13 +64,13 @@ void _updateWindowMetrics(
   _invoke(window.onMetricsChanged, window._onMetricsChangedZone);
 }
 
-typedef _LocaleClosure = String Function();
+typedef _LocaleClosure = String? Function();
 
-String _localeClosure() {
+String? _localeClosure() {
   if (window.locale == null) {
     return null;
   }
-  return window.locale.toString();
+  return window.locale!.toString();
 }
 
 @pragma('vm:entry-point')
@@ -82,12 +82,12 @@ _LocaleClosure _getLocaleClosure() => _localeClosure;
 void _updateLocales(List<String> locales) {
   const int stringsPerLocale = 4;
   final int numLocales = locales.length ~/ stringsPerLocale;
-  window._locales = List<Locale>(numLocales);
+  window._locales = List<Locale?>(numLocales);
   for (int localeIndex = 0; localeIndex < numLocales; localeIndex++) {
     final String countryCode = locales[localeIndex * stringsPerLocale + 1];
     final String scriptCode = locales[localeIndex * stringsPerLocale + 2];
 
-    window._locales[localeIndex] = Locale.fromSubtags(
+    window._locales![localeIndex] = Locale.fromSubtags(
       languageCode: locales[localeIndex * stringsPerLocale],
       countryCode: countryCode.isEmpty ? null : countryCode,
       scriptCode: scriptCode.isEmpty ? null : scriptCode,
@@ -99,13 +99,13 @@ void _updateLocales(List<String> locales) {
 @pragma('vm:entry-point')
 // ignore: unused_element
 void _updateUserSettingsData(String jsonData) {
-  final Map<String, dynamic> data = json.decode(jsonData) as Map<String, dynamic>;
+  final Map<String, dynamic> data = (json.decode(jsonData) as Map<String, dynamic>?)!;
   if (data.isEmpty) {
     return;
   }
-  _updateTextScaleFactor((data['textScaleFactor'] as num).toDouble());
-  _updateAlwaysUse24HourFormat(data['alwaysUse24HourFormat'] as bool);
-  _updatePlatformBrightness(data['platformBrightness'] as String);
+  _updateTextScaleFactor((data['textScaleFactor'] as num?)!.toDouble());
+  _updateAlwaysUse24HourFormat(data['alwaysUse24HourFormat'] as bool?);
+  _updatePlatformBrightness(data['platformBrightness'] as String?);
 }
 
 @pragma('vm:entry-point')
@@ -123,11 +123,11 @@ void _updateTextScaleFactor(double textScaleFactor) {
   _invoke(window.onTextScaleFactorChanged, window._onTextScaleFactorChangedZone);
 }
 
-void _updateAlwaysUse24HourFormat(bool alwaysUse24HourFormat) {
+void _updateAlwaysUse24HourFormat(bool? alwaysUse24HourFormat) {
   window._alwaysUse24HourFormat = alwaysUse24HourFormat;
 }
 
-void _updatePlatformBrightness(String brightnessName) {
+void _updatePlatformBrightness(String? brightnessName) {
   window._platformBrightness = brightnessName == 'dark' ? Brightness.dark : Brightness.light;
   _invoke(window.onPlatformBrightnessChanged, window._onPlatformBrightnessChangedZone);
 }
@@ -166,12 +166,12 @@ void _dispatchPlatformMessage(String name, ByteData data, int responseId) {
       window._onPlatformMessageZone,
       name,
       data,
-      (ByteData responseData) {
+      (ByteData? responseData) {
         window._respondToPlatformMessage(responseId, responseData);
       },
     );
   } else {
-    channelBuffers.push(name, data, (ByteData responseData) {
+    channelBuffers.push(name, data, (ByteData? responseData) {
       window._respondToPlatformMessage(responseId, responseData);
     });
   }
@@ -187,7 +187,7 @@ void _dispatchPointerDataPacket(ByteData packet) {
 @pragma('vm:entry-point')
 // ignore: unused_element
 void _dispatchSemanticsAction(int id, int action, ByteData args) {
-  _invoke3<int, SemanticsAction, ByteData>(
+  _invoke3<int, SemanticsAction?, ByteData>(
     window.onSemanticsAction,
     window._onSemanticsActionZone,
     id,
@@ -249,7 +249,7 @@ void _runMainZoned(Function startMainIsolateFunction,
 void _reportUnhandledException(String error, String stackTrace) native 'Window_reportUnhandledException';
 
 /// Invokes [callback] inside the given [zone].
-void _invoke(void callback(), Zone zone) {
+void _invoke(void callback(), Zone? zone) {
   if (callback == null)
     return;
 
@@ -258,12 +258,12 @@ void _invoke(void callback(), Zone zone) {
   if (identical(zone, Zone.current)) {
     callback();
   } else {
-    zone.runGuarded(callback);
+    zone!.runGuarded(callback);
   }
 }
 
 /// Invokes [callback] inside the given [zone] passing it [arg].
-void _invoke1<A>(void callback(A a), Zone zone, A arg) {
+void _invoke1<A>(void callback(A a), Zone? zone, A arg) {
   if (callback == null)
     return;
 
@@ -272,15 +272,15 @@ void _invoke1<A>(void callback(A a), Zone zone, A arg) {
   if (identical(zone, Zone.current)) {
     callback(arg);
   } else {
-    zone.runUnaryGuarded<A>(callback, arg);
+    zone!.runUnaryGuarded<A>(callback, arg);
   }
 }
 
 /// Invokes [callback] inside the given [zone] passing it [arg1] and [arg2].
 // ignore: unused_element
 void _invoke2<A1, A2>(void callback(A1 a1, A2 a2), Zone zone, A1 arg1, A2 arg2) {
-  if (callback == null)
-    return;
+  /* if (callback == null)
+    return; */
 
   assert(zone != null);
 
@@ -292,7 +292,7 @@ void _invoke2<A1, A2>(void callback(A1 a1, A2 a2), Zone zone, A1 arg1, A2 arg2) 
 }
 
 /// Invokes [callback] inside the given [zone] passing it [arg1], [arg2] and [arg3].
-void _invoke3<A1, A2, A3>(void callback(A1 a1, A2 a2, A3 a3), Zone zone, A1 arg1, A2 arg2, A3 arg3) {
+void _invoke3<A1, A2, A3>(void callback(A1 a1, A2 a2, A3 a3), Zone? zone, A1 arg1, A2 arg2, A3 arg3) {
   if (callback == null)
     return;
 
@@ -301,7 +301,7 @@ void _invoke3<A1, A2, A3>(void callback(A1 a1, A2 a2, A3 a3), Zone zone, A1 arg1
   if (identical(zone, Zone.current)) {
     callback(arg1, arg2, arg3);
   } else {
-    zone.runGuarded(() {
+    zone!.runGuarded(() {
       callback(arg1, arg2, arg3);
     });
   }
@@ -319,7 +319,7 @@ PointerDataPacket _unpackPointerDataPacket(ByteData packet) {
   const int kBytesPerPointerData = _kPointerDataFieldCount * kStride;
   final int length = packet.lengthInBytes ~/ kBytesPerPointerData;
   assert(length * kBytesPerPointerData == packet.lengthInBytes);
-  final List<PointerData> data = List<PointerData>(length);
+  final List<PointerData?> data = List<PointerData?>(length);
   for (int i = 0; i < length; ++i) {
     int offset = i * _kPointerDataFieldCount;
     data[i] = PointerData(

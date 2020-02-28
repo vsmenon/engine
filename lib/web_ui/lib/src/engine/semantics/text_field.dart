@@ -19,7 +19,7 @@ class SemanticsTextEditingStrategy extends DefaultTextEditingStrategy {
   /// [domElement] so the caller can insert it before calling
   /// [SemanticsTextEditingStrategy.enable].
   SemanticsTextEditingStrategy(
-      HybridTextEditing owner, html.HtmlElement domElement)
+      HybridTextEditing owner, html.HtmlElement? domElement)
       : super(owner) {
     // Make sure the DOM element is of a type that we support for text editing.
     // TODO(yjbanov): move into initializer list when https://github.com/dart-lang/sdk/issues/37881 is fixed.
@@ -36,7 +36,7 @@ class SemanticsTextEditingStrategy extends DefaultTextEditingStrategy {
     // Remove focus from the editable element to cause the keyboard to hide.
     // Otherwise, the keyboard stays on screen even when the user navigates to
     // a different screen (e.g. by hitting the "back" button).
-    domElement.blur();
+    domElement!.blur();
   }
 
   @override
@@ -46,7 +46,7 @@ class SemanticsTextEditingStrategy extends DefaultTextEditingStrategy {
 
   @override
   void initializeTextEditing(InputConfiguration inputConfig,
-      {_OnChangeCallback onChange, _OnActionCallback onAction}) {
+      {_OnChangeCallback? onChange, _OnActionCallback? onAction}) {
     // In accesibilty mode, the user of this class is supposed to insert the
     // [domElement] on their own. Let's make sure they did.
     assert(domElement != null);
@@ -57,15 +57,15 @@ class SemanticsTextEditingStrategy extends DefaultTextEditingStrategy {
     _onChange = onChange;
     _onAction = onAction;
 
-    domElement.focus();
+    domElement!.focus();
   }
 
   @override
-  void setEditingState(EditingState editingState) {
+  void setEditingState(EditingState? editingState) {
     super.setEditingState(editingState);
 
     // Refocus after setting editing state.
-    domElement.focus();
+    domElement!.focus();
   }
 }
 
@@ -91,8 +91,8 @@ class TextField extends RoleManager {
     _setupDomElement();
   }
 
-  SemanticsTextEditingStrategy textEditingElement;
-  html.Element get _textFieldElement => textEditingElement.domElement;
+  SemanticsTextEditingStrategy? textEditingElement;
+  html.Element? get _textFieldElement => textEditingElement!.domElement;
 
   void _setupDomElement() {
     // On iOS, even though the semantic text field is transparent, the cursor
@@ -106,7 +106,7 @@ class TextField extends RoleManager {
       ..setAttribute('autocomplete', 'off')
       ..setAttribute('data-semantics-role', 'text-field');
 
-    _textFieldElement.style
+    _textFieldElement!.style
       ..position = 'absolute'
       // `top` and `left` are intentionally set to zero here.
       //
@@ -119,9 +119,9 @@ class TextField extends RoleManager {
       //   and size of the parent `<flt-semantics>` element.
       ..top = '0'
       ..left = '0'
-      ..width = '${semanticsObject.rect.width}px'
-      ..height = '${semanticsObject.rect.height}px';
-    semanticsObject.element.append(_textFieldElement);
+      ..width = '${semanticsObject.rect!.width}px'
+      ..height = '${semanticsObject.rect!.height}px';
+    semanticsObject.element.append(_textFieldElement!);
 
     switch (browserEngine) {
       case BrowserEngine.blink:
@@ -143,14 +143,14 @@ class TextField extends RoleManager {
   /// When in browser gesture mode, the focus is forwarded to the framework as
   /// a tap to initialize editing.
   void _initializeForBlink() {
-    _textFieldElement.addEventListener('focus', (html.Event event) {
+    _textFieldElement!.addEventListener('focus', (html.Event event) {
       if (semanticsObject.owner.gestureMode != GestureMode.browserGestures) {
         return;
       }
 
       textEditing.useCustomEditableElement(textEditingElement);
       ui.window
-          .onSemanticsAction(semanticsObject.id, ui.SemanticsAction.tap, null);
+          .onSemanticsAction!(semanticsObject.id, ui.SemanticsAction.tap, null);
     });
   }
 
@@ -160,18 +160,18 @@ class TextField extends RoleManager {
   /// events are present regardless of whether accessibility is enabled or not,
   /// this mode is always enabled.
   void _initializeForWebkit() {
-    num lastTouchStartOffsetX;
-    num lastTouchStartOffsetY;
+    num? lastTouchStartOffsetX;
+    num? lastTouchStartOffsetY;
 
-    _textFieldElement.addEventListener('touchstart', (html.Event event) {
+    _textFieldElement!.addEventListener('touchstart', (html.Event event) {
       textEditing.useCustomEditableElement(textEditingElement);
-      final html.TouchEvent touchEvent = event;
+      final html.TouchEvent touchEvent = event as TouchEvent;
       lastTouchStartOffsetX = touchEvent.changedTouches.last.client.x;
       lastTouchStartOffsetY = touchEvent.changedTouches.last.client.y;
     }, true);
 
-    _textFieldElement.addEventListener('touchend', (html.Event event) {
-      final html.TouchEvent touchEvent = event;
+    _textFieldElement!.addEventListener('touchend', (html.Event event) {
+      final html.TouchEvent touchEvent = event as TouchEvent;
 
       if (lastTouchStartOffsetX != null) {
         assert(lastTouchStartOffsetY != null);
@@ -187,7 +187,7 @@ class TextField extends RoleManager {
 
         if (offsetX * offsetX + offsetY * offsetY < kTouchSlop) {
           // Recognize it as a tap that requires a keyboard.
-          ui.window.onSemanticsAction(
+          ui.window.onSemanticsAction!(
               semanticsObject.id, ui.SemanticsAction.tap, null);
         }
       } else {
@@ -207,7 +207,7 @@ class TextField extends RoleManager {
 
   @override
   void dispose() {
-    _textFieldElement.remove();
+    _textFieldElement!.remove();
     textEditing.stopUsingCustomEditableElement();
   }
 }

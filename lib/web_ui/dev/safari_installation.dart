@@ -16,7 +16,7 @@ class SafariArgParser extends BrowserArgParser {
   /// The [SafariArgParser] singleton.
   static SafariArgParser get instance => _singletonInstance;
 
-  String _version;
+  String? _version;
 
   SafariArgParser._();
 
@@ -40,7 +40,7 @@ class SafariArgParser extends BrowserArgParser {
   }
 
   @override
-  String get version => _version;
+  String? get version => _version;
 }
 
 /// Returns the installation of Safari.
@@ -53,8 +53,8 @@ class SafariArgParser extends BrowserArgParser {
 // TODO(nurhan): user latest version to download and install the latest
 // technology preview.
 Future<BrowserInstallation> getOrInstallSafari(
-  String requestedVersion, {
-  StringSink infoLog,
+  String? requestedVersion, {
+  StringSink? infoLog,
 }) async {
 
   // These tests are aimed to run only on MacOs machines local or on LUCI.
@@ -71,7 +71,7 @@ Future<BrowserInstallation> getOrInstallSafari(
     infoLog.writeln('Using the system version that is already installed.');
     return BrowserInstallation(
       version: 'system',
-      executable: PlatformBinding.instance.getMacApplicationLauncher(),
+      executable: PlatformBinding.instance!.getMacApplicationLauncher(),
     );
   } else {
     infoLog.writeln('Unsupported version $requestedVersion.');

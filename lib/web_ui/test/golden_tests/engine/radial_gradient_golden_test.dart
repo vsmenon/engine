@@ -26,7 +26,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('$fileName.png', region: region, write: write);
     } finally {
@@ -39,8 +39,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   Future<void> _testGradient(String fileName, Shader shader,
@@ -51,7 +51,7 @@ void main() async {
     final Paint paint = Paint()..shader = shader;
     final Path path = Path();
     path.addRect(paintRect);
-    rc.drawPath(path, paint);
+    rc.drawPath(path, paint as SurfacePaint);
     await _checkScreenshot(rc, fileName);
   }
 

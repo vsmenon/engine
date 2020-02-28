@@ -32,20 +32,20 @@ class Keyboard {
   }
 
   /// The [Keyboard] singleton.
-  static Keyboard get instance => _instance;
-  static Keyboard _instance;
+  static Keyboard? get instance => _instance;
+  static Keyboard? _instance;
 
-  html.EventListener _keydownListener;
-  html.EventListener _keyupListener;
+  html.EventListener? _keydownListener;
+  html.EventListener? _keyupListener;
 
   Keyboard._() {
     _keydownListener = (html.Event event) {
-      _handleHtmlEvent(event);
+      _handleHtmlEvent(event as KeyboardEvent);
     };
     html.window.addEventListener('keydown', _keydownListener);
 
     _keyupListener = (html.Event event) {
-      _handleHtmlEvent(event);
+      _handleHtmlEvent(event as KeyboardEvent);
     };
     html.window.addEventListener('keyup', _keyupListener);
     registerHotRestartListener(() {
@@ -88,7 +88,7 @@ class Keyboard {
       'metaState': _getMetaState(event),
     };
 
-    ui.window.onPlatformMessage('flutter/keyevent',
+    ui.window.onPlatformMessage!('flutter/keyevent',
         _messageCodec.encodeMessage(eventData), _noopCallback);
   }
 
@@ -103,7 +103,7 @@ class Keyboard {
     }
     // Other keys should be ignored if triggered on a text field.
     return event.target is html.Element &&
-        HybridTextEditing.isEditingElement(event.target);
+        HybridTextEditing.isEditingElement(event.target as Element);
   }
 
   bool _shouldPreventDefault(html.KeyboardEvent event) {
@@ -143,4 +143,4 @@ int _getMetaState(html.KeyboardEvent event) {
   return metaState;
 }
 
-void _noopCallback(ByteData data) {}
+void _noopCallback(ByteData? data) {}

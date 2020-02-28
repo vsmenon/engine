@@ -5,8 +5,8 @@
 // @dart = 2.6
 part of engine;
 
-Future<void> Function(String, ByteData, ui.PlatformMessageResponseCallback) pluginMessageCallHandler;
+Future<void> Function(String, ByteData?, ui.PlatformMessageResponseCallback?)? pluginMessageCallHandler;
 
-void webOnlySetPluginHandler(Future<void> Function(String, ByteData, ui.PlatformMessageResponseCallback) handler) {
+void webOnlySetPluginHandler(Future<void> Function(String, ByteData?, ui.PlatformMessageResponseCallback?) handler) {
   pluginMessageCallHandler = handler;
 }

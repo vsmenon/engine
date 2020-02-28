@@ -36,7 +36,7 @@ abstract class SkiaObject {
   }
 
   /// The JavaScript object that's mapped onto a Skia C++ object in the WebAssembly heap.
-  js.JsObject get skiaObject {
+  js.JsObject? get skiaObject {
     if (_skiaObject == null) {
       _skiaObject = resurrect();
       SkiaObjects.manage(this);
@@ -45,7 +45,7 @@ abstract class SkiaObject {
   }
 
   /// Do not use this field outside this class. Use [skiaObject] instead.
-  js.JsObject _skiaObject;
+  js.JsObject? _skiaObject;
 
   /// Instantiates a new Skia-backed JavaScript object containing default
   /// values.
@@ -66,7 +66,7 @@ class SkiaObjects {
   //                beyond a single frame.
   @visibleForTesting
   static final List<SkiaObject> managedObjects = () {
-    window.rasterizer.addPostFrameCallback(postFrameCleanUp);
+    window.rasterizer!.addPostFrameCallback(postFrameCleanUp);
     return <SkiaObject>[];
   }();
 
@@ -88,7 +88,7 @@ class SkiaObjects {
 
     for (int i = 0; i < managedObjects.length; i++) {
       final SkiaObject object = managedObjects[i];
-      object._skiaObject.callMethod('delete');
+      object._skiaObject!.callMethod('delete');
       object._skiaObject = null;
     }
 
@@ -97,7 +97,7 @@ class SkiaObjects {
 }
 
 js.JsObject makeSkRect(ui.Rect rect) {
-  return js.JsObject(canvasKit['LTRBRect'],
+  return js.JsObject(canvasKit!['LTRBRect'],
       <double>[rect.left, rect.top, rect.right, rect.bottom]);
 }
 
@@ -125,14 +125,14 @@ ui.Rect fromSkRect(js.JsObject skRect) {
 }
 
 ui.TextPosition fromPositionWithAffinity(js.JsObject positionWithAffinity) {
-  if (positionWithAffinity['affinity'] == canvasKit['Affinity']['Upstream']) {
+  if (positionWithAffinity['affinity'] == canvasKit!['Affinity']['Upstream']) {
     return ui.TextPosition(
       offset: positionWithAffinity['pos'],
       affinity: ui.TextAffinity.upstream,
     );
   } else {
     assert(positionWithAffinity['affinity'] ==
-        canvasKit['Affinity']['Downstream']);
+        canvasKit!['Affinity']['Downstream']);
     return ui.TextPosition(
       offset: positionWithAffinity['pos'],
       affinity: ui.TextAffinity.downstream,
@@ -140,8 +140,8 @@ ui.TextPosition fromPositionWithAffinity(js.JsObject positionWithAffinity) {
   }
 }
 
-js.JsArray<double> makeSkPoint(ui.Offset point) {
-  final js.JsArray<double> skPoint = js.JsArray<double>();
+js.JsArray<double?> makeSkPoint(ui.Offset point) {
+  final js.JsArray<double?> skPoint = js.JsArray<double?>();
   skPoint.length = 2;
   skPoint[0] = point.dx;
   skPoint[1] = point.dy;
@@ -149,94 +149,94 @@ js.JsArray<double> makeSkPoint(ui.Offset point) {
 }
 
 /// Creates a point list using a typed buffer created by CanvasKit.Malloc.
-Float32List encodePointList(List<ui.Offset> points) {
+Float32List? encodePointList(List<ui.Offset> points) {
   assert(points != null);
   final int pointCount = points.length;
-  final Float32List result = canvasKit.callMethod('Malloc', <dynamic>[js.context['Float32Array'], pointCount * 2]);
+  final Float32List? result = canvasKit!.callMethod('Malloc', <dynamic>[js.context['Float32Array'], pointCount * 2]);
   for (int i = 0; i < pointCount; ++i) {
     final int xIndex = i * 2;
     final int yIndex = xIndex + 1;
     final ui.Offset point = points[i];
     assert(_offsetIsValid(point));
-    result[xIndex] = point.dx;
-    result[yIndex] = point.dy;
+    result![xIndex] = point.dx!;
+    result[yIndex] = point.dy!;
   }
   return result;
 }
 
-js.JsObject makeSkPointMode(ui.PointMode pointMode) {
+js.JsObject? makeSkPointMode(ui.PointMode pointMode) {
   switch (pointMode) {
     case ui.PointMode.points:
-      return canvasKit['PointMode']['Points'];
+      return canvasKit!['PointMode']['Points'];
     case ui.PointMode.lines:
-      return canvasKit['PointMode']['Lines'];
+      return canvasKit!['PointMode']['Lines'];
     case ui.PointMode.polygon:
-      return canvasKit['PointMode']['Polygon'];
+      return canvasKit!['PointMode']['Polygon'];
     default:
       throw StateError('Unrecognized point mode $pointMode');
   }
 }
 
-js.JsObject makeSkBlendMode(ui.BlendMode blendMode) {
+js.JsObject? makeSkBlendMode(ui.BlendMode? blendMode) {
   switch (blendMode) {
     case ui.BlendMode.clear:
-      return canvasKit['BlendMode']['Clear'];
+      return canvasKit!['BlendMode']['Clear'];
     case ui.BlendMode.src:
-      return canvasKit['BlendMode']['Src'];
+      return canvasKit!['BlendMode']['Src'];
     case ui.BlendMode.dst:
-      return canvasKit['BlendMode']['Dst'];
+      return canvasKit!['BlendMode']['Dst'];
     case ui.BlendMode.srcOver:
-      return canvasKit['BlendMode']['SrcOver'];
+      return canvasKit!['BlendMode']['SrcOver'];
     case ui.BlendMode.dstOver:
-      return canvasKit['BlendMode']['DstOver'];
+      return canvasKit!['BlendMode']['DstOver'];
     case ui.BlendMode.srcIn:
-      return canvasKit['BlendMode']['SrcIn'];
+      return canvasKit!['BlendMode']['SrcIn'];
     case ui.BlendMode.dstIn:
-      return canvasKit['BlendMode']['DstIn'];
+      return canvasKit!['BlendMode']['DstIn'];
     case ui.BlendMode.srcOut:
-      return canvasKit['BlendMode']['SrcOut'];
+      return canvasKit!['BlendMode']['SrcOut'];
     case ui.BlendMode.dstOut:
-      return canvasKit['BlendMode']['DstOut'];
+      return canvasKit!['BlendMode']['DstOut'];
     case ui.BlendMode.srcATop:
-      return canvasKit['BlendMode']['SrcATop'];
+      return canvasKit!['BlendMode']['SrcATop'];
     case ui.BlendMode.dstATop:
-      return canvasKit['BlendMode']['DstATop'];
+      return canvasKit!['BlendMode']['DstATop'];
     case ui.BlendMode.xor:
-      return canvasKit['BlendMode']['Xor'];
+      return canvasKit!['BlendMode']['Xor'];
     case ui.BlendMode.plus:
-      return canvasKit['BlendMode']['Plus'];
+      return canvasKit!['BlendMode']['Plus'];
     case ui.BlendMode.modulate:
-      return canvasKit['BlendMode']['Modulate'];
+      return canvasKit!['BlendMode']['Modulate'];
     case ui.BlendMode.screen:
-      return canvasKit['BlendMode']['Screen'];
+      return canvasKit!['BlendMode']['Screen'];
     case ui.BlendMode.overlay:
-      return canvasKit['BlendMode']['Overlay'];
+      return canvasKit!['BlendMode']['Overlay'];
     case ui.BlendMode.darken:
-      return canvasKit['BlendMode']['Darken'];
+      return canvasKit!['BlendMode']['Darken'];
     case ui.BlendMode.lighten:
-      return canvasKit['BlendMode']['Lighten'];
+      return canvasKit!['BlendMode']['Lighten'];
     case ui.BlendMode.colorDodge:
-      return canvasKit['BlendMode']['ColorDodge'];
+      return canvasKit!['BlendMode']['ColorDodge'];
     case ui.BlendMode.colorBurn:
-      return canvasKit['BlendMode']['ColorBurn'];
+      return canvasKit!['BlendMode']['ColorBurn'];
     case ui.BlendMode.hardLight:
-      return canvasKit['BlendMode']['HardLight'];
+      return canvasKit!['BlendMode']['HardLight'];
     case ui.BlendMode.softLight:
-      return canvasKit['BlendMode']['SoftLight'];
+      return canvasKit!['BlendMode']['SoftLight'];
     case ui.BlendMode.difference:
-      return canvasKit['BlendMode']['Difference'];
+      return canvasKit!['BlendMode']['Difference'];
     case ui.BlendMode.exclusion:
-      return canvasKit['BlendMode']['Exclusion'];
+      return canvasKit!['BlendMode']['Exclusion'];
     case ui.BlendMode.multiply:
-      return canvasKit['BlendMode']['Multiply'];
+      return canvasKit!['BlendMode']['Multiply'];
     case ui.BlendMode.hue:
-      return canvasKit['BlendMode']['Hue'];
+      return canvasKit!['BlendMode']['Hue'];
     case ui.BlendMode.saturation:
-      return canvasKit['BlendMode']['Saturation'];
+      return canvasKit!['BlendMode']['Saturation'];
     case ui.BlendMode.color:
-      return canvasKit['BlendMode']['Color'];
+      return canvasKit!['BlendMode']['Color'];
     case ui.BlendMode.luminosity:
-      return canvasKit['BlendMode']['Luminosity'];
+      return canvasKit!['BlendMode']['Luminosity'];
     default:
       return null;
   }
@@ -251,12 +251,12 @@ const List<int> _skMatrixIndexToMatrix4Index = <int>[
 
 /// Converts a 4x4 Flutter matrix (represented as a [Float64List]) to an
 /// SkMatrix, which is a 3x3 transform matrix.
-js.JsArray<double> makeSkMatrix(Float64List matrix4) {
+js.JsArray<double> makeSkMatrix(Float64List? matrix4) {
   final js.JsArray<double> skMatrix = js.JsArray<double>();
   skMatrix.length = 9;
   for (int i = 0; i < 9; ++i) {
     final int matrix4Index = _skMatrixIndexToMatrix4Index[i];
-    if (matrix4Index < matrix4.length)
+    if (matrix4Index < matrix4!.length)
       skMatrix[i] = matrix4[matrix4Index];
     else
       skMatrix[i] = 0.0;
@@ -276,7 +276,7 @@ final js.JsArray<double> _kDefaultColorStops = () {
 /// Converts a list of color stops into a Skia-compatible JS array or color stops.
 ///
 /// In Flutter `null` means two color stops `[0, 1]` that in Skia must be specified explicitly.
-js.JsArray<double> makeSkiaColorStops(List<double> colorStops) {
+js.JsArray<double> makeSkiaColorStops(List<double>? colorStops) {
   if (colorStops == null) {
     return _kDefaultColorStops;
   }
@@ -316,7 +316,7 @@ void drawSkShadow(
   });
 
   final js.JsObject tonalColors =
-      canvasKit.callMethod('computeTonalColors', <js.JsObject>[inTonalColors]);
+      canvasKit!.callMethod('computeTonalColors', <js.JsObject>[inTonalColors]);
 
   skCanvas.callMethod('drawShadow', <dynamic>[
     path._skPath,

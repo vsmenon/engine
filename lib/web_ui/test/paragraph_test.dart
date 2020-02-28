@@ -8,7 +8,7 @@ import 'package:ui/ui.dart';
 
 import 'package:test/test.dart';
 
-void testEachMeasurement(String description, VoidCallback body, {bool skip}) {
+void testEachMeasurement(String description, VoidCallback body, {bool? skip}) {
   test('$description (dom measurement)', () async {
     try {
       TextMeasurementService.initialize(rulerCacheCapacity: 2);
@@ -54,7 +54,7 @@ void main() async {
       expect(paragraph.alphabeticBaseline, closeTo(fontSize * .8, 0.001));
       expect(
         paragraph.ideographicBaseline,
-        closeTo(paragraph.alphabeticBaseline * kAhemBaselineRatio, 3.0),
+        closeTo(paragraph.alphabeticBaseline! * kAhemBaselineRatio, 3.0),
       );
     }
   });
@@ -81,7 +81,7 @@ void main() async {
       expect(paragraph.alphabeticBaseline, closeTo(fontSize * .8, 0.001));
       expect(
         paragraph.ideographicBaseline,
-        closeTo(paragraph.alphabeticBaseline * kAhemBaselineRatio, 3.0),
+        closeTo(paragraph.alphabeticBaseline! * kAhemBaselineRatio, 3.0),
       );
     }
   });

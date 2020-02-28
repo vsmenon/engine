@@ -20,9 +20,9 @@ part of ui;
 /// This iterable does not memoize. Callers who need to traverse the list
 /// multiple times, or who need to randomly access elements of the list, should
 /// use [toList] on this object.
-abstract class PathMetrics extends collection.IterableBase<PathMetric> {
+abstract class PathMetrics extends collection.IterableBase<PathMetric?> {
   @override
-  Iterator<PathMetric> get iterator;
+  Iterator<PathMetric?> get iterator;
 }
 
 /// Used by [PathMetrics] to track iteration from one segment of a path to the
@@ -80,14 +80,14 @@ abstract class PathMetric {
   /// Returns null if the contour has zero [length].
   ///
   /// The distance is clamped to the [length] of the current contour.
-  Tangent getTangentForOffset(double distance);
+  Tangent? getTangentForOffset(double distance);
 
   /// Given a start and stop distance, return the intervening segment(s).
   ///
   /// `start` and `end` are pinned to legal values (0..[length])
   /// Returns null if the segment is 0 length or `start` > `stop`.
   /// Begin the segment with a moveTo if `startWithMoveTo` is true.
-  Path extractPath(double start, double end, {bool startWithMoveTo = true});
+  Path? extractPath(double start, double end, {bool startWithMoveTo = true});
 
   /// Whether the contour is closed.
   ///
@@ -144,5 +144,5 @@ class Tangent {
   /// pointing upward toward the positive y-axis, i.e. in a counter-clockwise
   /// direction.
   // flip the sign to be consistent with [Path.arcTo]'s `sweepAngle`
-  double get angle => -math.atan2(vector.dy, vector.dx);
+  double get angle => -math.atan2(vector.dy!, vector.dx!);
 }

@@ -9,46 +9,46 @@ part of engine;
 ///
 /// The `SkPath` is required for `SkCanvas` methods which take a path.
 class SkPath implements ui.Path {
-  js.JsObject _skPath;
+  js.JsObject? _skPath;
 
   SkPath() {
-    _skPath = js.JsObject(canvasKit['SkPath']);
+    _skPath = js.JsObject(canvasKit!['SkPath']);
     fillType = ui.PathFillType.nonZero;
   }
 
   SkPath.from(SkPath other) {
-    _skPath = js.JsObject(canvasKit['SkPath'], <js.JsObject>[other._skPath]);
+    _skPath = js.JsObject(canvasKit!['SkPath'], <js.JsObject?>[other._skPath]);
     fillType = other.fillType;
   }
 
-  SkPath._fromSkPath(js.JsObject skPath) : _skPath = skPath;
+  SkPath._fromSkPath(js.JsObject? skPath) : _skPath = skPath;
 
-  ui.PathFillType _fillType;
-
-  @override
-  ui.PathFillType get fillType => _fillType;
+  ui.PathFillType? _fillType;
 
   @override
-  set fillType(ui.PathFillType newFillType) {
+  ui.PathFillType? get fillType => _fillType;
+
+  @override
+  set fillType(ui.PathFillType? newFillType) {
     _fillType = newFillType;
 
-    js.JsObject skFillType;
+    js.JsObject? skFillType;
     switch (newFillType) {
       case ui.PathFillType.nonZero:
-        skFillType = canvasKit['FillType']['Winding'];
+        skFillType = canvasKit!['FillType']['Winding'];
         break;
       case ui.PathFillType.evenOdd:
-        skFillType = canvasKit['FillType']['EvenOdd'];
+        skFillType = canvasKit!['FillType']['EvenOdd'];
         break;
     }
 
-    _skPath.callMethod('setFillType', <js.JsObject>[skFillType]);
+    _skPath!.callMethod('setFillType', <js.JsObject?>[skFillType]);
   }
 
   @override
   void addArc(ui.Rect oval, double startAngle, double sweepAngle) {
     const double toDegrees = 180.0 / math.pi;
-    _skPath.callMethod('addArc', <dynamic>[
+    _skPath!.callMethod('addArc', <dynamic>[
       makeSkRect(oval),
       startAngle * toDegrees,
       sweepAngle * toDegrees,
@@ -57,22 +57,22 @@ class SkPath implements ui.Path {
 
   @override
   void addOval(ui.Rect oval) {
-    _skPath.callMethod('addOval', <dynamic>[makeSkRect(oval), false, 1]);
+    _skPath!.callMethod('addOval', <dynamic>[makeSkRect(oval), false, 1]);
   }
 
   @override
-  void addPath(ui.Path path, ui.Offset offset, {Float64List matrix4}) {
+  void addPath(ui.Path? path, ui.Offset offset, {Float64List? matrix4}) {
     List<double> skMatrix;
     if (matrix4 == null) {
       skMatrix = makeSkMatrix(
-          Matrix4.translationValues(offset.dx, offset.dy, 0.0).storage);
+          Matrix4.translationValues(offset.dx!, offset.dy!, 0.0).storage);
     } else {
       skMatrix = makeSkMatrix(matrix4);
       skMatrix[2] += offset.dx;
       skMatrix[5] += offset.dy;
     }
-    final SkPath otherPath = path;
-    _skPath.callMethod('addPath', <dynamic>[
+    final SkPath otherPath = path as SkPath;
+    _skPath!.callMethod('addPath', <dynamic>[
       otherPath._skPath,
       skMatrix[0],
       skMatrix[1],
@@ -90,13 +90,13 @@ class SkPath implements ui.Path {
   @override
   void addPolygon(List<ui.Offset> points, bool close) {
     assert(points != null);
-    final Float32List encodedPoints = encodePointList(points);
-    _skPath.callMethod('addPoly', <dynamic>[encodedPoints, close]);
+    final Float32List? encodedPoints = encodePointList(points);
+    _skPath!.callMethod('addPoly', <dynamic>[encodedPoints, close]);
   }
 
   @override
-  void addRRect(ui.RRect rrect) {
-    final js.JsObject skRect = makeSkRect(rrect.outerRect);
+  void addRRect(ui.RRect? rrect) {
+    final js.JsObject skRect = makeSkRect(rrect!.outerRect);
     final List<double> radii = <double>[
       rrect.tlRadiusX,
       rrect.tlRadiusY,
@@ -107,20 +107,20 @@ class SkPath implements ui.Path {
       rrect.blRadiusX,
       rrect.blRadiusY,
     ];
-    _skPath.callMethod('addRoundRect',
+    _skPath!.callMethod('addRoundRect',
         <dynamic>[skRect, js.JsArray<double>.from(radii), false]);
   }
 
   @override
   void addRect(ui.Rect rect) {
-    _skPath.callMethod('addRect', <js.JsObject>[makeSkRect(rect)]);
+    _skPath!.callMethod('addRect', <js.JsObject>[makeSkRect(rect)]);
   }
 
   @override
   void arcTo(
       ui.Rect rect, double startAngle, double sweepAngle, bool forceMoveTo) {
     const double toDegrees = 180.0 / math.pi;
-    _skPath.callMethod('arcTo', <dynamic>[
+    _skPath!.callMethod('arcTo', <dynamic>[
       makeSkRect(rect),
       startAngle * toDegrees,
       sweepAngle * toDegrees,
@@ -134,7 +134,7 @@ class SkPath implements ui.Path {
       double rotation = 0.0,
       bool largeArc = false,
       bool clockwise = true}) {
-    _skPath.callMethod('arcTo', <dynamic>[
+    _skPath!.callMethod('arcTo', <dynamic>[
       radius.x,
       radius.y,
       rotation,
@@ -147,7 +147,7 @@ class SkPath implements ui.Path {
 
   @override
   void close() {
-    _skPath.callMethod('close');
+    _skPath!.callMethod('close');
   }
 
   @override
@@ -156,34 +156,34 @@ class SkPath implements ui.Path {
   }
 
   @override
-  void conicTo(double x1, double y1, double x2, double y2, double w) {
-    _skPath.callMethod('conicTo', <double>[x1, y1, x2, y2, w]);
+  void conicTo(double? x1, double? y1, double? x2, double? y2, double w) {
+    _skPath!.callMethod('conicTo', <double?>[x1, y1, x2, y2, w]);
   }
 
   @override
-  bool contains(ui.Offset point) {
-    return _skPath.callMethod('contains', <double>[point.dx, point.dy]);
+  bool? contains(ui.Offset point) {
+    return _skPath!.callMethod('contains', <double?>[point.dx, point.dy]);
   }
 
   @override
   void cubicTo(
       double x1, double y1, double x2, double y2, double x3, double y3) {
-    _skPath.callMethod('cubicTo', <double>[x1, y1, x2, y2, x3, y3]);
+    _skPath!.callMethod('cubicTo', <double>[x1, y1, x2, y2, x3, y3]);
   }
 
   @override
-  void extendWithPath(ui.Path path, ui.Offset offset, {Float64List matrix4}) {
+  void extendWithPath(ui.Path path, ui.Offset offset, {Float64List? matrix4}) {
     List<double> skMatrix;
     if (matrix4 == null) {
       skMatrix = makeSkMatrix(
-          Matrix4.translationValues(offset.dx, offset.dy, 0.0).storage);
+          Matrix4.translationValues(offset.dx!, offset.dy!, 0.0).storage);
     } else {
       skMatrix = makeSkMatrix(matrix4);
       skMatrix[2] += offset.dx;
       skMatrix[5] += offset.dy;
     }
-    final SkPath otherPath = path;
-    _skPath.callMethod('addPath', <dynamic>[
+    final SkPath otherPath = path as SkPath;
+    _skPath!.callMethod('addPath', <dynamic>[
       otherPath._skPath,
       skMatrix[0],
       skMatrix[1],
@@ -200,23 +200,23 @@ class SkPath implements ui.Path {
 
   @override
   ui.Rect getBounds() {
-    final js.JsObject bounds = _skPath.callMethod('getBounds');
+    final js.JsObject bounds = _skPath!.callMethod('getBounds');
     return fromSkRect(bounds);
   }
 
   @override
-  void lineTo(double x, double y) {
-    _skPath.callMethod('lineTo', <double>[x, y]);
+  void lineTo(double? x, double? y) {
+    _skPath!.callMethod('lineTo', <double?>[x, y]);
   }
 
   @override
-  void moveTo(double x, double y) {
-    _skPath.callMethod('moveTo', <double>[x, y]);
+  void moveTo(double? x, double? y) {
+    _skPath!.callMethod('moveTo', <double?>[x, y]);
   }
 
   @override
   void quadraticBezierTo(double x1, double y1, double x2, double y2) {
-    _skPath.callMethod('quadTo', <double>[x1, y1, x2, y2]);
+    _skPath!.callMethod('quadTo', <double>[x1, y1, x2, y2]);
   }
 
   @override
@@ -225,7 +225,7 @@ class SkPath implements ui.Path {
       double rotation = 0.0,
       bool largeArc = false,
       bool clockwise = true}) {
-    _skPath.callMethod('rArcTo', <dynamic>[
+    _skPath!.callMethod('rArcTo', <dynamic>[
       radius.x,
       radius.y,
       rotation,
@@ -238,42 +238,42 @@ class SkPath implements ui.Path {
 
   @override
   void relativeConicTo(double x1, double y1, double x2, double y2, double w) {
-    _skPath.callMethod('rConicTo', <double>[x1, y1, x2, y2, w]);
+    _skPath!.callMethod('rConicTo', <double>[x1, y1, x2, y2, w]);
   }
 
   @override
   void relativeCubicTo(
       double x1, double y1, double x2, double y2, double x3, double y3) {
-    _skPath.callMethod('rCubicTo', <double>[x1, y1, x2, y2, x3, y3]);
+    _skPath!.callMethod('rCubicTo', <double>[x1, y1, x2, y2, x3, y3]);
   }
 
   @override
   void relativeLineTo(double dx, double dy) {
-    _skPath.callMethod('rLineTo', <double>[dx, dy]);
+    _skPath!.callMethod('rLineTo', <double>[dx, dy]);
   }
 
   @override
   void relativeMoveTo(double dx, double dy) {
-    _skPath.callMethod('rMoveTo', <double>[dx, dy]);
+    _skPath!.callMethod('rMoveTo', <double>[dx, dy]);
   }
 
   @override
   void relativeQuadraticBezierTo(double x1, double y1, double x2, double y2) {
-    _skPath.callMethod('rQuadTo', <double>[x1, y1, x2, y2]);
+    _skPath!.callMethod('rQuadTo', <double>[x1, y1, x2, y2]);
   }
 
   @override
   void reset() {
-    _skPath.callMethod('reset');
+    _skPath!.callMethod('reset');
   }
 
   @override
   ui.Path shift(ui.Offset offset) {
     // Since CanvasKit does not expose `SkPath.offset`, create a copy of this
     // path and call `transform` on it.
-    final js.JsObject newPath = _skPath.callMethod('copy');
+    final js.JsObject newPath = _skPath!.callMethod('copy');
     newPath.callMethod('transform',
-        <double>[1.0, 0.0, offset.dx, 0.0, 1.0, offset.dy, 0.0, 0.0, 0.0]);
+        <double?>[1.0, 0.0, offset.dx, 0.0, 1.0, offset.dy, 0.0, 0.0, 0.0]);
     return SkPath._fromSkPath(newPath);
   }
 
@@ -282,29 +282,29 @@ class SkPath implements ui.Path {
     ui.Path uiPath1,
     ui.Path uiPath2,
   ) {
-    final SkPath path1 = uiPath1;
-    final SkPath path2 = uiPath2;
-    js.JsObject pathOp;
+    final SkPath path1 = uiPath1 as SkPath;
+    final SkPath path2 = uiPath2 as SkPath;
+    js.JsObject? pathOp;
     switch (operation) {
       case ui.PathOperation.difference:
-        pathOp = canvasKit['PathOp']['Difference'];
+        pathOp = canvasKit!['PathOp']['Difference'];
         break;
       case ui.PathOperation.intersect:
-        pathOp = canvasKit['PathOp']['Intersect'];
+        pathOp = canvasKit!['PathOp']['Intersect'];
         break;
       case ui.PathOperation.union:
-        pathOp = canvasKit['PathOp']['Union'];
+        pathOp = canvasKit!['PathOp']['Union'];
         break;
       case ui.PathOperation.xor:
-        pathOp = canvasKit['PathOp']['XOR'];
+        pathOp = canvasKit!['PathOp']['XOR'];
         break;
       case ui.PathOperation.reverseDifference:
-        pathOp = canvasKit['PathOp']['ReverseDifference'];
+        pathOp = canvasKit!['PathOp']['ReverseDifference'];
         break;
     }
-    final js.JsObject newPath = canvasKit.callMethod(
+    final js.JsObject? newPath = canvasKit!.callMethod(
       'MakePathFromOp',
-      <js.JsObject>[
+      <js.JsObject?>[
         path1._skPath,
         path2._skPath,
         pathOp,
@@ -315,12 +315,12 @@ class SkPath implements ui.Path {
 
   @override
   ui.Path transform(Float64List matrix4) {
-    final js.JsObject newPath = _skPath.callMethod('copy');
+    final js.JsObject newPath = _skPath!.callMethod('copy');
     newPath.callMethod('transform', <js.JsArray>[makeSkMatrix(matrix4)]);
     return SkPath._fromSkPath(newPath);
   }
 
-  String toSvgString() {
-    return _skPath.callMethod('toSVGString');
+  String? toSvgString() {
+    return _skPath!.callMethod('toSVGString');
   }
 }

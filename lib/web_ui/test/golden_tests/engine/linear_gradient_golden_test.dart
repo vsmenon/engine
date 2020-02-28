@@ -26,7 +26,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('$fileName.png', region: region);
     } finally {
@@ -39,8 +39,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   test('Should draw linear gradient using rectangle.', () async {
@@ -51,7 +51,7 @@ void main() async {
         Offset(shaderRect.left, shaderRect.top),
         Offset(shaderRect.right, shaderRect.bottom),
         [Color(0xFFcfdfd2), Color(0xFF042a85)]);
-    rc.drawRect(shaderRect, paint);
+    rc.drawRect(shaderRect, paint as SurfacePaint);
     expect(rc.hasArbitraryPaint, isTrue);
     await _checkScreenshot(rc, 'linear_gradient_rect');
   });
@@ -65,7 +65,7 @@ void main() async {
         Offset(shaderRect.left, shaderRect.top),
         Offset(shaderRect.right, shaderRect.bottom),
         [Color(0xFFcfdfd2), Color(0xFF042a85)]);
-    rc.drawRRect(RRect.fromRectAndRadius(shaderRect, Radius.circular(16)), paint);
+    rc.drawRRect(RRect.fromRectAndRadius(shaderRect, Radius.circular(16)), paint as SurfacePaint);
     expect(rc.hasArbitraryPaint, isTrue);
     await _checkScreenshot(rc, 'linear_gradient_rounded_rect');
   });

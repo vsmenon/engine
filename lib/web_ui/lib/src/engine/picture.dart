@@ -9,11 +9,11 @@ part of engine;
 class EnginePictureRecorder implements ui.PictureRecorder {
   EnginePictureRecorder();
 
-  RecordingCanvas _canvas;
-  ui.Rect cullRect;
+  RecordingCanvas? _canvas;
+  ui.Rect? cullRect;
   bool _isRecording = false;
 
-  RecordingCanvas beginRecording(ui.Rect bounds) {
+  RecordingCanvas? beginRecording(ui.Rect? bounds) {
     assert(!_isRecording);
     cullRect = bounds;
     _isRecording = true;
@@ -25,7 +25,7 @@ class EnginePictureRecorder implements ui.PictureRecorder {
   bool get isRecording => _isRecording;
 
   @override
-  ui.Picture endRecording() {
+  ui.Picture? endRecording() {
     // Returning null is what the flutter engine does:
     // lib/ui/painting/picture_recorder.cc
     if (!_isRecording) {
@@ -47,7 +47,7 @@ class EnginePicture implements ui.Picture {
   @override
   Future<ui.Image> toImage(int width, int height) async {
     final BitmapCanvas canvas = BitmapCanvas(ui.Rect.fromLTRB(0, 0, width.toDouble(), height.toDouble()));
-    recordingCanvas.apply(canvas);
+    recordingCanvas!.apply(canvas);
     final String imageDataUrl = canvas.toDataUrl();
     final html.ImageElement imageElement = html.ImageElement()
       ..src = imageDataUrl
@@ -66,6 +66,6 @@ class EnginePicture implements ui.Picture {
   @override
   int get approximateBytesUsed => 0;
 
-  final RecordingCanvas recordingCanvas;
-  final ui.Rect cullRect;
+  final RecordingCanvas? recordingCanvas;
+  final ui.Rect? cullRect;
 }

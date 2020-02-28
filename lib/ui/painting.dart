@@ -49,7 +49,7 @@ bool _matrix4IsValid(Float64List matrix4) {
 
 bool _radiusIsValid(Radius radius) {
   assert(radius != null, 'Radius argument was null.');
-  assert(!radius.x.isNaN && !radius.y.isNaN, 'Radius argument contained a NaN value.');
+  assert(!radius.x!.isNaN && !radius.y!.isNaN, 'Radius argument contained a NaN value.');
   return true;
 }
 
@@ -257,19 +257,19 @@ class Color {
   ///
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
-  static Color lerp(Color a, Color b, double t) {
+  static Color? lerp(Color a, Color b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null)
-      return _scaleAlpha(b, t);
-    if (b == null)
-      return _scaleAlpha(a, 1.0 - t);
+    /* if (a == null)
+      return _scaleAlpha(b, t); */
+    /* if (b == null)
+      return _scaleAlpha(a, 1.0 - t); */
     return Color.fromARGB(
-      lerpDouble(a.alpha, b.alpha, t).toInt().clamp(0, 255) as int,
-      lerpDouble(a.red, b.red, t).toInt().clamp(0, 255) as int,
-      lerpDouble(a.green, b.green, t).toInt().clamp(0, 255) as int,
-      lerpDouble(a.blue, b.blue, t).toInt().clamp(0, 255) as int,
+      lerpDouble(a.alpha, b.alpha, t)!.toInt().clamp(0, 255) as int,
+      lerpDouble(a.red, b.red, t)!.toInt().clamp(0, 255) as int,
+      lerpDouble(a.green, b.green, t)!.toInt().clamp(0, 255) as int,
+      lerpDouble(a.blue, b.blue, t)!.toInt().clamp(0, 255) as int,
     );
   }
 
@@ -1087,7 +1087,7 @@ class Paint {
   static const int _kDataByteCount = 56;
 
   // Binary format must match the deserialization code in paint.cc.
-  List<dynamic> _objects;
+  List<dynamic>? _objects;
   static const int _kShaderIndex = 0;
   static const int _kColorFilterIndex = 1;
   static const int _kImageFilterIndex = 2;
@@ -1285,7 +1285,7 @@ class Paint {
   /// drawn but before it has been composited into the image.
   ///
   /// See [MaskFilter] for details.
-  MaskFilter get maskFilter {
+  MaskFilter? get maskFilter {
     switch (_data.getInt32(_kMaskFilterOffset, _kFakeHostEndian)) {
       case MaskFilter._TypeNone:
         return null;
@@ -1298,11 +1298,11 @@ class Paint {
     return null;
   }
   set maskFilter(MaskFilter value) {
-    if (value == null) {
+    /* if (value == null) {
       _data.setInt32(_kMaskFilterOffset, MaskFilter._TypeNone, _kFakeHostEndian);
       _data.setInt32(_kMaskFilterBlurStyleOffset, 0, _kFakeHostEndian);
       _data.setFloat32(_kMaskFilterSigmaOffset, 0.0, _kFakeHostEndian);
-    } else {
+    } else */ {
       // For now we only support one kind of MaskFilter, so we don't need to
       // check what the type is if it's not null.
       _data.setInt32(_kMaskFilterOffset, MaskFilter._TypeBlur, _kFakeHostEndian);
@@ -1336,14 +1336,14 @@ class Paint {
   ///  * [ImageShader], a shader that tiles an [Image].
   ///  * [colorFilter], which overrides [shader].
   ///  * [color], which is used if [shader] and [colorFilter] are null.
-  Shader get shader {
+  Shader? get shader {
     if (_objects == null)
       return null;
-    return _objects[_kShaderIndex] as Shader;
+    return _objects![_kShaderIndex] as Shader?;
   }
   set shader(Shader value) {
     _objects ??= List<dynamic>(_kObjectCount);
-    _objects[_kShaderIndex] = value;
+    _objects![_kShaderIndex] = value;
   }
 
   /// A color filter to apply when a shape is drawn or when a layer is
@@ -1352,25 +1352,25 @@ class Paint {
   /// See [ColorFilter] for details.
   ///
   /// When a shape is being drawn, [colorFilter] overrides [color] and [shader].
-  ColorFilter get colorFilter {
-    if (_objects == null || _objects[_kColorFilterIndex] == null) {
+  ColorFilter? get colorFilter {
+    if (_objects == null || _objects![_kColorFilterIndex] == null) {
       return null;
     }
-    return _objects[_kColorFilterIndex].creator as ColorFilter;
+    return _objects![_kColorFilterIndex].creator as ColorFilter?;
   }
 
   set colorFilter(ColorFilter value) {
-    final _ColorFilter nativeFilter = value?._toNativeColorFilter();
+    final _ColorFilter? nativeFilter = value._toNativeColorFilter();
     if (nativeFilter == null) {
       if (_objects != null) {
-        _objects[_kColorFilterIndex] = null;
+        _objects![_kColorFilterIndex] = null;
       }
     } else {
       if (_objects == null) {
         _objects = List<dynamic>(_kObjectCount);
-        _objects[_kColorFilterIndex] = nativeFilter;
-      } else if (_objects[_kColorFilterIndex]?.creator != value) {
-        _objects[_kColorFilterIndex] = nativeFilter;
+        _objects![_kColorFilterIndex] = nativeFilter;
+      } else if (_objects![_kColorFilterIndex]?.creator != value) {
+        _objects![_kColorFilterIndex] = nativeFilter;
       }
     }
   }
@@ -1397,21 +1397,21 @@ class Paint {
   /// See also:
   ///
   ///  * [MaskFilter], which is used for drawing geometry.
-  ImageFilter get imageFilter {
-    if (_objects == null || _objects[_kImageFilterIndex] == null)
+  ImageFilter? get imageFilter {
+    if (_objects == null || _objects![_kImageFilterIndex] == null)
       return null;
-    return _objects[_kImageFilterIndex].creator as ImageFilter;
+    return _objects![_kImageFilterIndex].creator as ImageFilter?;
   }
 
   set imageFilter(ImageFilter value) {
-    if (value == null) {
+    /* if (value == null) {
       if (_objects != null) {
         _objects[_kImageFilterIndex] = null;
       }
-    } else {
+    } else */ {
       _objects ??= List<dynamic>(_kObjectCount);
-      if (_objects[_kImageFilterIndex]?.creator != value) {
-        _objects[_kImageFilterIndex] = value._toNativeImageFilter();
+      if (_objects![_kImageFilterIndex]?.creator != value) {
+        _objects![_kImageFilterIndex] = value._toNativeImageFilter();
       }
     }
   }
@@ -1478,10 +1478,10 @@ class Paint {
       semicolon = '; ';
     }
     if (color != const Color(_kColorDefault)) {
-      if (color != null)
-        result.write('$semicolon$color');
+      /* if (color != null)
+        */ result.write('$semicolon$color'); /*
       else
-        result.write('${semicolon}no color');
+        result.write('${semicolon}no color'); */
       semicolon = '; ';
     }
     if (blendMode.index != _kBlendModeDefault) {
@@ -1574,7 +1574,7 @@ class _ImageInfo {
   @pragma('vm:entry-point', 'get')
   int format;
   @pragma('vm:entry-point', 'get')
-  int rowBytes;
+  int? rowBytes;
 }
 
 /// Opaque handle to raw decoded image data (pixels).
@@ -1613,7 +1613,7 @@ class Image extends NativeFieldWrapperClass2 {
   Future<ByteData> toByteData({ImageByteFormat format = ImageByteFormat.rawRgba}) {
     return _futurize((_Callback<ByteData> callback) {
       return _toByteData(format.index, (Uint8List encoded) {
-        callback(encoded?.buffer?.asByteData());
+        callback(encoded.buffer.asByteData()!);
       });
     });
   }
@@ -1713,8 +1713,8 @@ class Codec extends NativeFieldWrapperClass2 {
 /// The returned future can complete with an error if the image decoding has
 /// failed.
 Future<Codec> instantiateImageCodec(Uint8List list, {
-  int targetWidth,
-  int targetHeight,
+  int? targetWidth,
+  int? targetHeight,
 }) {
   return _futurize(
     (_Callback<Codec> callback) => _instantiateImageCodec(list, callback, null, targetWidth ?? _kDoNotResizeDimension, targetHeight ?? _kDoNotResizeDimension)
@@ -1732,7 +1732,7 @@ Future<Codec> instantiateImageCodec(Uint8List list, {
 /// If both are equal to [_kDoNotResizeDimension], then the image maintains its real size.
 ///
 /// Returns an error message if the instantiation has failed, null otherwise.
-String _instantiateImageCodec(Uint8List list, _Callback<Codec> callback, _ImageInfo imageInfo, int targetWidth, int targetHeight)
+String _instantiateImageCodec(Uint8List list, _Callback<Codec> callback, _ImageInfo? imageInfo, int targetWidth, int targetHeight)
   native 'instantiateImageCodec';
 
 /// Loads a single image frame from a byte array into an [Image] object.
@@ -1770,7 +1770,7 @@ void decodeImageFromPixels(
   int height,
   PixelFormat format,
   ImageDecoderCallback callback,
-  {int rowBytes, int targetWidth, int targetHeight}
+  {int? rowBytes, int? targetWidth, int? targetHeight}
 ) {
   final _ImageInfo imageInfo = _ImageInfo(width, height, format.index, rowBytes);
   final Future<Codec> codecFuture = _futurize(
@@ -2014,8 +2014,8 @@ class Path extends NativeFieldWrapperClass2 {
     _arcToPoint(arcEnd.dx, arcEnd.dy, radius.x, radius.y, rotation,
                 largeArc, clockwise);
   }
-  void _arcToPoint(double arcEndX, double arcEndY, double radiusX,
-                   double radiusY, double rotation, bool largeArc,
+  void _arcToPoint(double arcEndX, double arcEndY, double? radiusX,
+                   double? radiusY, double rotation, bool largeArc,
                    bool clockwise) native 'Path_arcToPoint';
 
 
@@ -2044,8 +2044,8 @@ class Path extends NativeFieldWrapperClass2 {
     _relativeArcToPoint(arcEndDelta.dx, arcEndDelta.dy, radius.x, radius.y,
                         rotation, largeArc, clockwise);
   }
-  void _relativeArcToPoint(double arcEndX, double arcEndY, double radiusX,
-                           double radiusY, double rotation,
+  void _relativeArcToPoint(double arcEndX, double arcEndY, double? radiusX,
+                           double? radiusY, double rotation,
                            bool largeArc, bool clockwise)
                            native 'Path_relativeArcToPoint';
 
@@ -2111,7 +2111,7 @@ class Path extends NativeFieldWrapperClass2 {
   /// If `matrix4` is specified, the path will be transformed by this matrix
   /// after the matrix is translated by the given offset. The matrix is a 4x4
   /// matrix stored in column major order.
-  void addPath(Path path, Offset offset, {Float64List matrix4}) {
+  void addPath(Path path, Offset offset, {Float64List? matrix4}) {
     assert(path != null); // path is checked on the engine side
     assert(_offsetIsValid(offset));
     if (matrix4 != null) {
@@ -2130,7 +2130,7 @@ class Path extends NativeFieldWrapperClass2 {
   /// If `matrix4` is specified, the path will be transformed by this matrix
   /// after the matrix is translated by the given `offset`.  The matrix is a 4x4
   /// matrix stored in column major order.
-  void extendWithPath(Path path, Offset offset, {Float64List matrix4}) {
+  void extendWithPath(Path path, Offset offset, {Float64List? matrix4}) {
     assert(path != null); // path is checked on the engine side
     assert(_offsetIsValid(offset));
     if (matrix4 != null) {
@@ -2322,26 +2322,26 @@ class Tangent {
 /// This iterable does not memoize. Callers who need to traverse the list
 /// multiple times, or who need to randomly access elements of the list, should
 /// use [toList] on this object.
-class PathMetrics extends collection.IterableBase<PathMetric> {
+class PathMetrics extends collection.IterableBase<PathMetric?> {
   PathMetrics._(Path path, bool forceClosed) :
     _iterator = PathMetricIterator._(_PathMeasure(path, forceClosed));
 
-  final Iterator<PathMetric> _iterator;
+  final Iterator<PathMetric?> _iterator;
 
   @override
-  Iterator<PathMetric> get iterator => _iterator;
+  Iterator<PathMetric?> get iterator => _iterator;
 }
 
 /// Used by [PathMetrics] to track iteration from one segment of a path to the
 /// next for measurement.
-class PathMetricIterator implements Iterator<PathMetric> {
+class PathMetricIterator implements Iterator<PathMetric?> {
   PathMetricIterator._(this._pathMeasure) : assert(_pathMeasure != null);
 
-  PathMetric _pathMetric;
+  PathMetric? _pathMetric;
   _PathMeasure _pathMeasure;
 
   @override
-  PathMetric get current => _pathMetric;
+  PathMetric? get current => _pathMetric;
 
   @override
   bool moveNext() {
@@ -2370,8 +2370,8 @@ class PathMetricIterator implements Iterator<PathMetric> {
 class PathMetric {
   PathMetric._(this._measure)
     : assert(_measure != null),
-      length = _measure.length(_measure.currentContourIndex),
-      isClosed = _measure.isClosed(_measure.currentContourIndex),
+      length = _measure.length(_measure.currentContourIndex!),
+      isClosed = _measure.isClosed(_measure.currentContourIndex!),
       contourIndex = _measure.currentContourIndex;
 
   /// Return the total length of the current contour.
@@ -2397,7 +2397,7 @@ class PathMetric {
   /// the contours of the path at the time the path's metrics were computed. If
   /// additional contours were added or existing contours updated, this metric
   /// will be invalid for the current state of the path.
-  final int contourIndex;
+  final int? contourIndex;
 
   final _PathMeasure _measure;
 
@@ -2412,8 +2412,8 @@ class PathMetric {
   /// Returns null if the contour has zero [length].
   ///
   /// The distance is clamped to the [length] of the current contour.
-  Tangent getTangentForOffset(double distance) {
-    return _measure.getTangentForOffset(contourIndex, distance);
+  Tangent? getTangentForOffset(double distance) {
+    return _measure.getTangentForOffset(contourIndex!, distance);
   }
 
   /// Given a start and stop distance, return the intervening segment(s).
@@ -2422,7 +2422,7 @@ class PathMetric {
   /// Returns null if the segment is 0 length or `start` > `stop`.
   /// Begin the segment with a moveTo if `startWithMoveTo` is true.
   Path extractPath(double start, double end, {bool startWithMoveTo = true}) {
-    return _measure.extractPath(contourIndex, start, end, startWithMoveTo: startWithMoveTo);
+    return _measure.extractPath(contourIndex!, start, end, startWithMoveTo: startWithMoveTo);
   }
 
   @override
@@ -2437,13 +2437,13 @@ class _PathMeasure extends NativeFieldWrapperClass2 {
   void _constructor(Path path, bool forceClosed) native 'PathMeasure_constructor';
 
   double length(int contourIndex) {
-    assert(contourIndex <= currentContourIndex, 'Iterator must be advanced before index $contourIndex can be used.');
+    assert(contourIndex <= currentContourIndex!, 'Iterator must be advanced before index $contourIndex can be used.');
     return _length(contourIndex);
   }
   double _length(int contourIndex) native 'PathMeasure_getLength';
 
-  Tangent getTangentForOffset(int contourIndex, double distance) {
-    assert(contourIndex <= currentContourIndex, 'Iterator must be advanced before index $contourIndex can be used.');
+  Tangent? getTangentForOffset(int contourIndex, double distance) {
+    assert(contourIndex <= currentContourIndex!, 'Iterator must be advanced before index $contourIndex can be used.');
     final Float32List posTan = _getPosTan(contourIndex, distance);
     // first entry == 0 indicates that Skia returned false
     if (posTan[0] == 0.0) {
@@ -2458,7 +2458,7 @@ class _PathMeasure extends NativeFieldWrapperClass2 {
   Float32List _getPosTan(int contourIndex, double distance) native 'PathMeasure_getPosTan';
 
   Path extractPath(int contourIndex, double start, double end, {bool startWithMoveTo = true}) {
-    assert(contourIndex <= currentContourIndex, 'Iterator must be advanced before index $contourIndex can be used.');
+    assert(contourIndex <= currentContourIndex!, 'Iterator must be advanced before index $contourIndex can be used.');
     final Path path = Path._();
     _extractPath(path, contourIndex, start, end, startWithMoveTo: startWithMoveTo);
     return path;
@@ -2466,7 +2466,7 @@ class _PathMeasure extends NativeFieldWrapperClass2 {
   void _extractPath(Path outPath, int contourIndex, double start, double end, {bool startWithMoveTo = true}) native 'PathMeasure_getSegment';
 
   bool isClosed(int contourIndex) {
-    assert(contourIndex <= currentContourIndex, 'Iterator must be advanced before index $contourIndex can be used.');
+    assert(contourIndex <= currentContourIndex!, 'Iterator must be advanced before index $contourIndex can be used.');
     return _isClosed(contourIndex);
   }
   bool _isClosed(int contourIndex) native 'PathMeasure_isClosed';
@@ -2484,7 +2484,7 @@ class _PathMeasure extends NativeFieldWrapperClass2 {
   }
   bool _nativeNextContour() native 'PathMeasure_nextContour';
 
-  int currentContourIndex;
+  int? currentContourIndex;
 }
 
 /// Styles to use for blurs in [MaskFilter] objects.
@@ -2667,9 +2667,9 @@ class ColorFilter {
         _matrix = null,
         _type = _TypeSrgbToLinearGamma;
 
-  final Color _color;
-  final BlendMode _blendMode;
-  final List<double> _matrix;
+  final Color? _color;
+  final BlendMode? _blendMode;
+  final List<double>? _matrix;
   final int _type;
 
   // The type of SkColorFilter class to create for Skia.
@@ -2687,7 +2687,7 @@ class ColorFilter {
         && other._blendMode == _blendMode;
   }
 
-  _ColorFilter _toNativeColorFilter() {
+  _ColorFilter? _toNativeColorFilter() {
     switch (_type) {
       case _TypeMode:
         if (_color == null || _blendMode == null) {
@@ -2698,7 +2698,7 @@ class ColorFilter {
         if (_matrix == null) {
           return null;
         }
-        assert(_matrix.length == 20, 'Color Matrix must have 20 entries.');
+        assert(_matrix!.length == 20, 'Color Matrix must have 20 entries.');
         return _ColorFilter.matrix(this);
       case _TypeLinearToSrgbGamma:
         return _ColorFilter.linearToSrgbGamma(this);
@@ -2740,14 +2740,14 @@ class _ColorFilter extends NativeFieldWrapperClass2 {
     : assert(creator != null),
       assert(creator._type == ColorFilter._TypeMode) {
     _constructor();
-    _initMode(creator._color.value, creator._blendMode.index);
+    _initMode(creator._color!.value, creator._blendMode!.index);
   }
 
   _ColorFilter.matrix(this.creator)
     : assert(creator != null),
       assert(creator._type == ColorFilter._TypeMatrix) {
     _constructor();
-    _initMatrix(Float32List.fromList(creator._matrix));
+    _initMatrix(Float32List.fromList(creator._matrix!));
   }
   _ColorFilter.linearToSrgbGamma(this.creator)
     : assert(creator != null),
@@ -2806,17 +2806,17 @@ class ImageFilter {
 
   static Float64List _makeList(double a, double b) {
     final Float64List list = Float64List(2);
-    if (a != null)
-      list[0] = a;
-    if (b != null)
-      list[1] = b;
+    /* if (a != null)
+      */ list[0] = a;
+    /* if (b != null)
+      */ list[1] = b;
     return list;
   }
 
   final Float64List _data;
-  final FilterQuality _filterQuality;
+  final FilterQuality? _filterQuality;
   final int _type;
-  _ImageFilter _nativeFilter;
+  _ImageFilter? _nativeFilter;
 
   // The type of SkImageFilter class to create for Skia.
   static const int _kTypeBlur = 0;   // MakeBlurFilter
@@ -2833,9 +2833,9 @@ class ImageFilter {
   _ImageFilter _toNativeImageFilter() => _nativeFilter ??= _makeNativeImageFilter();
 
   _ImageFilter _makeNativeImageFilter() {
-    if (_data == null) {
+    /* if (_data == null) {
       return null;
-    }
+    } */
     switch (_type) {
       case _kTypeBlur:
         return _ImageFilter.blur(this);
@@ -2889,7 +2889,7 @@ class _ImageFilter extends NativeFieldWrapperClass2 {
     if (creator._data.length != 16)
       throw ArgumentError('"matrix4" must have 16 entries.');
     _constructor();
-    _initMatrix(creator._data, creator._filterQuality.index);
+    _initMatrix(creator._data, creator._filterQuality!.index);
   }
   void _initMatrix(Float64List matrix4, int filterQuality) native 'ImageFilter_initMatrix';
 
@@ -3030,9 +3030,9 @@ class Gradient extends Shader {
     Offset from,
     Offset to,
     List<Color> colors, [
-    List<double> colorStops,
+    List<double>? colorStops,
     TileMode tileMode = TileMode.clamp,
-    Float64List matrix4,
+    Float64List? matrix4,
   ]) : assert(_offsetIsValid(from)),
        assert(_offsetIsValid(to)),
        assert(colors != null),
@@ -3042,11 +3042,11 @@ class Gradient extends Shader {
     _validateColorStops(colors, colorStops);
     final Float32List endPointsBuffer = _encodeTwoPoints(from, to);
     final Int32List colorsBuffer = _encodeColorList(colors);
-    final Float32List colorStopsBuffer = colorStops == null ? null : Float32List.fromList(colorStops);
+    final Float32List? colorStopsBuffer = colorStops == null ? null : Float32List.fromList(colorStops);
     _constructor();
     _initLinear(endPointsBuffer, colorsBuffer, colorStopsBuffer, tileMode.index, matrix4);
   }
-  void _initLinear(Float32List endPoints, Int32List colors, Float32List colorStops, int tileMode, Float64List matrix4) native 'Gradient_initLinear';
+  void _initLinear(Float32List endPoints, Int32List colors, Float32List? colorStops, int tileMode, Float64List? matrix4) native 'Gradient_initLinear';
 
   /// Creates a radial gradient centered at `center` that ends at `radius`
   /// distance from the center.
@@ -3081,10 +3081,10 @@ class Gradient extends Shader {
     Offset center,
     double radius,
     List<Color> colors, [
-    List<double> colorStops,
+    List<double>? colorStops,
     TileMode tileMode = TileMode.clamp,
-    Float64List matrix4,
-    Offset focal,
+    Float64List? matrix4,
+    Offset? focal,
     double focalRadius = 0.0
   ]) : assert(_offsetIsValid(center)),
        assert(colors != null),
@@ -3094,7 +3094,7 @@ class Gradient extends Shader {
     focalRadius ??= 0.0;
     _validateColorStops(colors, colorStops);
     final Int32List colorsBuffer = _encodeColorList(colors);
-    final Float32List colorStopsBuffer = colorStops == null ? null : Float32List.fromList(colorStops);
+    final Float32List? colorStopsBuffer = colorStops == null ? null : Float32List.fromList(colorStops);
 
     // If focal is null or focal radius is null, this should be treated as a regular radial gradient
     // If focal == center and the focal radius is 0.0, it's still a regular radial gradient
@@ -3107,8 +3107,8 @@ class Gradient extends Shader {
       _initConical(focal.dx, focal.dy, focalRadius, center.dx, center.dy, radius, colorsBuffer, colorStopsBuffer, tileMode.index, matrix4);
     }
   }
-  void _initRadial(double centerX, double centerY, double radius, Int32List colors, Float32List colorStops, int tileMode, Float64List matrix4) native 'Gradient_initRadial';
-  void _initConical(double startX, double startY, double startRadius, double endX, double endY, double endRadius, Int32List colors, Float32List colorStops, int tileMode, Float64List matrix4) native 'Gradient_initTwoPointConical';
+  void _initRadial(double centerX, double centerY, double radius, Int32List colors, Float32List? colorStops, int tileMode, Float64List? matrix4) native 'Gradient_initRadial';
+  void _initConical(double startX, double startY, double startRadius, double endX, double endY, double endRadius, Int32List colors, Float32List? colorStops, int tileMode, Float64List? matrix4) native 'Gradient_initTwoPointConical';
 
   /// Creates a sweep gradient centered at `center` that starts at `startAngle`
   /// and ends at `endAngle`.
@@ -3139,11 +3139,11 @@ class Gradient extends Shader {
   Gradient.sweep(
     Offset center,
     List<Color> colors, [
-    List<double> colorStops,
+    List<double>? colorStops,
     TileMode tileMode = TileMode.clamp,
     double startAngle = 0.0,
     double endAngle = math.pi * 2,
-    Float64List matrix4,
+    Float64List? matrix4,
   ]) : assert(_offsetIsValid(center)),
        assert(colors != null),
        assert(tileMode != null),
@@ -3154,13 +3154,13 @@ class Gradient extends Shader {
        super._() {
     _validateColorStops(colors, colorStops);
     final Int32List colorsBuffer = _encodeColorList(colors);
-    final Float32List colorStopsBuffer = colorStops == null ? null : Float32List.fromList(colorStops);
+    final Float32List? colorStopsBuffer = colorStops == null ? null : Float32List.fromList(colorStops);
     _constructor();
     _initSweep(center.dx, center.dy, colorsBuffer, colorStopsBuffer, tileMode.index, startAngle, endAngle, matrix4);
   }
-  void _initSweep(double centerX, double centerY, Int32List colors, Float32List colorStops, int tileMode, double startAngle, double endAngle, Float64List matrix) native 'Gradient_initSweep';
+  void _initSweep(double centerX, double centerY, Int32List colors, Float32List? colorStops, int tileMode, double startAngle, double endAngle, Float64List? matrix) native 'Gradient_initSweep';
 
-  static void _validateColorStops(List<Color> colors, List<double> colorStops) {
+  static void _validateColorStops(List<Color> colors, List<double>? colorStops) {
     if (colorStops == null) {
       if (colors.length != 2)
         throw ArgumentError('"colors" must have length 2 if "colorStops" is omitted.');
@@ -3223,9 +3223,9 @@ class Vertices extends NativeFieldWrapperClass2 {
   Vertices(
     VertexMode mode,
     List<Offset> positions, {
-    List<Offset> textureCoordinates,
-    List<Color> colors,
-    List<int> indices,
+    List<Offset>? textureCoordinates,
+    List<Color>? colors,
+    List<int>? indices,
   }) : assert(mode != null),
        assert(positions != null) {
     if (textureCoordinates != null && textureCoordinates.length != positions.length)
@@ -3236,13 +3236,13 @@ class Vertices extends NativeFieldWrapperClass2 {
       throw ArgumentError('"indices" values must be valid indices in the positions list.');
 
     final Float32List encodedPositions = _encodePointList(positions);
-    final Float32List encodedTextureCoordinates = (textureCoordinates != null)
+    final Float32List? encodedTextureCoordinates = (textureCoordinates != null)
       ? _encodePointList(textureCoordinates)
       : null;
-    final Int32List encodedColors = colors != null
+    final Int32List? encodedColors = colors != null
       ? _encodeColorList(colors)
       : null;
-    final Uint16List encodedIndices = indices != null
+    final Uint16List? encodedIndices = indices != null
       ? Uint16List.fromList(indices)
       : null;
 
@@ -3272,9 +3272,9 @@ class Vertices extends NativeFieldWrapperClass2 {
   Vertices.raw(
     VertexMode mode,
     Float32List positions, {
-    Float32List textureCoordinates,
-    Int32List colors,
-    Uint16List indices,
+    Float32List? textureCoordinates,
+    Int32List? colors,
+    Uint16List? indices,
   }) : assert(mode != null),
        assert(positions != null) {
     if (textureCoordinates != null && textureCoordinates.length != positions.length)
@@ -3293,9 +3293,9 @@ class Vertices extends NativeFieldWrapperClass2 {
 
   bool _init(int mode,
              Float32List positions,
-             Float32List textureCoordinates,
-             Int32List colors,
-             Uint16List indices) native 'Vertices_init';
+             Float32List? textureCoordinates,
+             Int32List? colors,
+             Uint16List? indices) native 'Vertices_init';
 }
 
 /// Defines how a list of points is interpreted when drawing a set of points.
@@ -3373,7 +3373,7 @@ class Canvas extends NativeFieldWrapperClass2 {
   /// To end the recording, call [PictureRecorder.endRecording] on the
   /// given recorder.
   @pragma('vm:entry-point')
-  Canvas(PictureRecorder recorder, [ Rect cullRect ]) : assert(recorder != null) {
+  Canvas(PictureRecorder recorder, [ Rect? cullRect ]) : assert(recorder != null) {
     if (recorder.isRecording)
       throw ArgumentError('"recorder" must not already be associated with another Canvas.');
     cullRect ??= Rect.largest;
@@ -3506,9 +3506,9 @@ class Canvas extends NativeFieldWrapperClass2 {
   ///    [saveLayer].
   void saveLayer(Rect bounds, Paint paint) {
     assert(paint != null);
-    if (bounds == null) {
+    /* if (bounds == null) {
       _saveLayerWithoutBounds(paint._objects, paint._data);
-    } else {
+    } else */ {
       assert(_rectIsValid(bounds));
       _saveLayer(bounds.left, bounds.top, bounds.right, bounds.bottom,
                  paint._objects, paint._data);
@@ -3520,7 +3520,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                   double top,
                   double right,
                   double bottom,
-                  List<dynamic> paintObjects,
+                  List<dynamic>? paintObjects,
                   ByteData paintData) native 'Canvas_saveLayer';
 
   /// Pops the current save stack, if there is anything to pop.
@@ -3550,7 +3550,7 @@ class Canvas extends NativeFieldWrapperClass2 {
   ///
   /// If [sy] is unspecified, [sx] will be used for the scale in both
   /// directions.
-  void scale(double sx, [double sy]) => _scale(sx, sy ?? sx);
+  void scale(double sx, [double? sy]) => _scale(sx, sy ?? sx);
 
   void _scale(double sx, double sy) native 'Canvas_scale';
 
@@ -3652,7 +3652,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                  double y1,
                  double x2,
                  double y2,
-                 List<dynamic> paintObjects,
+                 List<dynamic>? paintObjects,
                  ByteData paintData) native 'Canvas_drawLine';
 
   /// Fills the canvas with the given [Paint].
@@ -3663,7 +3663,7 @@ class Canvas extends NativeFieldWrapperClass2 {
     assert(paint != null);
     _drawPaint(paint._objects, paint._data);
   }
-  void _drawPaint(List<dynamic> paintObjects, ByteData paintData) native 'Canvas_drawPaint';
+  void _drawPaint(List<dynamic>? paintObjects, ByteData paintData) native 'Canvas_drawPaint';
 
   /// Draws a rectangle with the given [Paint]. Whether the rectangle is filled
   /// or stroked (or both) is controlled by [Paint.style].
@@ -3677,7 +3677,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                  double top,
                  double right,
                  double bottom,
-                 List<dynamic> paintObjects,
+                 List<dynamic>? paintObjects,
                  ByteData paintData) native 'Canvas_drawRect';
 
   /// Draws a rounded rectangle with the given [Paint]. Whether the rectangle is
@@ -3688,7 +3688,7 @@ class Canvas extends NativeFieldWrapperClass2 {
     _drawRRect(rrect._value32, paint._objects, paint._data);
   }
   void _drawRRect(Float32List rrect,
-                  List<dynamic> paintObjects,
+                  List<dynamic>? paintObjects,
                   ByteData paintData) native 'Canvas_drawRRect';
 
   /// Draws a shape consisting of the difference between two rounded rectangles
@@ -3704,7 +3704,7 @@ class Canvas extends NativeFieldWrapperClass2 {
   }
   void _drawDRRect(Float32List outer,
                    Float32List inner,
-                   List<dynamic> paintObjects,
+                   List<dynamic>? paintObjects,
                    ByteData paintData) native 'Canvas_drawDRRect';
 
   /// Draws an axis-aligned oval that fills the given axis-aligned rectangle
@@ -3720,7 +3720,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                  double top,
                  double right,
                  double bottom,
-                 List<dynamic> paintObjects,
+                 List<dynamic>? paintObjects,
                  ByteData paintData) native 'Canvas_drawOval';
 
   /// Draws a circle centered at the point given by the first argument and
@@ -3735,7 +3735,7 @@ class Canvas extends NativeFieldWrapperClass2 {
   void _drawCircle(double x,
                    double y,
                    double radius,
-                   List<dynamic> paintObjects,
+                   List<dynamic>? paintObjects,
                    ByteData paintData) native 'Canvas_drawCircle';
 
   /// Draw an arc scaled to fit inside the given rectangle. It starts from
@@ -3761,7 +3761,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                 double startAngle,
                 double sweepAngle,
                 bool useCenter,
-                List<dynamic> paintObjects,
+                List<dynamic>? paintObjects,
                 ByteData paintData) native 'Canvas_drawArc';
 
   /// Draws the given [Path] with the given [Paint]. Whether this shape is
@@ -3773,7 +3773,7 @@ class Canvas extends NativeFieldWrapperClass2 {
     _drawPath(path, paint._objects, paint._data);
   }
   void _drawPath(Path path,
-                 List<dynamic> paintObjects,
+                 List<dynamic>? paintObjects,
                  ByteData paintData) native 'Canvas_drawPath';
 
   /// Draws the given [Image] into the canvas with its top-left corner at the
@@ -3787,7 +3787,7 @@ class Canvas extends NativeFieldWrapperClass2 {
   void _drawImage(Image image,
                   double x,
                   double y,
-                  List<dynamic> paintObjects,
+                  List<dynamic>? paintObjects,
                   ByteData paintData) native 'Canvas_drawImage';
 
   /// Draws the subset of the given image described by the `src` argument into
@@ -3825,7 +3825,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                       double dstTop,
                       double dstRight,
                       double dstBottom,
-                      List<dynamic> paintObjects,
+                      List<dynamic>? paintObjects,
                       ByteData paintData) native 'Canvas_drawImageRect';
 
   /// Draws the given [Image] into the canvas using the given [Paint].
@@ -3867,7 +3867,7 @@ class Canvas extends NativeFieldWrapperClass2 {
                       double dstTop,
                       double dstRight,
                       double dstBottom,
-                      List<dynamic> paintObjects,
+                      List<dynamic>? paintObjects,
                       ByteData paintData) native 'Canvas_drawImageNine';
 
   /// Draw the given picture onto the canvas. To create a picture, see
@@ -3937,7 +3937,7 @@ class Canvas extends NativeFieldWrapperClass2 {
     _drawPoints(paint._objects, paint._data, pointMode.index, points);
   }
 
-  void _drawPoints(List<dynamic> paintObjects,
+  void _drawPoints(List<dynamic>? paintObjects,
                    ByteData paintData,
                    int pointMode,
                    Float32List points) native 'Canvas_drawPoints';
@@ -3958,7 +3958,7 @@ class Canvas extends NativeFieldWrapperClass2 {
   }
   void _drawVertices(Vertices vertices,
                      int blendMode,
-                     List<dynamic> paintObjects,
+                     List<dynamic>? paintObjects,
                      ByteData paintData) native 'Canvas_drawVertices';
 
   /// Draws part of an image - the [atlas] - onto the canvas.
@@ -4014,8 +4014,8 @@ class Canvas extends NativeFieldWrapperClass2 {
       rectBuffer[index3] = rect.bottom;
     }
 
-    final Int32List colorBuffer = colors.isEmpty ? null : _encodeColorList(colors);
-    final Float32List cullRectBuffer = cullRect?._value32;
+    final Int32List? colorBuffer = colors.isEmpty ? null : _encodeColorList(colors);
+    final Float32List cullRectBuffer = cullRect._value32;
 
     _drawAtlas(
       paint._objects, paint._data, atlas, rstTransformBuffer, rectBuffer,
@@ -4067,16 +4067,16 @@ class Canvas extends NativeFieldWrapperClass2 {
 
     _drawAtlas(
       paint._objects, paint._data, atlas, rstTransforms, rects,
-      colors, blendMode.index, cullRect?._value32
+      colors, blendMode.index, cullRect._value32
     );
   }
 
-  void _drawAtlas(List<dynamic> paintObjects,
+  void _drawAtlas(List<dynamic>? paintObjects,
                   ByteData paintData,
                   Image atlas,
                   Float32List rstTransforms,
                   Float32List rects,
-                  Int32List colors,
+                  Int32List? colors,
                   int blendMode,
                   Float32List cullRect) native 'Canvas_drawAtlas';
 
@@ -4286,18 +4286,18 @@ class Shadow {
   /// Values for `t` are usually obtained from an [Animation<double>], such as
   /// an [AnimationController].
   /// {@endtemplate}
-  static Shadow lerp(Shadow a, Shadow b, double t) {
+  static Shadow? lerp(Shadow a, Shadow b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
-    if (a == null)
-      return b.scale(t);
-    if (b == null)
-      return a.scale(1.0 - t);
+    /* if (a == null)
+      return b.scale(t); */
+    /* if (b == null)
+      return a.scale(1.0 - t); */
     return Shadow(
-      color: Color.lerp(a.color, b.color, t),
-      offset: Offset.lerp(a.offset, b.offset, t),
-      blurRadius: lerpDouble(a.blurRadius, b.blurRadius, t),
+      color: Color.lerp(a.color, b.color, t)!,
+      offset: Offset.lerp(a.offset, b.offset, t)!,
+      blurRadius: lerpDouble(a.blurRadius, b.blurRadius, t)!,
     );
   }
 
@@ -4306,13 +4306,13 @@ class Shadow {
   /// If the lists differ in length, excess items are lerped with null.
   ///
   /// {@macro dart.ui.shadow.lerp}
-  static List<Shadow> lerpList(List<Shadow> a, List<Shadow> b, double t) {
+  static List<Shadow?>? lerpList(List<Shadow> a, List<Shadow> b, double t) {
     assert(t != null);
     if (a == null && b == null)
       return null;
     a ??= <Shadow>[];
     b ??= <Shadow>[];
-    final List<Shadow> result = <Shadow>[];
+    final List<Shadow?> result = <Shadow?>[];
     final int commonLength = math.min(a.length, b.length);
     for (int i = 0; i < commonLength; i += 1)
       result.add(Shadow.lerp(a[i], b[i], t));
@@ -4339,7 +4339,7 @@ class Shadow {
   // Serialize [shadows] into ByteData. The format is a single uint_32_t at
   // the beginning indicating the number of shadows, followed by _kBytesPerShadow
   // bytes for each shadow.
-  static ByteData _encodeShadows(List<Shadow> shadows) {
+  static ByteData _encodeShadows(List<Shadow>? shadows) {
     if (shadows == null)
       return ByteData(0);
 
@@ -4349,8 +4349,8 @@ class Shadow {
     int shadowOffset = 0;
     for (int shadowIndex = 0; shadowIndex < shadows.length; ++shadowIndex) {
       final Shadow shadow = shadows[shadowIndex];
-      if (shadow == null)
-        continue;
+      /* if (shadow == null)
+        continue; */
       shadowOffset = shadowIndex * _kBytesPerShadow;
 
       shadowsData.setInt32(_kColorOffset + shadowOffset,
@@ -4406,13 +4406,13 @@ typedef _Callbacker<T> = String Function(_Callback<T> callback);
 Future<T> _futurize<T>(_Callbacker<T> callbacker) {
   final Completer<T> completer = Completer<T>.sync();
   final String error = callbacker((T t) {
-    if (t == null) {
+    /* if (t == null) {
       completer.completeError(Exception('operation failed'));
     } else {
-      completer.complete(t);
-    }
+      */ completer.complete(t); /*
+    } */
   });
-  if (error != null)
-    throw Exception(error);
+  /* if (error != null)
+    */ throw Exception(error);
   return completer.future;
 }

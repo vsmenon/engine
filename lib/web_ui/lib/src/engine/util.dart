@@ -12,7 +12,7 @@ typedef Callback<T> = void Function(T result);
 ///
 /// Return value should be null on success, and a string error message on
 /// failure.
-typedef Callbacker<T> = String Function(Callback<T> callback);
+typedef Callbacker<T> = String? Function(Callback<T> callback);
 
 /// Converts a method that receives a value-returning callback to a method that
 /// returns a Future.
@@ -37,12 +37,12 @@ typedef Callbacker<T> = String Function(Callback<T> callback);
 /// ```
 Future<T> futurize<T>(Callbacker<T> callbacker) {
   final Completer<T> completer = Completer<T>.sync();
-  final String error = callbacker((T t) {
-    if (t == null) {
+  final String? error = callbacker((T t) {
+    /* if (t == null) {
       completer.completeError(Exception('operation failed'));
     } else {
-      completer.complete(t);
-    }
+      */ completer.complete(t); /*
+    } */
   });
   if (error != null) {
     throw Exception(error);
@@ -51,8 +51,8 @@ Future<T> futurize<T>(Callbacker<T> callbacker) {
 }
 
 /// Converts [matrix] to CSS transform value.
-String matrix4ToCssTransform(Matrix4 matrix) {
-  return float64ListToCssTransform(matrix.storage);
+String? matrix4ToCssTransform(Matrix4 matrix) {
+  return float64ListToCssTransform(matrix.storage!);
 }
 
 /// Applies a transform to the [element].
@@ -61,7 +61,7 @@ String matrix4ToCssTransform(Matrix4 matrix) {
 void setElementTransform(html.Element element, Float64List matrix4) {
   element.style
     ..transformOrigin = '0 0 0'
-    ..transform = float64ListToCssTransform(matrix4);
+    ..transform = float64ListToCssTransform(matrix4)!;
 }
 
 /// Converts [matrix] to CSS transform value.
@@ -73,7 +73,7 @@ void setElementTransform(html.Element element, Float64List matrix4) {
 /// See also:
 ///  * https://github.com/flutter/flutter/issues/32274
 ///  * https://bugs.chromium.org/p/chromium/issues/detail?id=1040222
-String float64ListToCssTransform(Float64List matrix) {
+String? float64ListToCssTransform(Float64List matrix) {
   assert(matrix.length == 16);
   final TransformKind transformKind = transformKindOf(matrix);
   if (transformKind == TransformKind.transform2d) {
@@ -310,13 +310,13 @@ String _pathToSvgClipPath(ui.Path path,
   sb.write('<clipPath id=$clipId clipPathUnits="objectBoundingBox">');
 
   sb.write('<path transform="scale($scaleX, $scaleY)" fill="#FFFFFF" d="');
-  pathToSvg(path, sb, offsetX: offsetX, offsetY: offsetY);
+  pathToSvg(path as SurfacePath, sb, offsetX: offsetX, offsetY: offsetY);
   sb.write('"></path></clipPath></defs></svg');
   return sb.toString();
 }
 
 /// Converts color to a css compatible attribute value.
-String colorToCssString(ui.Color color) {
+String? colorToCssString(ui.Color? color) {
   if (color == null) {
     return null;
   }
@@ -398,7 +398,7 @@ final String _fallbackFontFamily =
 ///
 /// If the given [fontFamily] is a generic font-family, then just return it.
 /// Otherwise, wrap the family name in quotes and add a fallback font family.
-String canonicalizeFontFamily(String fontFamily) {
+String? canonicalizeFontFamily(String? fontFamily) {
   if (_genericFontFamilies.contains(fontFamily)) {
     return fontFamily;
   }
@@ -406,15 +406,15 @@ String canonicalizeFontFamily(String fontFamily) {
 }
 
 /// Converts a list of [Offset] to a typed array of floats.
-Float32List offsetListToFloat32List(List<ui.Offset> offsetList) {
+Float32List? offsetListToFloat32List(List<ui.Offset>? offsetList) {
   if (offsetList == null) {
     return null;
   }
   final int length = offsetList.length;
   final floatList = Float32List(length * 2);
   for (int i = 0, destIndex = 0; i < length; i++, destIndex += 2) {
-    floatList[destIndex] = offsetList[i].dx;
-    floatList[destIndex + 1] = offsetList[i].dy;
+    floatList[destIndex] = offsetList[i].dx!;
+    floatList[destIndex + 1] = offsetList[i].dy!;
   }
   return floatList;
 }
@@ -429,8 +429,8 @@ Float32List offsetListToFloat32List(List<ui.Offset> offsetList) {
 ///
 /// * Use 3D transform instead of 2D: this does not work because it causes text
 ///   blurriness: https://github.com/flutter/flutter/issues/32274
-void applyWebkitClipFix(html.Element containerElement) {
+void applyWebkitClipFix(html.Element? containerElement) {
   if (browserEngine == BrowserEngine.webkit) {
-    containerElement.style.zIndex = '0';
+    containerElement!.style.zIndex = '0';
   }
 }

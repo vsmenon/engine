@@ -27,7 +27,7 @@ void main() async {
     // Wrap in <flt-scene> so that our CSS selectors kick in.
     final html.Element sceneElement = html.Element.tag('flt-scene');
     try {
-      sceneElement.append(engineCanvas.rootElement);
+      sceneElement.append(engineCanvas.rootElement!);
       html.document.body.append(sceneElement);
       await matchGoldenFile('$fileName.png', region: region, maxDiffRatePercent: 0.0);
     } finally {
@@ -40,8 +40,8 @@ void main() async {
   setUp(() async {
     debugEmulateFlutterTesterEnvironment = true;
     await webOnlyInitializePlatform();
-    webOnlyFontCollection.debugRegisterTestFonts();
-    await webOnlyFontCollection.ensureFontsLoaded();
+    webOnlyFontCollection!.debugRegisterTestFonts();
+    await webOnlyFontCollection!.ensureFontsLoaded();
   });
 
   // Regression test for https://github.com/flutter/flutter/issues/48683
@@ -51,13 +51,13 @@ void main() async {
         engine.RecordingCanvas(const Rect.fromLTRB(0, 0, 400, 300));
     rc.save();
     Image testImage = createTestImage();
-    double testWidth = testImage.width.toDouble();
-    double testHeight = testImage.height.toDouble();
+    double testWidth = testImage.width!.toDouble();
+    double testHeight = testImage.height!.toDouble();
     final Path path = Path();
     path.addOval(Rect.fromLTWH(100, 30, testWidth, testHeight));
     rc.clipPath(path);
     rc.drawImageRect(testImage, Rect.fromLTRB(0, 0, testWidth, testHeight),
-        Rect.fromLTWH(100, 30, testWidth, testHeight), Paint());
+        Rect.fromLTWH(100, 30, testWidth, testHeight), Paint() as SurfacePaint);
     rc.restore();
     await _checkScreenshot(rc, 'image_clipped_by_oval');
   });
@@ -79,7 +79,7 @@ void main() async {
     paintPath.close();
     rc.drawPath(
         paintPath,
-        Paint()
+        Paint() as SurfacePaint
           ..color = Color(0xFF00FF00)
           ..style = PaintingStyle.fill);
     rc.restore();

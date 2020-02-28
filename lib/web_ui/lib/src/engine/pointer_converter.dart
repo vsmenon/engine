@@ -9,8 +9,8 @@ class _PointerState {
   _PointerState(this.x, this.y);
 
   /// The identifier used in framework hit test.
-  int get pointer => _pointer;
-  int _pointer;
+  int? get pointer => _pointer;
+  int? _pointer;
   static int _pointerCount = 0;
   void startNewPointer() {
     _pointerCount += 1;
@@ -65,33 +65,33 @@ class PointerDataConverter {
   }
 
   ui.PointerData _generateCompletePointerData({
-    Duration timeStamp,
-    ui.PointerChange change,
-    ui.PointerDeviceKind kind,
-    ui.PointerSignalKind signalKind,
-    int device,
-    double physicalX,
-    double physicalY,
-    int buttons,
-    bool obscured,
-    double pressure,
-    double pressureMin,
-    double pressureMax,
-    double distance,
-    double distanceMax,
-    double size,
-    double radiusMajor,
-    double radiusMinor,
-    double radiusMin,
-    double radiusMax,
-    double orientation,
-    double tilt,
-    int platformData,
-    double scrollDeltaX,
-    double scrollDeltaY,
+    Duration? timeStamp,
+    ui.PointerChange? change,
+    ui.PointerDeviceKind? kind,
+    ui.PointerSignalKind? signalKind,
+    int? device,
+    required double physicalX,
+    required double physicalY,
+    int? buttons,
+    bool? obscured,
+    double? pressure,
+    double? pressureMin,
+    double? pressureMax,
+    double? distance,
+    double? distanceMax,
+    double? size,
+    double? radiusMajor,
+    double? radiusMinor,
+    double? radiusMin,
+    double? radiusMax,
+    double? orientation,
+    double? tilt,
+    int? platformData,
+    double? scrollDeltaX,
+    double? scrollDeltaY,
   }) {
     assert(_pointers.containsKey(device));
-    final _PointerState state = _pointers[device];
+    final _PointerState state = _pointers[device]!;
     final double deltaX = physicalX - state.x;
     final double deltaY = physicalY - state.y;
     state.x = physicalX;
@@ -129,37 +129,37 @@ class PointerDataConverter {
 
   bool _locationHasChanged(int device, double physicalX, double physicalY) {
     assert(_pointers.containsKey(device));
-    final _PointerState state = _pointers[device];
+    final _PointerState state = _pointers[device]!;
     return state.x != physicalX || state.y != physicalY;
   }
 
   ui.PointerData _synthesizePointerData({
-    Duration timeStamp,
-    ui.PointerChange change,
-    ui.PointerDeviceKind kind,
-    int device,
-    double physicalX,
-    double physicalY,
-    int buttons,
-    bool obscured,
-    double pressure,
-    double pressureMin,
-    double pressureMax,
-    double distance,
-    double distanceMax,
-    double size,
-    double radiusMajor,
-    double radiusMinor,
-    double radiusMin,
-    double radiusMax,
-    double orientation,
-    double tilt,
-    int platformData,
-    double scrollDeltaX,
-    double scrollDeltaY,
+    Duration? timeStamp,
+    ui.PointerChange? change,
+    ui.PointerDeviceKind? kind,
+    int? device,
+    required double physicalX,
+    required double physicalY,
+    int? buttons,
+    bool? obscured,
+    double? pressure,
+    double? pressureMin,
+    double? pressureMax,
+    double? distance,
+    double? distanceMax,
+    double? size,
+    double? radiusMajor,
+    double? radiusMinor,
+    double? radiusMin,
+    double? radiusMax,
+    double? orientation,
+    double? tilt,
+    int? platformData,
+    double? scrollDeltaX,
+    double? scrollDeltaY,
   }) {
     assert(_pointers.containsKey(device));
-    final _PointerState state = _pointers[device];
+    final _PointerState state = _pointers[device]!;
     final double deltaX = physicalX - state.x;
     final double deltaY = physicalY - state.y;
     state.x = physicalX;
@@ -206,7 +206,7 @@ class PointerDataConverter {
     Duration timeStamp = Duration.zero,
     ui.PointerChange change = ui.PointerChange.cancel,
     ui.PointerDeviceKind kind = ui.PointerDeviceKind.touch,
-    ui.PointerSignalKind signalKind,
+    ui.PointerSignalKind? signalKind,
     int device = 0,
     double physicalX = 0.0,
     double physicalY = 0.0,
@@ -429,7 +429,7 @@ class PointerDataConverter {
           break;
         case ui.PointerChange.move:
           assert(_pointers.containsKey(device));
-          final _PointerState state = _pointers[device];
+          final _PointerState state = _pointers[device]!;
           assert(state.down);
           result.add(
             _generateCompletePointerData(
@@ -463,7 +463,7 @@ class PointerDataConverter {
         case ui.PointerChange.up:
         case ui.PointerChange.cancel:
           assert(_pointers.containsKey(device));
-          final _PointerState state = _pointers[device];
+          final _PointerState state = _pointers[device]!;
           assert(state.down);
           // Cancel events can have different coordinates due to various
           // reasons (window lost focus which is accompanied by window
@@ -570,7 +570,7 @@ class PointerDataConverter {
           break;
         case ui.PointerChange.remove:
           assert(_pointers.containsKey(device));
-          final _PointerState state = _pointers[device];
+          final _PointerState state = _pointers[device]!;
           assert(!state.down);
           result.add(
             _generateCompletePointerData(
