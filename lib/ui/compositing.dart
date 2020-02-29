@@ -53,7 +53,7 @@ abstract class _EngineLayerWrapper implements EngineLayer {
   //
   // Null if this layer has no children. This field is populated only in debug
   // mode.
-  List<_EngineLayerWrapper>? _debugChildren;
+  List<_EngineLayerWrapper> _debugChildren;
 
   // Whether this layer was used as `oldLayer` in a past frame.
   //
@@ -200,9 +200,9 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   // In debug mode checks that the `layer` is only used once in a given scene.
   bool _debugCheckUsedOnce(EngineLayer layer, String usage) {
     assert(() {
-      /* if (layer == null) {
+      if (layer == null) {
         return true;
-      } */
+      }
 
       assert(
           !_usedLayers.containsKey(layer),
@@ -217,7 +217,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
     return true;
   }
 
-  bool _debugCheckCanBeUsedAsOldLayer(_EngineLayerWrapper? layer, String methodName) {
+  bool _debugCheckCanBeUsedAsOldLayer(_EngineLayerWrapper layer, String methodName) {
     assert(() {
       if (layer == null) {
         return true;
@@ -239,7 +239,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
       if (_layerStack.isNotEmpty) {
         final _EngineLayerWrapper currentLayer = _layerStack.last;
         currentLayer._debugChildren ??= <_EngineLayerWrapper>[];
-        currentLayer._debugChildren!.add(newLayer);
+        currentLayer._debugChildren.add(newLayer);
       }
       _layerStack.add(newLayer);
       return true;
@@ -277,7 +277,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   /// See [pop] for details about the operation stack.
   TransformEngineLayer pushTransform(
     Float64List matrix4, {
-    TransformEngineLayer? oldLayer,
+    TransformEngineLayer oldLayer,
   }) {
     assert(_matrix4IsValid(matrix4));
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushTransform'));
@@ -302,7 +302,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   OffsetEngineLayer pushOffset(
     double dx,
     double dy, {
-    OffsetEngineLayer? oldLayer,
+    OffsetEngineLayer oldLayer,
   }) {
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushOffset'));
     final EngineLayer engineLayer = EngineLayer._();
@@ -327,7 +327,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   ClipRectEngineLayer pushClipRect(
     Rect rect, {
     Clip clipBehavior = Clip.antiAlias,
-    ClipRectEngineLayer? oldLayer,
+    ClipRectEngineLayer oldLayer,
   }) {
     assert(clipBehavior != null);
     assert(clipBehavior != Clip.none);
@@ -355,7 +355,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   ClipRRectEngineLayer pushClipRRect(
     RRect rrect, {
     Clip clipBehavior = Clip.antiAlias,
-    ClipRRectEngineLayer? oldLayer,
+    ClipRRectEngineLayer oldLayer,
   }) {
     assert(clipBehavior != null);
     assert(clipBehavior != Clip.none);
@@ -383,7 +383,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   ClipPathEngineLayer pushClipPath(
     Path path, {
     Clip clipBehavior = Clip.antiAlias,
-    ClipPathEngineLayer? oldLayer,
+    ClipPathEngineLayer oldLayer,
   }) {
     assert(clipBehavior != null);
     assert(clipBehavior != Clip.none);
@@ -412,7 +412,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   OpacityEngineLayer pushOpacity(
     int alpha, {
     Offset offset = Offset.zero,
-    OpacityEngineLayer? oldLayer,
+    OpacityEngineLayer oldLayer,
   }) {
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushOpacity'));
     final EngineLayer engineLayer = EngineLayer._();
@@ -436,11 +436,11 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   /// See [pop] for details about the operation stack.
   ColorFilterEngineLayer pushColorFilter(
     ColorFilter filter, {
-    ColorFilterEngineLayer? oldLayer,
+    ColorFilterEngineLayer oldLayer,
   }) {
     assert(filter != null);
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushColorFilter'));
-    final _ColorFilter nativeFilter = filter._toNativeColorFilter()!;
+    final _ColorFilter nativeFilter = filter._toNativeColorFilter();
     assert(nativeFilter != null);
     final EngineLayer engineLayer = EngineLayer._();
     _pushColorFilter(engineLayer, nativeFilter);
@@ -463,7 +463,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   /// See [pop] for details about the operation stack.
   ImageFilterEngineLayer pushImageFilter(
     ImageFilter filter, {
-    ImageFilterEngineLayer? oldLayer,
+    ImageFilterEngineLayer oldLayer,
   }) {
     assert(filter != null);
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushImageFilter'));
@@ -490,7 +490,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   /// See [pop] for details about the operation stack.
   BackdropFilterEngineLayer pushBackdropFilter(
     ImageFilter filter, {
-    BackdropFilterEngineLayer? oldLayer,
+    BackdropFilterEngineLayer oldLayer,
   }) {
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushBackdropFilter'));
     final EngineLayer engineLayer = EngineLayer._();
@@ -516,7 +516,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
     Shader shader,
     Rect maskRect,
     BlendMode blendMode, {
-    ShaderMaskEngineLayer? oldLayer,
+    ShaderMaskEngineLayer oldLayer,
   }) {
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushShaderMask'));
     final EngineLayer engineLayer = EngineLayer._();
@@ -561,12 +561,12 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
   /// See [pop] for details about the operation stack, and [Clip] for different clip modes.
   // ignore: deprecated_member_use
   PhysicalShapeEngineLayer pushPhysicalShape({
-    Path? path,
-    double? elevation,
-    required Color color,
-    Color? shadowColor,
+    Path path,
+    double elevation,
+    Color color,
+    Color shadowColor,
     Clip clipBehavior = Clip.none,
-    PhysicalShapeEngineLayer? oldLayer,
+    PhysicalShapeEngineLayer oldLayer,
   }) {
     assert(_debugCheckCanBeUsedAsOldLayer(oldLayer, 'pushPhysicalShape'));
     final EngineLayer engineLayer = EngineLayer._();
@@ -583,7 +583,7 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
     return layer;
   }
 
-  EngineLayer _pushPhysicalShape(EngineLayer outEngineLayer, Path? path, double? elevation, int color, int shadowColor,
+  EngineLayer _pushPhysicalShape(EngineLayer outEngineLayer, Path path, double elevation, int color, int shadowColor,
       int clipBehavior) native 'SceneBuilder_pushPhysicalShape';
 
   /// Ends the effect of the most recently pushed operation.
@@ -620,11 +620,11 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
         _debugCheckUsedOnce(parentLayer, 'retained layer');
         parentLayer._debugCheckNotUsedAsOldLayer();
 
-        if (parentLayer._debugChildren == null || parentLayer._debugChildren!.isEmpty) {
+        if (parentLayer._debugChildren == null || parentLayer._debugChildren.isEmpty) {
           return;
         }
 
-        parentLayer._debugChildren!.forEach(recursivelyCheckChildrenUsedOnce);
+        parentLayer._debugChildren.forEach(recursivelyCheckChildrenUsedOnce);
       }
 
       recursivelyCheckChildrenUsedOnce(layer);
@@ -750,13 +750,13 @@ class SceneBuilder extends NativeFieldWrapperClass2 {
     Offset offset = Offset.zero,
     double width = 0.0,
     double height = 0.0,
-    SceneHost? sceneHost,
+    SceneHost sceneHost,
     bool hitTestable = true,
   }) {
     _addChildScene(offset.dx, offset.dy, width, height, sceneHost, hitTestable);
   }
 
-  void _addChildScene(double dx, double dy, double width, double height, SceneHost? sceneHost,
+  void _addChildScene(double dx, double dy, double width, double height, SceneHost sceneHost,
       bool hitTestable) native 'SceneBuilder_addChildScene';
 
   /// Sets a threshold after which additional debugging information should be recorded.

@@ -23,7 +23,7 @@ part of dart.ui;
 class IsolateNameServer {
   // This class is only a namespace, and should not be instantiated or
   // extended directly.
-  factory IsolateNameServer._() => null!;
+  factory IsolateNameServer._() => null;
 
   /// Looks up the [SendPort] associated with a given name.
   ///
