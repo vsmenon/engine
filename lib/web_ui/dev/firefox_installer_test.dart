@@ -4,7 +4,6 @@
 
 @TestOn('vm && linux')
 
-// @dart = 2.6
 import 'dart:io' as io;
 
 import 'package:path/path.dart' as path;
